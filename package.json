@@ -1,0 +1,66 @@
+{
+  "name": "api-qasim",
+  "version": "1.1.0",
+  "description": "My Rest Api Project",
+  "engines" : {
+    "node" : ">=20.0.0"
+    },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KoyebApp/GlobalTech-API.git"
+  },
+  "keywords": [
+    "simple",
+    "api",
+    "rest",
+    "api"
+  ],
+  "author": "KoyebApp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KoyebApp/GlobalTech-API/issues"
+  },
+  "dependencies": {
+    "@vitalets/google-translate-api": "^9.2.0",
+    "@shineiichijo/marika": "^2.0.6",
+    "api-qasim": "^3.2.5",
+    "aptoide-scraper": "^1.0.1",
+    "aptoideapk_dl": "^1.0.2",
+    "base-64": "^1.0.0",
+    "base32": "0.0.6",
+    "chalk": "^4.1.0",
+    "child_process": "^1.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ephoto-api-faris": "^1.0.0",
+    "express": "^4.17.1",
+    "file_size_url": "^1.0.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "form-data": "^4.0.1",
+    "fs": "0.0.1-security",
+    "imgur": "2.3.0",
+    "megajs": "*",
+    "mime-types": "^2.1.35",
+    "moment": "^2.29.1",
+    "morgan": "^1.10.0",
+    "nayan-videos-downloader": "^0.0.9",
+    "needle": "^2.6.0",
+    "nodemon": "^2.0.7",
+    "path": "^0.12.7",
+    "pg": "^8.12.0",
+    "qrcode": "^1.5.3",
+    "request": "^2.88.2",
+    "snapsave-media-downloader": "^2.1.1",
+    "sequelize": "^6.37.3",
+    "serve-favicon": "^2.5.0",
+    "ssl-express-www": "^3.0.7",
+    "tslib": "^2.8.1",
+    "urlencode": "^2.0.0",
+    "yt-search": "^2.11.1"
+  },
+  "homepage": "https://github.com/KoyebApp/GlobalTech-API#readme"
+}
