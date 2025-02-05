@@ -186,6 +186,51 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
+// Route to fetch data from Ulvis API with custom parameters
+router.get('/short/ulvis', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const url = req.query.url;  // URL parameter to fetch data from
+  const custom = req.query.name;  // Custom parameter
+
+  // Validate input parameters
+  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Construct the API URL for fetching data from Ulvis
+      const apiUrl = `https://ulvis.net/api.php?url=${encodeURIComponent(url)}&custom=${encodeURIComponent(custom)}`;
+
+      // Fetch the data from Ulvis API
+      const response = await fetch(apiUrl);
+      const apiResult = await response.json();
+
+      // Check if the result contains valid data
+      if (apiResult) {
+        res.json({
+          status: true,
+          code: 200,
+          creator: `${creator}`,
+          result: apiResult,  // Return the entire API result
+        });
+      } else {
+        res.json({
+          status: false,
+          code: 404,
+          message: 'Data not found or invalid URL.',
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching data from Ulvis:", err);
+      res.json(loghandler.error);
+    }
+  } else {
+    res.json(loghandler.invalidKey);
+  }
+});
+
+
 
 
 router.get('/download/mega', async (req, res, next) => {
