@@ -186,11 +186,12 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
+
 // Route to fetch data from Ulvis API with custom parameters
-router.get('/short/ulvis', async (req, res, next) => {
+router.get('/fetch/ulvis', async (req, res, next) => {
   const apikey = req.query.apikey;
   const url = req.query.url;  // URL parameter to fetch data from
-  const custom = req.query.name;  // Custom parameter
+  const custom = req.query.custom;  // Custom parameter
 
   // Validate input parameters
   if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
@@ -204,15 +205,36 @@ router.get('/short/ulvis', async (req, res, next) => {
 
       // Fetch the data from Ulvis API
       const response = await fetch(apiUrl);
-      const apiResult = await response.json();
 
-      // Check if the result contains valid data
+      // Check if the response is a valid JSON
+      const contentType = response.headers.get('content-type');
+
+      let apiResult;
+      if (contentType && contentType.includes('application/json')) {
+        // If the response is JSON, parse it
+        apiResult = await response.json();
+      } else if (contentType && contentType.includes('application/xml')) {
+        // If the response is XML, parse it (you can use an XML parser library like `xml2js`)
+        const xmlText = await response.text();
+        apiResult = xml2js.parseStringPromise(xmlText); // Assuming you installed and imported xml2js
+      } else {
+        // If it's something else (like HTML), return the raw response body
+        const errorText = await response.text();
+        return res.json({
+          status: false,
+          code: 400,
+          message: 'Unexpected response format',
+          details: errorText,
+        });
+      }
+
+      // If the result is valid, return it
       if (apiResult) {
         res.json({
           status: true,
           code: 200,
           creator: `${creator}`,
-          result: apiResult,  // Return the entire API result
+          result: apiResult,  // Return the parsed result
         });
       } else {
         res.json({
