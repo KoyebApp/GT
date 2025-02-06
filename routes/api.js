@@ -294,6 +294,10 @@ router.get('/download/spotify', async (req, res, next) => {
   }
 });
 
+
+// Import the base-x library
+const baseX = require('base-x');
+
 // Base Alphabet Definitions for different Bases
 const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -304,21 +308,21 @@ const BASE16 = '0123456789abcdef';
 const BASE8 = '01234567';
 const BASE2 = '01';
 const BASE11 = '0123456789a';
-const BASE67 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~';
+const BASE67 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!';
 const ZBASE32 = 'ybndrfg8ejkmcpqxot1uwisza345h769';
 
-// Import base-x instances dynamically using the base alphabet
-const bs58 = require('base-x')(BASE58);
-const bs64 = require('base-x')(BASE64);
-const bs62 = require('base-x')(BASE62);
-const bs36 = require('base-x')(BASE36);
-const bs32 = require('base-x')(BASE32);
-const bs16 = require('base-x')(BASE16);
-const bs8 = require('base-x')(BASE8);
-const bs2 = require('base-x')(BASE2);
-const bs11 = require('base-x')(BASE11);
-const bs67 = require('base-x')(BASE67);
-const bs32z = require('base-x')(ZBASE32);
+// Create base-x instances using the alphabets
+const bs58 = baseX(BASE58);
+const bs64 = baseX(BASE64);
+const bs62 = baseX(BASE62);
+const bs36 = baseX(BASE36);
+const bs32 = baseX(BASE32);
+const bs16 = baseX(BASE16);
+const bs8 = baseX(BASE8);
+const bs2 = baseX(BASE2);
+const bs11 = baseX(BASE11);
+const bs67 = baseX(BASE67);
+const bs32z = baseX(ZBASE32);
 
 // Base Alphabet Mapping for dynamic base selection
 const BASE_ENCODERS = {
@@ -357,7 +361,7 @@ router.get('/base/:base', (req, res) => {
     return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ENCODERS).join(', ')}` });
   }
 
-  // Get the correct base encoder for the chosen base
+  // Get the correct base encoder/decoder for the chosen base
   const baseEncoder = BASE_ENCODERS[base];
   
   let result;
@@ -396,6 +400,8 @@ router.get('/base/:base', (req, res) => {
     });
   }
 });
+
+
 
 
 
