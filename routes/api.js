@@ -571,19 +571,6 @@ router.get('/random/data', (req, res) => {
           semver: faker.system.semver(),
         };
         break;
-      case 'random':
-        randomData = {
-          number: faker.datatype.number(),
-          float: faker.datatype.float(),
-          uuid: faker.datatype.uuid(),
-          boolean: faker.datatype.boolean(),
-          image: faker.datatype.image(),
-          locale: faker.datatype.locale(),
-          alpha: faker.datatype.alpha(),
-          alphaNumeric: faker.datatype.alphaNumeric(),
-          hexaDecimal: faker.datatype.hexaDecimal(),
-        };
-        break;
         case 'finance':
         randomData = {
           account: faker.finance.account(),
