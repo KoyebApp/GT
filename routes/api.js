@@ -2,12 +2,18 @@ __path = process.cwd();
 
 // Required modules
 const express = require('express');
+const baseX = require('base-x');
 const favicon = require('serve-favicon');
+const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
+const validator = require('validator');
 const { search } = require('aptoide-scraper');
+const CurrencyConverter = require('currency-converter-lt');
+const moment = require('moment-timezone');
 const cors = require('cors');
 const QRCode = require('qrcode');
 const fetch = require('node-fetch');
+const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const request = require('request');
@@ -321,6 +327,416 @@ router.get('/download/spotify', async (req, res, next) => {
     res.json(loghandler.error);
   }
 });
+
+// Base62 encoding/decoding setup
+const BASE62_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const base62 = baseX(BASE62_ALPHABET);
+
+
+// Route for Base62 encoding and decoding
+app.get('/base62', (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const action = req.query.action; // Action (encode or decode)
+  const data = req.query.data; // Data to be encoded or decoded
+
+  // Validate input parameters
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+  if (!data) return res.json({ status: false, code: 400, message: 'Data is required.' });
+  if (!action) return res.json({ status: false, code: 400, message: 'Action (encode/decode) is required.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  let result;
+  
+  try {
+    if (action === 'encode') {
+      // Base62 encoding
+      result = base62.encode(Buffer.from(data, 'utf-8')).toString();
+    } else if (action === 'decode') {
+      // Base62 decoding
+      result = base62.decode(data).toString('utf-8');
+    } else {
+      return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
+    }
+
+    // Return the result
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        action: action,
+        originalData: data,
+        processedData: result,
+      },
+    });
+  } catch (err) {
+    console.error('Error with Base62 operation:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error with Base62 encoding/decoding.',
+    });
+  }
+});
+
+
+app.get('/generate-uuid', (req, res) => {
+  const apikey = req.query.apikey;
+
+  try {
+    if (!apikey) {
+      return res.json({ status: false, code: 400, message: 'API key is required.' });
+    }
+
+    if (!listkey.includes(apikey)) {
+      return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+    }
+
+    const uuid = uuidv4();
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        uuid: uuid,
+      },
+    });
+  } catch (err) {
+    console.error('Error generating UUID:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Internal server error while generating UUID.',
+    });
+  }
+});
+
+
+app.get('/convert-currency', async (req, res) => {
+  const apikey = req.query.apikey;
+  const amount = req.query.amount;
+  const fromCurrency = req.query.from;
+  const toCurrency = req.query.to;
+
+  if (!apikey || !amount || !fromCurrency || !toCurrency) {
+    return res.json({ status: false, code: 400, message: 'API key, amount, fromCurrency, and toCurrency are required.' });
+  }
+
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  try {
+    const converter = new CurrencyConverter();
+    const conversionResult = await converter.convert(amount, fromCurrency, toCurrency);
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        convertedAmount: conversionResult,
+      },
+    });
+  } catch (err) {
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error converting currency.',
+    });
+  }
+});
+
+
+// Base36 encoding/decoding setup
+const BASE36_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
+const base36 = baseX(BASE36_ALPHABET);
+
+
+// Route for Base36 encoding and decoding
+app.get('/base36', (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const action = req.query.action; // Action (encode or decode)
+  const data = req.query.data; // Data to be encoded or decoded
+
+  // Validate input parameters
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+  if (!data) return res.json({ status: false, code: 400, message: 'Data is required.' });
+  if (!action) return res.json({ status: false, code: 400, message: 'Action (encode/decode) is required.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  let result;
+  
+  try {
+    if (action === 'encode') {
+      // Base36 encoding
+      result = base36.encode(Buffer.from(data, 'utf-8')).toString();
+    } else if (action === 'decode') {
+      // Base36 decoding
+      result = base36.decode(data).toString('utf-8');
+    } else {
+      return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
+    }
+
+    // Return the result
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        action: action,
+        originalData: data,
+        processedData: result,
+      },
+    });
+  } catch (err) {
+    console.error('Error with Base36 operation:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error with Base36 encoding/decoding.',
+    });
+  }
+});
+
+
+// Base58 encoding/decoding setup
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const base58 = baseX(BASE58_ALPHABET);
+
+// Route for Base58 encoding and decoding
+app.get('/base58', (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const action = req.query.action; // Action (encode or decode)
+  const data = req.query.data; // Data to be encoded or decoded
+
+  // Validate input parameters
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+  if (!data) return res.json({ status: false, code: 400, message: 'Data is required.' });
+  if (!action) return res.json({ status: false, code: 400, message: 'Action (encode/decode) is required.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  let result;
+  
+  try {
+    if (action === 'encode') {
+      // Base58 encoding
+      result = base58.encode(Buffer.from(data, 'utf-8')).toString();
+    } else if (action === 'decode') {
+      // Base58 decoding
+      result = base58.decode(data).toString('utf-8');
+    } else {
+      return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
+    }
+
+    // Return the result
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        action: action,
+        originalData: data,
+        processedData: result,
+      },
+    });
+  } catch (err) {
+    console.error('Error with Base58 operation:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error with Base58 encoding/decoding.',
+    });
+  }
+});
+
+// Route to validate data
+app.get('/validate/data', (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const type = req.query.type; // Type of validation (email, phone, etc.)
+  const data = req.query.data; // Data to be validated
+
+  // Validate input parameters
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+  if (!data) return res.json({ status: false, code: 400, message: 'Data is required for validation.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  let validationResult;
+
+  try {
+    switch (type.toLowerCase()) {
+      case 'email':
+        validationResult = validator.isEmail(data);
+        break;
+      case 'url':
+        validationResult = validator.isURL(data);
+        break;
+      case 'phone':
+        validationResult = validator.isMobilePhone(data);
+        break;
+      case 'alpha':
+        validationResult = validator.isAlpha(data); // checks if only letters are present
+        break;
+      case 'alphanumeric':
+        validationResult = validator.isAlphanumeric(data); // checks if only letters and numbers are present
+        break;
+      case 'numeric':
+        validationResult = validator.isNumeric(data); // checks if the string is numeric
+        break;
+      case 'uuid':
+        validationResult = validator.isUUID(data); // checks if the string is a valid UUID
+        break;
+      default:
+        return res.json({ status: false, code: 400, message: 'Invalid validation type requested.' });
+    }
+
+    // Return the validation result
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        type: type,
+        data: data,
+        isValid: validationResult,
+      },
+    });
+  } catch (err) {
+    console.error('Error validating data:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error validating data.',
+    });
+  }
+});
+
+
+// Route to check the time of a given city or country
+app.get('/time/check', async (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const location = req.query.location; // City or Country name
+
+  // Validate input parameters
+  if (!location) return res.json({ status: false, code: 400, message: 'Please provide a location.' });
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  try {
+    // Check if the location is a valid timezone
+    if (!moment.tz.zone(location)) {
+      return res.json({ status: false, code: 400, message: 'Invalid timezone or location.' });
+    }
+
+    // Get the current time for the specified location
+    const currentTime = moment().tz(location).format('YYYY-MM-DD HH:mm:ss');
+
+    // Send back the complete JSON response
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali🦋',
+      result: {
+        location: location,
+        currentTime: currentTime,
+        timezone: moment.tz(location).format('z'), // Timezone abbreviation (e.g., UTC, GMT, IST)
+        offset: moment.tz(location).utcOffset(), // UTC offset in minutes
+        dateTime: currentTime,
+      },
+    });
+  } catch (err) {
+    console.error('Error fetching time:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error fetching time.',
+    });
+  }
+});
+
+
+// Route to generate random data
+app.get('/random/generator', (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const dataType = req.query.type || 'user'; // Type of data to generate (default: 'user')
+
+  // Validate input parameters
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  // Generate different types of random data
+  let randomData;
+  try {
+    switch (dataType.toLowerCase()) {
+      case 'user':
+        randomData = {
+          name: faker.name.findName(),
+          email: faker.internet.email(),
+          address: faker.address.streetAddress(),
+          phone: faker.phone.phoneNumber(),
+          company: faker.company.companyName(),
+        };
+        break;
+      case 'product':
+        randomData = {
+          productName: faker.commerce.productName(),
+          price: faker.commerce.price(),
+          department: faker.commerce.department(),
+          productMaterial: faker.commerce.productMaterial(),
+        };
+        break;
+      case 'company':
+        randomData = {
+          companyName: faker.company.companyName(),
+          catchPhrase: faker.company.catchPhrase(),
+          bs: faker.company.bs(),
+        };
+        break;
+      default:
+        return res.json({ status: false, code: 400, message: 'Invalid data type requested.' });
+    }
+
+    // Send back the generated data as a response
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali🦋',
+      result: randomData,
+    });
+  } catch (err) {
+    console.error('Error generating random data:', err);
+    res.json({
+      status: false,
+      code: 500,
+      message: 'Error generating random data.',
+    });
+  }
+});
+
+
 
 // Route to search for an app using aptoide-scraper
 router.get('/aptoide/search', async (req, res, next) => {
