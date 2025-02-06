@@ -2,18 +2,6 @@ __path = process.cwd();
 
 // Required modules
 const express = require('express');
-const bs2 = require('base-x')('01');
-const bs8 = require('base-x')('01234567');
-const bs11 = require('base-x')('0123456789a');
-const bs16 = require('base-x')('0123456789abcdef');
-const bs32 = require('base-x')('0123456789ABCDEFGHJKMNPQRSTVWXYZ');
-const bs32z = require('base-x')('ybndrfg8ejkmcpqxot1uwisza345h769');
-const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
-const bs58 = require('base-x')('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz');
-const bs62 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-const bs64 = require('base-x')('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/');
-const bs67 = require('base-x')('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!');
-
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
@@ -306,6 +294,32 @@ router.get('/download/spotify', async (req, res, next) => {
   }
 });
 
+// Base Alphabet Definitions for different Bases
+const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const BASE36 = '0123456789abcdefghijklmnopqrstuvwxyz';
+const BASE32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+const BASE16 = '0123456789abcdef';
+const BASE8 = '01234567';
+const BASE2 = '01';
+const BASE11 = '0123456789a';
+const BASE67 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!~';
+const ZBASE32 = 'ybndrfg8ejkmcpqxot1uwisza345h769';
+
+// Import base-x instances dynamically using the base alphabet
+const bs58 = require('base-x')(BASE58);
+const bs64 = require('base-x')(BASE64);
+const bs62 = require('base-x')(BASE62);
+const bs36 = require('base-x')(BASE36);
+const bs32 = require('base-x')(BASE32);
+const bs16 = require('base-x')(BASE16);
+const bs8 = require('base-x')(BASE8);
+const bs2 = require('base-x')(BASE2);
+const bs11 = require('base-x')(BASE11);
+const bs67 = require('base-x')(BASE67);
+const bs32z = require('base-x')(ZBASE32);
+
 // Base Alphabet Mapping for dynamic base selection
 const BASE_ENCODERS = {
   base2: bs2,
@@ -382,7 +396,6 @@ router.get('/base/:base', (req, res) => {
     });
   }
 });
-
 
 
 
