@@ -1125,7 +1125,7 @@ router.get('/quotes/pickupline', async (req, res, next) => {
   if (listkey.includes(apikey)) {
     try {
       // Fetch the pickup line from popcat.xyz API
-      const response = await fetch('https://api.popcat.xyz/pickuplines');
+      const response = await Get('https://api.popcat.xyz/pickuplines');
 
       // Check the content type of the response
       const contentType = response.headers.get('content-type');
