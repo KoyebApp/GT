@@ -94,6 +94,7 @@ var { Base, WPUser } = require('./../lib/utils/tools');
 var { Tiktok, FB, Joox } = require('./../lib/utils/downloader');
 var tebakGambar = require('./../lib/utils/tebakGambar');
 const uploadToImgur = require('./../lib/utils/Imgur');
+const Get = require('./../lib/utils/Get');
 
 const creator = 'Qasim Ali 🦋';
 
