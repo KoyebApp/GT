@@ -577,7 +577,6 @@ router.get('/random/data', (req, res) => {
           float: faker.datatype.float(),
           uuid: faker.datatype.uuid(),
           boolean: faker.datatype.boolean(),
-          words: faker.datatype.words(),
           image: faker.datatype.image(),
           locale: faker.datatype.locale(),
           alpha: faker.datatype.alpha(),
