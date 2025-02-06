@@ -488,6 +488,7 @@ router.get('/time/check', async (req, res) => {
 });
 
 
+const faker = require('faker'); // Import the faker library for random data
 
 // Route to generate random data
 router.get('/random/data', (req, res) => {
@@ -530,6 +531,99 @@ router.get('/random/data', (req, res) => {
           bs: faker.company.bs(),
         };
         break;
+      case 'address':
+        randomData = {
+          streetAddress: faker.address.streetAddress(),
+          city: faker.address.city(),
+          state: faker.address.state(),
+          country: faker.address.country(),
+          zipCode: faker.address.zipCode(),
+        };
+        break;
+      case 'phone':
+        randomData = {
+          phoneNumber: faker.phone.phoneNumber(),
+          phoneNumberFormat: faker.phone.phoneNumberFormat(),
+        };
+        break;
+      case 'vehicle':
+        randomData = {
+          vehicleMake: faker.vehicle.vehicle(),
+          vehicleModel: faker.vehicle.model(),
+          vehicleYear: faker.vehicle.year(),
+          vehicleVin: faker.vehicle.vin(),
+        };
+        break;
+      case 'internet':
+        randomData = {
+          ipAddress: faker.internet.ip(),
+          url: faker.internet.url(),
+          domainName: faker.internet.domainName(),
+        };
+        break;
+      case 'finance':
+        randomData = {
+          amount: faker.finance.amount(),
+          transactionType: faker.finance.transactionType(),
+          currency: faker.finance.currencyName(),
+        };
+        break;
+      case 'system':
+        randomData = {
+          system: faker.system.commonFileExt(),
+          fileType: faker.system.fileType(),
+          mimeType: faker.system.mimeType(),
+        };
+        break;
+      case 'locale':
+        randomData = {
+          language: faker.locale,
+          countryCode: faker.address.countryCode(),
+        };
+        break;
+      case 'unique':
+        randomData = {
+          uuid: faker.datatype.uuid(),
+          randomNumber: faker.datatype.number(),
+          randomBoolean: faker.datatype.boolean(),
+        };
+        break;
+      case 'database':
+        randomData = {
+          dbType: faker.database.type(),
+          dbEngine: faker.database.engine(),
+          dbCollation: faker.database.collation(),
+        };
+        break;
+      case 'commerce':
+        randomData = {
+          productName: faker.commerce.productName(),
+          price: faker.commerce.price(),
+          department: faker.commerce.department(),
+          productMaterial: faker.commerce.productMaterial(),
+        };
+        break;
+      case 'git':
+        randomData = {
+          gitCommitHash: faker.git.commitSha(),
+          gitBranch: faker.git.branch(),
+          gitRevision: faker.git.revision(),
+        };
+        break;
+      case 'image':
+        randomData = {
+          imageUrl: faker.image.imageUrl(),
+          imageAbstract: faker.image.abstract(),
+          imageNature: faker.image.nature(),
+        };
+        break;
+      case 'random':
+        randomData = {
+          randomNumber: faker.datatype.number(),
+          randomBoolean: faker.datatype.boolean(),
+          randomUuid: faker.datatype.uuid(),
+        };
+        break;
       default:
         return res.json({ status: false, code: 400, message: 'Invalid data type requested.' });
     }
@@ -550,7 +644,6 @@ router.get('/random/data', (req, res) => {
     });
   }
 });
-
 
 
 // Route to search for an app using aptoide-scraper
