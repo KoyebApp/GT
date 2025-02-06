@@ -186,51 +186,40 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
-// Route to fetch data from Ulvis API with custom parameters
+
 router.get('/fetch/ulvis', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const url = req.query.url;  // URL parameter to fetch data from
-  const custom = req.query.name;  // Custom parameter
+  const url = req.query.url;
+  const custom = req.query.name;
 
-  // Validate input parameters
-  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
-  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+  if (!url) return res.json(loghandler.notquery);
+  if (!apikey) return res.json(loghandler.notparam);
 
-  // Check if the API key is valid
   if (listkey.includes(apikey)) {
     try {
-      // Construct the API URL for fetching data from Ulvis
       const apiUrl = `https://ulvis.net/api.php?url=${encodeURIComponent(url)}&custom=${encodeURIComponent(custom)}`;
-
       console.log(`Fetching data from Ulvis API with URL: ${apiUrl}`);
 
-      // Fetch the data from Ulvis API
-      const response = await fetch(apiUrl);
+      // Fetch with automatic redirect handling
+      const response = await fetch(apiUrl, { redirect: 'follow' });
 
-      // Log the status code and Content-Type header of the response
       console.log(`API Response Status: ${response.status}`);
       const contentType = response.headers.get('content-type');
       console.log(`Content-Type: ${contentType}`);
 
-      // Read response text for logging and debugging
       const responseText = await response.text();
-      console.log(`Response Text (First 200 chars): ${responseText.slice(0, 200)}...`);
+      console.log(`Full Response Text: ${responseText}`);
 
-      // Check if the response is HTML (like a redirect or URL in <body>)
       if (contentType && contentType.includes('text/html')) {
-        // Extract the URL from the <body> content
-        const bodyContent = responseText.match(/<body>(.*?)<\/body>/i);
-
-        // Check if the URL is found in the body
+        const bodyContent = responseText.match(/<body.*?>(.*?)<\/body>/i);
+        
         if (bodyContent && bodyContent[1]) {
-          const extractedUrl = bodyContent[1].trim();  // Get the URL inside the <body> tag
+          const extractedUrl = bodyContent[1].trim();
           res.json({
             status: true,
             code: 200,
             creator: `${creator}`,
-            result: {
-              url: extractedUrl,  // Return the extracted URL
-            },
+            result: { url: extractedUrl },
           });
         } else {
           res.json({
@@ -240,12 +229,11 @@ router.get('/fetch/ulvis', async (req, res, next) => {
           });
         }
       } else {
-        // If the response isn't HTML, log the response type and send raw content for debugging
         res.json({
           status: false,
           code: 400,
           message: 'Unexpected response format.',
-          details: responseText,  // Raw response for further investigation
+          details: responseText,
         });
       }
     } catch (err) {
