@@ -488,6 +488,7 @@ router.get('/time/check', async (req, res) => {
 });
 
 
+
 // Route to generate random data
 router.get('/random/data', (req, res) => {
   const apikey = req.query.apikey; // API key
@@ -514,112 +515,250 @@ router.get('/random/data', (req, res) => {
           company: faker.company.companyName(),
         };
         break;
-      case 'product':
+      case 'image':
         randomData = {
-          productName: faker.commerce.productName(),
-          price: faker.commerce.price(),
-          department: faker.commerce.department(),
-          productMaterial: faker.commerce.productMaterial(),
-        };
-        break;
-      case 'company':
-        randomData = {
-          companyName: faker.company.companyName(),
-          catchPhrase: faker.company.catchPhrase(),
-          bs: faker.company.bs(),
-        };
-        break;
-      case 'address':
-        randomData = {
-          streetAddress: faker.address.streetAddress(),
-          city: faker.address.city(),
-          state: faker.address.state(),
-          country: faker.address.country(),
-          zipCode: faker.address.zipCode(),
-        };
-        break;
-      case 'phone':
-        randomData = {
-          phoneNumber: faker.phone.phoneNumber(),
-          phoneNumberFormat: faker.phone.phoneNumberFormat(),
-        };
-        break;
-      case 'vehicle':
-        randomData = {
-          vehicleMake: faker.vehicle.vehicle(),
-          vehicleModel: faker.vehicle.model(),
-          vehicleYear: faker.vehicle.year(),
-          vehicleVin: faker.vehicle.vin(),
+          image: faker.image.image(),
+          avatar: faker.image.avatar(),
+          imageUrl: faker.image.imageUrl(),
+          abstract: faker.image.abstract(),
+          animals: faker.image.animals(),
+          business: faker.image.business(),
+          cats: faker.image.cats(),
+          city: faker.image.city(),
+          food: faker.image.food(),
+          nightlife: faker.image.nightlife(),
+          fashion: faker.image.fashion(),
+          people: faker.image.people(),
+          nature: faker.image.nature(),
+          sports: faker.image.sports(),
+          technics: faker.image.technics(),
+          transport: faker.image.transport(),
+          dataUri: faker.image.dataUri(),
+          lorempixel: faker.image.lorempixel(),
+          unsplash: faker.image.unsplash(),
+          lorempicsum: faker.image.lorempicsum(),
         };
         break;
       case 'internet':
         randomData = {
-          ipAddress: faker.internet.ip(),
+          avatar: faker.internet.avatar(),
+          email: faker.internet.email(),
+          exampleEmail: faker.internet.exampleEmail(),
+          userName: faker.internet.userName(),
+          protocol: faker.internet.protocol(),
+          httpMethod: faker.internet.httpMethod(),
           url: faker.internet.url(),
           domainName: faker.internet.domainName(),
-        };
-        break;
-      case 'finance':
-        randomData = {
-          amount: faker.finance.amount(),
-          transactionType: faker.finance.transactionType(),
-          currency: faker.finance.currencyName(),
+          domainSuffix: faker.internet.domainSuffix(),
+          domainWord: faker.internet.domainWord(),
+          ip: faker.internet.ip(),
+          ipv6: faker.internet.ipv6(),
+          port: faker.internet.port(),
+          userAgent: faker.internet.userAgent(),
+          color: faker.internet.color(),
+          mac: faker.internet.mac(),
+          password: faker.internet.password(),
         };
         break;
       case 'system':
         randomData = {
-          system: faker.system.commonFileExt(),
-          fileType: faker.system.fileType(),
+          fileName: faker.system.fileName(),
+          commonFileName: faker.system.commonFileName(),
           mimeType: faker.system.mimeType(),
-        };
-        break;
-      case 'locale':
-        randomData = {
-          language: faker.locale,
-          countryCode: faker.address.countryCode(),
-        };
-        break;
-      case 'unique':
-        randomData = {
-          uuid: faker.datatype.uuid(),
-          randomNumber: faker.datatype.number(),
-          randomBoolean: faker.datatype.boolean(),
-        };
-        break;
-      case 'database':
-        randomData = {
-          dbType: faker.database.type(),
-          dbEngine: faker.database.engine(),
-          dbCollation: faker.database.collation(),
-        };
-        break;
-      case 'commerce':
-        randomData = {
-          productName: faker.commerce.productName(),
-          price: faker.commerce.price(),
-          department: faker.commerce.department(),
-          productMaterial: faker.commerce.productMaterial(),
-        };
-        break;
-      case 'git':
-        randomData = {
-          gitCommitHash: faker.git.commitSha(),
-          gitBranch: faker.git.branch(),
-          gitRevision: faker.git.revision(),
-        };
-        break;
-      case 'image':
-        randomData = {
-          imageUrl: faker.image.imageUrl(),
-          imageAbstract: faker.image.abstract(),
-          imageNature: faker.image.nature(),
+          commonFileType: faker.system.commonFileType(),
+          commonFileExt: faker.system.commonFileExt(),
+          fileType: faker.system.fileType(),
+          fileExt: faker.system.fileExt(),
+          directoryPath: faker.system.directoryPath(),
+          filePath: faker.system.filePath(),
+          semver: faker.system.semver(),
         };
         break;
       case 'random':
         randomData = {
-          randomNumber: faker.datatype.number(),
-          randomBoolean: faker.datatype.boolean(),
-          randomUuid: faker.datatype.uuid(),
+          number: faker.datatype.number(),
+          float: faker.datatype.float(),
+          arrayElement: faker.datatype.arrayElement(),
+          arrayElements: faker.datatype.arrayElements(),
+          objectElement: faker.datatype.objectElement(),
+          uuid: faker.datatype.uuid(),
+          boolean: faker.datatype.boolean(),
+          word: faker.datatype.word(),
+          words: faker.datatype.words(),
+          image: faker.datatype.image(),
+          locale: faker.datatype.locale(),
+          alpha: faker.datatype.alpha(),
+          alphaNumeric: faker.datatype.alphaNumeric(),
+          hexaDecimal: faker.datatype.hexaDecimal(),
+        };
+        break;
+        case 'finance':
+        randomData = {
+          account: faker.finance.account(),
+          accountName: faker.finance.accountName(),
+          routingNumber: faker.finance.routingNumber(),
+          mask: faker.finance.mask(),
+          amount: faker.finance.amount(),
+          transactionType: faker.finance.transactionType(),
+          currencyCode: faker.finance.currencyCode(),
+          currencyName: faker.finance.currencyName(),
+          currencySymbol: faker.finance.currencySymbol(),
+          bitcoinAddress: faker.finance.bitcoinAddress(),
+          litecoinAddress: faker.finance.litecoinAddress(),
+          creditCardNumber: faker.finance.creditCardNumber(),
+          creditCardCVV: faker.finance.creditCardCVV(),
+          ethereumAddress: faker.finance.ethereumAddress(),
+          iban: faker.finance.iban(),
+          bic: faker.finance.bic(),
+          transactionDescription: faker.finance.transactionDescription(),
+        };
+        break;
+        case 'name':
+        randomData = {
+          name: faker.name.findName(),
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          middleName: faker.name.middleName(),
+          jobTitle: faker.name.jobTitle(),
+          gender: faker.name.gender(),
+          prefix: faker.name.prefix(),
+          suffix: faker.name.suffix(),
+          title: faker.name.title(),
+          jobDescriptor: faker.name.jobDescriptor(),
+          jobArea: faker.name.jobArea(),
+          jobType: faker.name.jobType(),
+        };
+        break;
+        case 'vehicle':
+        randomData = {
+          vehicle: faker.vehicle.vehicle(),
+          vehicleManufacturer: faker.vehicle.manufacturer(),
+          vehicleModel: faker.vehicle.model(),
+          vehicleType: faker.vehicle.type(),
+          vehicleFuel: faker.vehicle.fuel(),
+          vehicleVin: faker.vehicle.vin(),
+          vehicleColor: faker.vehicle.color(),
+          vehicleVrm: faker.vehicle.vrm(),
+          vehicleBicycle: faker.vehicle.bicycle(),
+        };
+        break;
+        case 'git':
+        randomData = {
+          gitBranch: faker.git.branch(),
+          gitCommitEntry: faker.git.commitEntry(),
+          gitCommitMessage: faker.git.commitMessage(),
+          gitCommitSha: faker.git.commitSha(),
+          gitShortSha: faker.git.shortSha(),
+        };
+        break;
+        case 'datatype':
+  randomData = {
+    number: faker.datatype.number(),
+    float: faker.datatype.float(),
+    datetime: faker.datatype.datetime(),
+    string: faker.datatype.string(),
+    uuid: faker.datatype.uuid(),
+    boolean: faker.datatype.boolean(),
+    hexaDecimal: faker.datatype.hexaDecimal(),
+    json: faker.datatype.json(),
+    array: faker.datatype.array(),
+  };
+  break;
+        case 'company':
+  randomData = {
+    suffixes: faker.company.suffixes(),
+    companyName: faker.company.companyName(),
+    companySuffix: faker.company.companySuffix(),
+    catchPhrase: faker.company.catchPhrase(),
+    bs: faker.company.bs(),
+    catchPhraseAdjective: faker.company.catchPhraseAdjective(),
+    catchPhraseDescriptor: faker.company.catchPhraseDescriptor(),
+    catchPhraseNoun: faker.company.catchPhraseNoun(),
+    bsAdjective: faker.company.bsAdjective(),
+    bsBuzz: faker.company.bsBuzz(),
+    bsNoun: faker.company.bsNoun(),
+  };
+  break;
+case 'commerce':
+  randomData = {
+    color: faker.commerce.color(),
+    department: faker.commerce.department(),
+    productName: faker.commerce.productName(),
+    price: faker.commerce.price(),
+    productAdjective: faker.commerce.productAdjective(),
+    productMaterial: faker.commerce.productMaterial(),
+    product: faker.commerce.product(),
+    productDescription: faker.commerce.productDescription(),
+  };
+  break;
+        case 'helpers':
+  randomData = {
+    randomize: faker.helpers.randomize(),
+    slugify: faker.helpers.slugify(),
+    replaceSymbolWithNumber: faker.helpers.replaceSymbolWithNumber(),
+    replaceSymbols: faker.helpers.replaceSymbols(),
+    replaceCreditCardSymbols: faker.helpers.replaceCreditCardSymbols(),
+    repeatString: faker.helpers.repeatString(),
+    regexpStyleStringParse: faker.helpers.regexpStyleStringParse(),
+    shuffle: faker.helpers.shuffle(),
+    mustache: faker.helpers.mustache(),
+    createCard: faker.helpers.createCard(),
+    contextualCard: faker.helpers.contextualCard(),
+    userCard: faker.helpers.userCard(),
+    createTransaction: faker.helpers.createTransaction(),
+  };
+  break;
+
+case 'lorem':
+  randomData = {
+    word: faker.lorem.word(),
+    words: faker.lorem.words(),
+    sentence: faker.lorem.sentence(),
+    slug: faker.lorem.slug(),
+    sentences: faker.lorem.sentences(),
+    paragraph: faker.lorem.paragraph(),
+    paragraphs: faker.lorem.paragraphs(),
+    text: faker.lorem.text(),
+    lines: faker.lorem.lines(),
+  };
+  break;
+case 'date':
+  randomData = {
+    past: faker.date.past(),
+    future: faker.date.future(),
+    between: faker.date.between(),
+    betweens: faker.date.betweens(),
+    recent: faker.date.recent(),
+    soon: faker.date.soon(),
+    month: faker.date.month(),
+    weekday: faker.date.weekday(),
+  };
+  break;
+        case 'address':
+        randomData = {
+          address: faker.address.streetAddress(),
+          zipCode: faker.address.zipCode(),
+          zipCodeByState: faker.address.zipCodeByState(),
+          city: faker.address.city(),
+          cityPrefix: faker.address.cityPrefix(),
+          citySuffix: faker.address.citySuffix(),
+          cityName: faker.address.cityName(),
+          streetName: faker.address.streetName(),
+          streetSuffix: faker.address.streetSuffix(),
+          streetPrefix: faker.address.streetPrefix(),
+          secondaryAddress: faker.address.secondaryAddress(),
+          county: faker.address.county(),
+          country: faker.address.country(),
+          countryCode: faker.address.countryCode(),
+          state: faker.address.state(),
+          stateAbbr: faker.address.stateAbbr(),
+          latitude: faker.address.latitude(),
+          longitude: faker.address.longitude(),
+          direction: faker.address.direction(),
+          cardinalDirection: faker.address.cardinalDirection(),
+          ordinalDirection: faker.address.ordinalDirection(),
+          nearbyGPSCoordinate: faker.address.nearbyGPSCoordinate(),
+          timeZone: faker.address.timeZone(),
         };
         break;
       default:
@@ -642,6 +781,9 @@ router.get('/random/data', (req, res) => {
     });
   }
 });
+
+      
+        
 
 
 // Route to search for an app using aptoide-scraper
