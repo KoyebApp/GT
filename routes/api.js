@@ -219,7 +219,7 @@ router.get('/fetch/ulvis', async (req, res, next) => {
       // Check if the response is HTML (like a redirect or URL in <body>)
       if (contentType && contentType.includes('text/html')) {
         // Extract the URL from the <body> content
-        const bodyContent = responseText.match(/<body>(.*?)<\/body>/);
+        const bodyContent = responseText.match(/<body>(.*?)<\/body>/i);
 
         // Check if the URL is found in the body
         if (bodyContent && bodyContent[1]) {
