@@ -187,8 +187,6 @@ router.delete("/apikey", async (req, res, next) => {
 const Spotify = require('./../lib/utils/Spotify');
 
 
-// Route to fetch data from Ulvis API with custom parameters
-
 
 // Route to fetch data from Ulvis API with custom parameters
 router.get('/fetch/ulvis', async (req, res, next) => {
@@ -197,14 +195,8 @@ router.get('/fetch/ulvis', async (req, res, next) => {
   const custom = req.query.name;  // Custom parameter
 
   // Validate input parameters
-  if (!url) {
-    console.log("Error: Missing 'url' parameter");
-    return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
-  }
-  if (!apikey) {
-    console.log("Error: Missing 'apikey' parameter");
-    return res.json(loghandler.notparam);  // Ensure API key is provided
-  }
+  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
   if (listkey.includes(apikey)) {
@@ -217,59 +209,57 @@ router.get('/fetch/ulvis', async (req, res, next) => {
       // Fetch the data from Ulvis API
       const response = await fetch(apiUrl);
 
-      // Log the status code of the response
+      // Log the status code and Content-Type header of the response
       console.log(`API Response Status: ${response.status}`);
-      
-      // Check if the response is an HTML error page (like a timeout)
       const contentType = response.headers.get('content-type');
-      const responseText = await response.text(); // Read response as text
-
-      // Log the content type and response text
       console.log(`Content-Type: ${contentType}`);
-      console.log(`Response Text: ${responseText.slice(0, 200)}...`); // Logging the first 200 chars for brevity
 
+      // Read response text for logging and debugging
+      const responseText = await response.text();
+      console.log(`Response Text (First 200 chars): ${responseText.slice(0, 200)}...`);
+
+      // Check if the response is HTML (e.g., timeout or error page)
       if (contentType && contentType.includes('text/html')) {
-        // If the response is HTML (like error page), send the raw HTML to the user
+        // If it's HTML (e.g., an error page), send the raw HTML content
         return res.json({
           status: false,
           code: 524,
           message: 'Timeout error. The server took too long to respond.',
-          details: responseText, // Send the raw HTML content for debugging
+          details: responseText,  // Send the raw HTML content for debugging
         });
       }
 
-      // If the response is JSON, parse it
+      // If the response is JSON, attempt to parse it
       if (contentType && contentType.includes('application/json')) {
-        let apiResult;
         try {
-          apiResult = JSON.parse(responseText);
-          console.log("API JSON Result: ", apiResult); // Log the parsed result
+          const apiResult = JSON.parse(responseText);
+          console.log("Parsed JSON Result:", apiResult);  // Log the parsed result
+
+          // Return the parsed JSON result if it's valid
+          if (apiResult) {
+            res.json({
+              status: true,
+              code: 200,
+              creator: `${creator}`,
+              result: apiResult,  // Return the parsed result
+            });
+          } else {
+            res.json({
+              status: false,
+              code: 404,
+              message: 'Data not found or invalid URL.',
+            });
+          }
         } catch (err) {
           console.error("Error parsing JSON response:", err);
-          return res.json({
+          res.json({
             status: false,
             code: 500,
             message: 'Error parsing JSON response from Ulvis API.',
           });
         }
-
-        // If the result is valid, return it
-        if (apiResult) {
-          res.json({
-            status: true,
-            code: 200,
-            creator: `${creator}`,
-            result: apiResult,  // Return the parsed result
-          });
-        } else {
-          res.json({
-            status: false,
-            code: 404,
-            message: 'Data not found or invalid URL.',
-          });
-        }
       } else {
-        // If it's not HTML or JSON, return the raw response text
+        // If it's neither HTML nor JSON, log the response type and send raw content for debugging
         res.json({
           status: false,
           code: 400,
@@ -286,8 +276,6 @@ router.get('/fetch/ulvis', async (req, res, next) => {
     res.json(loghandler.invalidKey);
   }
 });
-
-
 
 
 router.get('/download/mega', async (req, res, next) => {
