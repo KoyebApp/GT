@@ -488,8 +488,6 @@ router.get('/time/check', async (req, res) => {
 });
 
 
-const faker = require('faker'); // Import the faker library for random data
-
 // Route to generate random data
 router.get('/random/data', (req, res) => {
   const apikey = req.query.apikey; // API key
