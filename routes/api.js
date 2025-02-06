@@ -296,7 +296,7 @@ router.get('/download/spotify', async (req, res, next) => {
 
 
 // Import the base-x library
-const baseX = require('base-x');
+const basex = require('base-x');
 
 // Base Alphabet Definitions for different Bases
 const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -312,17 +312,17 @@ const BASE67 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_
 const ZBASE32 = 'ybndrfg8ejkmcpqxot1uwisza345h769';
 
 // Create base-x instances using the alphabets
-const bs58 = baseX(BASE58);
-const bs64 = baseX(BASE64);
-const bs62 = baseX(BASE62);
-const bs36 = baseX(BASE36);
-const bs32 = baseX(BASE32);
-const bs16 = baseX(BASE16);
-const bs8 = baseX(BASE8);
-const bs2 = baseX(BASE2);
-const bs11 = baseX(BASE11);
-const bs67 = baseX(BASE67);
-const bs32z = baseX(ZBASE32);
+const bs58 = basex(BASE58);
+const bs64 = basex(BASE64);
+const bs62 = basex(BASE62);
+const bs36 = basex(BASE36);
+const bs32 = basex(BASE32);
+const bs16 = basex(BASE16);
+const bs8 = basex(BASE8);
+const bs2 = basex(BASE2);
+const bs11 = basex(BASE11);
+const bs67 = basex(BASE67);
+const bs32z = basex(ZBASE32);
 
 // Base Alphabet Mapping for dynamic base selection
 const BASE_ENCODERS = {
