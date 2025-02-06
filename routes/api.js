@@ -534,7 +534,6 @@ router.get('/random/data', (req, res) => {
           technics: faker.image.technics(),
           transport: faker.image.transport(),
           dataUri: faker.image.dataUri(),
-          unsplash: faker.image.unsplash(),
         };
         break;
       case 'internet':
@@ -578,7 +577,6 @@ router.get('/random/data', (req, res) => {
           float: faker.datatype.float(),
           uuid: faker.datatype.uuid(),
           boolean: faker.datatype.boolean(),
-          word: faker.datatype.word(),
           words: faker.datatype.words(),
           image: faker.datatype.image(),
           locale: faker.datatype.locale(),
