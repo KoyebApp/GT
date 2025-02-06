@@ -197,8 +197,14 @@ router.get('/fetch/ulvis', async (req, res, next) => {
   const custom = req.query.name;  // Custom parameter
 
   // Validate input parameters
-  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
-  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+  if (!url) {
+    console.log("Error: Missing 'url' parameter");
+    return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
+  }
+  if (!apikey) {
+    console.log("Error: Missing 'apikey' parameter");
+    return res.json(loghandler.notparam);  // Ensure API key is provided
+  }
 
   // Check if the API key is valid
   if (listkey.includes(apikey)) {
@@ -206,12 +212,21 @@ router.get('/fetch/ulvis', async (req, res, next) => {
       // Construct the API URL for fetching data from Ulvis
       const apiUrl = `https://ulvis.net/api.php?url=${encodeURIComponent(url)}&custom=${encodeURIComponent(custom)}`;
 
+      console.log(`Fetching data from Ulvis API with URL: ${apiUrl}`);
+
       // Fetch the data from Ulvis API
       const response = await fetch(apiUrl);
 
+      // Log the status code of the response
+      console.log(`API Response Status: ${response.status}`);
+      
       // Check if the response is an HTML error page (like a timeout)
       const contentType = response.headers.get('content-type');
       const responseText = await response.text(); // Read response as text
+
+      // Log the content type and response text
+      console.log(`Content-Type: ${contentType}`);
+      console.log(`Response Text: ${responseText.slice(0, 200)}...`); // Logging the first 200 chars for brevity
 
       if (contentType && contentType.includes('text/html')) {
         // If the response is HTML (like error page), send the raw HTML to the user
@@ -225,7 +240,18 @@ router.get('/fetch/ulvis', async (req, res, next) => {
 
       // If the response is JSON, parse it
       if (contentType && contentType.includes('application/json')) {
-        const apiResult = JSON.parse(responseText);
+        let apiResult;
+        try {
+          apiResult = JSON.parse(responseText);
+          console.log("API JSON Result: ", apiResult); // Log the parsed result
+        } catch (err) {
+          console.error("Error parsing JSON response:", err);
+          return res.json({
+            status: false,
+            code: 500,
+            message: 'Error parsing JSON response from Ulvis API.',
+          });
+        }
 
         // If the result is valid, return it
         if (apiResult) {
@@ -256,9 +282,11 @@ router.get('/fetch/ulvis', async (req, res, next) => {
       res.json(loghandler.error);
     }
   } else {
+    console.log(`Invalid API key: ${apikey}`);
     res.json(loghandler.invalidKey);
   }
 });
+
 
 
 
