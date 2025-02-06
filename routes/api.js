@@ -186,8 +186,6 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
-
-
 // Route to fetch data from Ulvis API with custom parameters
 router.get('/fetch/ulvis', async (req, res, next) => {
   const apikey = req.query.apikey;
@@ -195,7 +193,7 @@ router.get('/fetch/ulvis', async (req, res, next) => {
   const custom = req.query.name;  // Custom parameter
 
   // Validate input parameters
-  if (!url) return res.json(loghandler.noturl);  // Ensure 'url' parameter is provided
+  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
   if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
@@ -220,31 +218,29 @@ router.get('/fetch/ulvis', async (req, res, next) => {
 
       // Check if the response is HTML (like a redirect or URL in <body>)
       if (contentType && contentType.includes('text/html')) {
-        // If it's HTML, parse it using cheerio
-        const $ = cheerio.load(responseText);
+        // Extract the URL from the <body> content
+        const bodyContent = responseText.match(/<body>(.*?)<\/body>/);
 
-        // Extract the URL or other content inside the <body> tag
-        const bodyContent = $('body').text().trim();
-
-        // Check if body content is found
-        if (bodyContent) {
+        // Check if the URL is found in the body
+        if (bodyContent && bodyContent[1]) {
+          const extractedUrl = bodyContent[1].trim();  // Get the URL inside the <body> tag
           res.json({
             status: true,
             code: 200,
             creator: `${creator}`,
             result: {
-              url: bodyContent  // Return the URL or body content
+              url: extractedUrl,  // Return the extracted URL
             },
           });
         } else {
           res.json({
             status: false,
             code: 404,
-            message: 'No valid content found in the response.',
+            message: 'No valid URL found in the response body.',
           });
         }
       } else {
-        // If it's neither HTML nor JSON, log the response type and send raw content for debugging
+        // If the response isn't HTML, log the response type and send raw content for debugging
         res.json({
           status: false,
           code: 400,
@@ -262,7 +258,7 @@ router.get('/fetch/ulvis', async (req, res, next) => {
   }
 });
 
-      
+
 router.get('/download/mega', async (req, res, next) => {
   const Apikey = req.query.apikey;
   const url = req.query.url;
