@@ -295,16 +295,27 @@ router.get('/download/spotify', async (req, res, next) => {
   }
 });
 
-// Base62 encoding/decoding setup
-const BASE62_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const base62 = baseX(BASE62_ALPHABET);
+// Base Alphabet Definitions for different Bases
+const BASE_ALPHABETS = {
+  base2: '01',
+  base8: '01234567',
+  base11: '0123456789a',
+  base16: '0123456789abcdef',
+  base32: '0123456789ABCDEFGHJKMNPQRSTVWXYZ',
+  zbase32: 'ybndrfg8ejkmcpqxot1uwisza345h769',
+  base36: '0123456789abcdefghijklmnopqrstuvwxyz',
+  base58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+  base62: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  base64: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+  base67: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!',
+};
 
-
-// Route for Base62 encoding and decoding
-router.get('/base62', (req, res) => {
+// Dynamic route for encoding and decoding using any Base
+router.get('/base/:base', (req, res) => {
   const apikey = req.query.apikey; // API key
   const action = req.query.action; // Action (encode or decode)
   const data = req.query.data; // Data to be encoded or decoded
+  const base = req.params.base; // Base from URL parameter
 
   // Validate input parameters
   if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
@@ -316,15 +327,25 @@ router.get('/base62', (req, res) => {
     return res.json({ status: false, code: 401, message: 'Invalid API key.' });
   }
 
-  let result;
+  // Check if the requested base is valid
+  if (!BASE_ALPHABETS[base]) {
+    return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ALPHABETS).join(', ')}` });
+  }
+
+  // Create a base-x instance with the correct alphabet for the chosen base
+  const baseEncoder = baseX(BASE_ALPHABETS[base]);
   
+  let result;
+
   try {
     if (action === 'encode') {
-      // Base62 encoding
-      result = base62.encode(Buffer.from(data, 'utf-8')).toString();
+      // Base encoding
+      const buffer = Buffer.from(data, 'utf-8');
+      result = baseEncoder.encode(buffer).toString();
     } else if (action === 'decode') {
-      // Base62 decoding
-      result = base62.decode(data).toString('utf-8');
+      // Base decoding
+      const decoded = baseEncoder.decode(data);
+      result = decoded.toString('utf-8');
     } else {
       return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
     }
@@ -335,131 +356,23 @@ router.get('/base62', (req, res) => {
       code: 200,
       creator: 'Qasim Ali 🦋',
       result: {
+        base: base,
         action: action,
         originalData: data,
         processedData: result,
       },
     });
   } catch (err) {
-    console.error('Error with Base62 operation:', err);
+    console.error(`Error with Base${base} operation:`, err);
     res.json({
       status: false,
       code: 500,
-      message: 'Error with Base62 encoding/decoding.',
+      message: `Error with Base${base} encoding/decoding.`,
     });
   }
 });
 
 
-// Base36 encoding/decoding setup
-const BASE36_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
-const base36 = baseX(BASE36_ALPHABET);
-
-
-// Route for Base36 encoding and decoding
-router.get('/base36', (req, res) => {
-  const apikey = req.query.apikey; // API key
-  const action = req.query.action; // Action (encode or decode)
-  const data = req.query.data; // Data to be encoded or decoded
-
-  // Validate input parameters
-  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
-  if (!data) return res.json({ status: false, code: 400, message: 'Data is required.' });
-  if (!action) return res.json({ status: false, code: 400, message: 'Action (encode/decode) is required.' });
-
-  // Check if the API key is valid
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
-  }
-
-  let result;
-  
-  try {
-    if (action === 'encode') {
-      // Base36 encoding
-      result = base36.encode(Buffer.from(data, 'utf-8')).toString();
-    } else if (action === 'decode') {
-      // Base36 decoding
-      result = base36.decode(data).toString('utf-8');
-    } else {
-      return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
-    }
-
-    // Return the result
-    res.json({
-      status: true,
-      code: 200,
-      creator: 'Qasim Ali 🦋',
-      result: {
-        action: action,
-        originalData: data,
-        processedData: result,
-      },
-    });
-  } catch (err) {
-    console.error('Error with Base36 operation:', err);
-    res.json({
-      status: false,
-      code: 500,
-      message: 'Error with Base36 encoding/decoding.',
-    });
-  }
-});
-
-
-// Base58 encoding/decoding setup
-const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-const base58 = baseX(BASE58_ALPHABET);
-
-// Route for Base58 encoding and decoding
-router.get('/base58', (req, res) => {
-  const apikey = req.query.apikey; // API key
-  const action = req.query.action; // Action (encode or decode)
-  const data = req.query.data; // Data to be encoded or decoded
-
-  // Validate input parameters
-  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
-  if (!data) return res.json({ status: false, code: 400, message: 'Data is required.' });
-  if (!action) return res.json({ status: false, code: 400, message: 'Action (encode/decode) is required.' });
-
-  // Check if the API key is valid
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
-  }
-
-  let result;
-  
-  try {
-    if (action === 'encode') {
-      // Base58 encoding
-      result = base58.encode(Buffer.from(data, 'utf-8')).toString();
-    } else if (action === 'decode') {
-      // Base58 decoding
-      result = base58.decode(data).toString('utf-8');
-    } else {
-      return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
-    }
-
-    // Return the result
-    res.json({
-      status: true,
-      code: 200,
-      creator: 'Qasim Ali 🦋',
-      result: {
-        action: action,
-        originalData: data,
-        processedData: result,
-      },
-    });
-  } catch (err) {
-    console.error('Error with Base58 operation:', err);
-    res.json({
-      status: false,
-      code: 500,
-      message: 'Error with Base58 encoding/decoding.',
-    });
-  }
-});
 
 // Route to validate data
 router.get('/validate/data', (req, res) => {
