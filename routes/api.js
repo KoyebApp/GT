@@ -195,7 +195,7 @@ router.get('/fetch/ulvis', async (req, res, next) => {
   const custom = req.query.name;  // Custom parameter
 
   // Validate input parameters
-  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
+  if (!url) return res.json(loghandler.noturl);  // Ensure 'url' parameter is provided
   if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
@@ -218,44 +218,29 @@ router.get('/fetch/ulvis', async (req, res, next) => {
       const responseText = await response.text();
       console.log(`Response Text (First 200 chars): ${responseText.slice(0, 200)}...`);
 
-      // Check if the response is HTML (e.g., timeout or error page)
+      // Check if the response is HTML (like a redirect or URL in <body>)
       if (contentType && contentType.includes('text/html')) {
-        // If it's HTML (e.g., an error page), send the raw HTML content
-        return res.json({
-          status: false,
-          code: 524,
-          message: 'Timeout error. The server took too long to respond.',
-          details: responseText,  // Send the raw HTML content for debugging
-        });
-      }
+        // If it's HTML, parse it using cheerio
+        const $ = cheerio.load(responseText);
 
-      // If the response is JSON, attempt to parse it
-      if (contentType && contentType.includes('application/json')) {
-        try {
-          const apiResult = JSON.parse(responseText);
-          console.log("Parsed JSON Result:", apiResult);  // Log the parsed result
+        // Extract the URL or other content inside the <body> tag
+        const bodyContent = $('body').text().trim();
 
-          // Return the parsed JSON result if it's valid
-          if (apiResult) {
-            res.json({
-              status: true,
-              code: 200,
-              creator: `${creator}`,
-              result: apiResult,  // Return the parsed result
-            });
-          } else {
-            res.json({
-              status: false,
-              code: 404,
-              message: 'Data not found or invalid URL.',
-            });
-          }
-        } catch (err) {
-          console.error("Error parsing JSON response:", err);
+        // Check if body content is found
+        if (bodyContent) {
+          res.json({
+            status: true,
+            code: 200,
+            creator: `${creator}`,
+            result: {
+              url: bodyContent  // Return the URL or body content
+            },
+          });
+        } else {
           res.json({
             status: false,
-            code: 500,
-            message: 'Error parsing JSON response from Ulvis API.',
+            code: 404,
+            message: 'No valid content found in the response.',
           });
         }
       } else {
@@ -277,7 +262,7 @@ router.get('/fetch/ulvis', async (req, res, next) => {
   }
 });
 
-
+      
 router.get('/download/mega', async (req, res, next) => {
   const Apikey = req.query.apikey;
   const url = req.query.url;
