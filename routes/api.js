@@ -187,65 +187,40 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
+
 router.get('/fetch/ulvis', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const url = req.query.url;  // URL parameter to fetch data from
-  const custom = req.query.name;  // Custom parameter
+  const url = req.query.url;
+  const custom = req.query.name;
 
-  // Validate input parameters
-  if (!url) return res.json(loghandler.notquery);  // Ensure 'url' parameter is provided
-  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+  if (!url) return res.json(loghandler.notquery);
+  if (!apikey) return res.json(loghandler.notparam);
 
-  // Check if the API key is valid
   if (listkey.includes(apikey)) {
     try {
-      // Construct the API URL for fetching data from Ulvis
       const apiUrl = `https://ulvis.net/api.php?url=${encodeURIComponent(url)}&custom=${encodeURIComponent(custom)}`;
-
       console.log(`Fetching data from Ulvis API with URL: ${apiUrl}`);
 
-      // Fetch the data from Ulvis API
-      const response = await fetch(apiUrl);
+      // Use the Get function to get the JSON response
+      const responseJson = await Get(apiUrl);
 
-      // Log the status code and Content-Type header of the response
-      console.log(`API Response Status: ${response.status}`);
-      const contentType = response.headers.get('content-type');
-      console.log(`Content-Type: ${contentType}`);
-
-      // Read response text for logging and debugging
-      const responseText = await response.text();
-      console.log(`Full Response Text: ${responseText}`);
-
-      // Check if the response is plain text or HTML
-      if (contentType && (contentType.includes('text/plain') || contentType.includes('text/html'))) {
-        // If the response is plain text or HTML, treat it as the shortened URL
-        const extractedUrl = responseText.trim();  // Trim any extra whitespace
-        res.json({
-          status: true,
-          code: 200,
-          creator: `${creator}`,
-          result: {
-            url: extractedUrl,  // Return the extracted URL
-          },
-        });
-      } else {
-        // If the response isn't plain text or HTML, log the response type and send raw content for debugging
-        res.json({
-          status: false,
-          code: 400,
-          message: 'Unexpected response format.',
-          details: responseText,  // Raw response for further investigation
-        });
-      }
+      // Return the response JSON directly
+      return res.json({
+        status: true,
+        code: 200,
+        creator: `${creator}`,
+        result: responseJson,
+      });
     } catch (err) {
       console.error("Error fetching data from Ulvis:", err);
-      res.json(loghandler.error);
+      return res.json(loghandler.error);
     }
   } else {
     console.log(`Invalid API key: ${apikey}`);
-    res.json(loghandler.invalidKey);
+    return res.json(loghandler.invalidKey);
   }
 });
+
 
 router.get('/download/mega', async (req, res, next) => {
   const Apikey = req.query.apikey;
