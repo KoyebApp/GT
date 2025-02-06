@@ -294,53 +294,22 @@ router.get('/download/spotify', async (req, res, next) => {
   }
 });
 
-
-// Import the base-x library
-const basex = require('base-x');
-
-// Base Alphabet Definitions for different Bases
-const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-const BASE62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const BASE36 = '0123456789abcdefghijklmnopqrstuvwxyz';
-const BASE32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-const BASE16 = '0123456789abcdef';
-const BASE8 = '01234567';
-const BASE2 = '01';
-const BASE11 = '0123456789a';
-const BASE67 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!';
-const ZBASE32 = 'ybndrfg8ejkmcpqxot1uwisza345h769';
-
-// Create base-x instances using the alphabets
-const bs58 = basex(BASE58);
-const bs64 = basex(BASE64);
-const bs62 = basex(BASE62);
-const bs36 = basex(BASE36);
-const bs32 = basex(BASE32);
-const bs16 = basex(BASE16);
-const bs8 = basex(BASE8);
-const bs2 = basex(BASE2);
-const bs11 = basex(BASE11);
-const bs67 = basex(BASE67);
-const bs32z = basex(ZBASE32);
-
-// Base Alphabet Mapping for dynamic base selection
-const BASE_ENCODERS = {
-  base2: bs2,
-  base8: bs8,
-  base11: bs11,
-  base16: bs16,
-  base32: bs32,
-  zbase32: bs32z,
-  base36: bs36,
-  base58: bs58,
-  base62: bs62,
-  base64: bs64,
-  base67: bs67,
+const BASE_ALPHABETS = {
+  base2: '01',
+  base8: '01234567',
+  base11: '0123456789a',
+  base16: '0123456789abcdef',
+  base32: '0123456789ABCDEFGHJKMNPQRSTVWXYZ',
+  zbase32: 'ybndrfg8ejkmcpqxot1uwisza345h769',
+  base36: '0123456789abcdefghijklmnopqrstuvwxyz',
+  base58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+  base62: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  base64: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+  base67: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!',
 };
 
 // Dynamic route for encoding and decoding using any Base
-router.get('/base/:base', (req, res) => {
+router.get('/base/:base', async (req, res) => {
   const apikey = req.query.apikey; // API key
   const action = req.query.action; // Action (encode or decode)
   const data = req.query.data; // Data to be encoded or decoded
@@ -357,16 +326,20 @@ router.get('/base/:base', (req, res) => {
   }
 
   // Check if the requested base is valid
-  if (!BASE_ENCODERS[base]) {
-    return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ENCODERS).join(', ')}` });
+  if (!BASE_ALPHABETS[base]) {
+    return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ALPHABETS).join(', ')}` });
   }
 
-  // Get the correct base encoder/decoder for the chosen base
-  const baseEncoder = BASE_ENCODERS[base];
-  
-  let result;
-
   try {
+    // Dynamically import base-x module
+    const { default: basex } = await import('base-x');
+
+    // Create the base encoder/decoder using the correct alphabet
+    const baseEncoder = basex(BASE_ALPHABETS[base]);
+
+    let result;
+
+    // Perform the encoding or decoding based on the action
     if (action === 'encode') {
       // Base encoding
       const buffer = Buffer.from(data, 'utf-8');
@@ -400,8 +373,6 @@ router.get('/base/:base', (req, res) => {
     });
   }
 });
-
-
 
 
 
