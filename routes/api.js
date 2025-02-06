@@ -2,7 +2,18 @@ __path = process.cwd();
 
 // Required modules
 const express = require('express');
-const basex = require('base-x');
+const bs2 = require('base-x')('01');
+const bs8 = require('base-x')('01234567');
+const bs11 = require('base-x')('0123456789a');
+const bs16 = require('base-x')('0123456789abcdef');
+const bs32 = require('base-x')('0123456789ABCDEFGHJKMNPQRSTVWXYZ');
+const bs32z = require('base-x')('ybndrfg8ejkmcpqxot1uwisza345h769');
+const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
+const bs58 = require('base-x')('123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz');
+const bs62 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+const bs64 = require('base-x')('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/');
+const bs67 = require('base-x')('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!');
+
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
@@ -295,19 +306,19 @@ router.get('/download/spotify', async (req, res, next) => {
   }
 });
 
-// Base Alphabet Definitions for different Bases
-const BASE_ALPHABETS = {
-  base2: '01',
-  base8: '01234567',
-  base11: '0123456789a',
-  base16: '0123456789abcdef',
-  base32: '0123456789ABCDEFGHJKMNPQRSTVWXYZ',
-  zbase32: 'ybndrfg8ejkmcpqxot1uwisza345h769',
-  base36: '0123456789abcdefghijklmnopqrstuvwxyz',
-  base58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-  base62: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-  base64: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
-  base67: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!',
+// Base Alphabet Mapping for dynamic base selection
+const BASE_ENCODERS = {
+  base2: bs2,
+  base8: bs8,
+  base11: bs11,
+  base16: bs16,
+  base32: bs32,
+  zbase32: bs32z,
+  base36: bs36,
+  base58: bs58,
+  base62: bs62,
+  base64: bs64,
+  base67: bs67,
 };
 
 // Dynamic route for encoding and decoding using any Base
@@ -328,12 +339,12 @@ router.get('/base/:base', (req, res) => {
   }
 
   // Check if the requested base is valid
-  if (!BASE_ALPHABETS[base]) {
-    return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ALPHABETS).join(', ')}` });
+  if (!BASE_ENCODERS[base]) {
+    return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ENCODERS).join(', ')}` });
   }
 
-  // Create a base-x instance with the correct alphabet for the chosen base
-  const baseEncoder = basex(BASE_ALPHABETS[base]);
+  // Get the correct base encoder for the chosen base
+  const baseEncoder = BASE_ENCODERS[base];
   
   let result;
 
@@ -371,6 +382,7 @@ router.get('/base/:base', (req, res) => {
     });
   }
 });
+
 
 
 
