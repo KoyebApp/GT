@@ -2,7 +2,7 @@ __path = process.cwd();
 
 // Required modules
 const express = require('express');
-const baseX = require('base-x');
+const basex = require('base-x');
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
@@ -333,7 +333,7 @@ router.get('/base/:base', (req, res) => {
   }
 
   // Create a base-x instance with the correct alphabet for the chosen base
-  const baseEncoder = baseX(BASE_ALPHABETS[base]);
+  const baseEncoder = basex(BASE_ALPHABETS[base]);
   
   let result;
 
