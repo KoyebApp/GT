@@ -441,7 +441,6 @@ router.get('/validate/data', (req, res) => {
   }
 });
 
-
 // Route to check the time of a given city or country
 router.get('/time/check', async (req, res) => {
   const apikey = req.query.apikey; // API key
@@ -487,6 +486,7 @@ router.get('/time/check', async (req, res) => {
     });
   }
 });
+
 
 
 // Route to generate random data
