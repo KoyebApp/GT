@@ -8,12 +8,10 @@ const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
 const validator = require('validator');
 const { search } = require('aptoide-scraper');
-const CurrencyConverter = require('currency-converter-lt');
 const moment = require('moment-timezone');
 const cors = require('cors');
 const QRCode = require('qrcode');
 const fetch = require('node-fetch');
-const { v4: uuidv4 } = require('uuid');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const request = require('request');
@@ -148,7 +146,7 @@ Akhir Pesan Error
 */
 router.use(favicon(__path + "/views/favicon.ico"));
 
-const listkey = ["qasim", "MEGA-AI", "APIKEY"];
+const listkey = ["Suhail", "GURU", "APIKEY"];
 
 router.post("/apikey", async (req, res, next) => {
   const key = req.query.key;
@@ -194,38 +192,7 @@ router.delete("/apikey", async (req, res, next) => {
 const Spotify = require('./../lib/utils/Spotify');
 
 
-router.get('/fetch/ulvis', async (req, res, next) => {
-  const apikey = req.query.apikey;
-  const url = req.query.url;
-  const custom = req.query.name;
 
-  if (!url) return res.json(loghandler.notquery);
-  if (!apikey) return res.json(loghandler.notparam);
-
-  if (listkey.includes(apikey)) {
-    try {
-      const apiUrl = `https://ulvis.net/api.php?url=${encodeURIComponent(url)}&custom=${encodeURIComponent(custom)}`;
-      console.log(`Fetching data from Ulvis API with URL: ${apiUrl}`);
-
-      // Use the Get function to get the JSON response
-      const responseJson = await Get(apiUrl);
-
-      // Return the response JSON directly
-      return res.json({
-        status: true,
-        code: 200,
-        creator: `${creator}`,
-        result: responseJson,
-      });
-    } catch (err) {
-      console.error("Error fetching data from Ulvis:", err);
-      return res.json(loghandler.error);
-    }
-  } else {
-    console.log(`Invalid API key: ${apikey}`);
-    return res.json(loghandler.invalidKey);
-  }
-});
 
 
 router.get('/download/mega', async (req, res, next) => {
@@ -334,7 +301,7 @@ const base62 = baseX(BASE62_ALPHABET);
 
 
 // Route for Base62 encoding and decoding
-app.get('/base62', (req, res) => {
+router.get('/base62', (req, res) => {
   const apikey = req.query.apikey; // API key
   const action = req.query.action; // Action (encode or decode)
   const data = req.query.data; // Data to be encoded or decoded
@@ -384,80 +351,13 @@ app.get('/base62', (req, res) => {
 });
 
 
-app.get('/generate-uuid', (req, res) => {
-  const apikey = req.query.apikey;
-
-  try {
-    if (!apikey) {
-      return res.json({ status: false, code: 400, message: 'API key is required.' });
-    }
-
-    if (!listkey.includes(apikey)) {
-      return res.json({ status: false, code: 401, message: 'Invalid API key.' });
-    }
-
-    const uuid = uuidv4();
-    res.json({
-      status: true,
-      code: 200,
-      creator: 'Qasim Ali 🦋',
-      result: {
-        uuid: uuid,
-      },
-    });
-  } catch (err) {
-    console.error('Error generating UUID:', err);
-    res.json({
-      status: false,
-      code: 500,
-      message: 'Internal server error while generating UUID.',
-    });
-  }
-});
-
-
-app.get('/convert-currency', async (req, res) => {
-  const apikey = req.query.apikey;
-  const amount = req.query.amount;
-  const fromCurrency = req.query.from;
-  const toCurrency = req.query.to;
-
-  if (!apikey || !amount || !fromCurrency || !toCurrency) {
-    return res.json({ status: false, code: 400, message: 'API key, amount, fromCurrency, and toCurrency are required.' });
-  }
-
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
-  }
-
-  try {
-    const converter = new CurrencyConverter();
-    const conversionResult = await converter.convert(amount, fromCurrency, toCurrency);
-    res.json({
-      status: true,
-      code: 200,
-      creator: 'Qasim Ali 🦋',
-      result: {
-        convertedAmount: conversionResult,
-      },
-    });
-  } catch (err) {
-    res.json({
-      status: false,
-      code: 500,
-      message: 'Error converting currency.',
-    });
-  }
-});
-
-
 // Base36 encoding/decoding setup
 const BASE36_ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
 const base36 = baseX(BASE36_ALPHABET);
 
 
 // Route for Base36 encoding and decoding
-app.get('/base36', (req, res) => {
+router.get('/base36', (req, res) => {
   const apikey = req.query.apikey; // API key
   const action = req.query.action; // Action (encode or decode)
   const data = req.query.data; // Data to be encoded or decoded
@@ -512,7 +412,7 @@ const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvw
 const base58 = baseX(BASE58_ALPHABET);
 
 // Route for Base58 encoding and decoding
-app.get('/base58', (req, res) => {
+router.get('/base58', (req, res) => {
   const apikey = req.query.apikey; // API key
   const action = req.query.action; // Action (encode or decode)
   const data = req.query.data; // Data to be encoded or decoded
@@ -562,7 +462,7 @@ app.get('/base58', (req, res) => {
 });
 
 // Route to validate data
-app.get('/validate/data', (req, res) => {
+router.get('/validate/data', (req, res) => {
   const apikey = req.query.apikey; // API key
   const type = req.query.type; // Type of validation (email, phone, etc.)
   const data = req.query.data; // Data to be validated
@@ -628,7 +528,7 @@ app.get('/validate/data', (req, res) => {
 
 
 // Route to check the time of a given city or country
-app.get('/time/check', async (req, res) => {
+router.get('/time/check', async (req, res) => {
   const apikey = req.query.apikey; // API key
   const location = req.query.location; // City or Country name
 
@@ -675,7 +575,7 @@ app.get('/time/check', async (req, res) => {
 
 
 // Route to generate random data
-app.get('/random/generator', (req, res) => {
+router.get('/random/data', (req, res) => {
   const apikey = req.query.apikey; // API key
   const dataType = req.query.type || 'user'; // Type of data to generate (default: 'user')
 
