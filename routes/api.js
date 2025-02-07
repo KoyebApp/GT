@@ -192,6 +192,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
+
 router.get('/web/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
   const custom = req.query.custom;  // Get the custom parameter from query parameter
@@ -243,7 +244,12 @@ router.get('/web/ulvis', async (req, res) => {
     });
 
   } catch (error) {
-    return res.json({ status: false, message: 'Error fetching data from Ulvis', error: error.message });
+    // Send the error message with a description of the issue
+    return res.json({
+      status: false,
+      message: 'Error fetching data from Ulvis',
+      error: error.message,
+    });
   }
 });
 
