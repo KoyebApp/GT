@@ -260,7 +260,7 @@ router.get('/img/lexica', async (req, res) => {
 
 
 // Route to fetch a screenshot with custom overlay color and hex
-router.get('/web/screenshot', async (req, res) => {
+router.get('/custom/ss', async (req, res) => {
   const url = req.query.url;
   const hex = req.query.hex || '#F76698'; // Default hex color if not provided
   const color = req.query.color || 'black'; // Default background color if not provided
