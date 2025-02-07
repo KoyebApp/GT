@@ -18,6 +18,7 @@ const request = require('request');
 const { translate } = require('@vitalets/google-translate-api');
 const { Anime } = require('@shineiichijo/marika');
 const fs = require('fs');
+const webshot = require('webshot');
 const ffmpeg = require('fluent-ffmpeg');
 const mime = require('mime-types');
 const mega = require('megajs');
@@ -499,13 +500,14 @@ router.get('/time/check', async (req, res, next) => {
   }
 });
 
-// Route for searching JS libraries using cdnjs API
-router.get('/search/jslibrary', async (req, res, next) => {
+
+// Route for taking a screenshot of a webpage
+router.get('/mb/screenshot', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const libraryName = req.query.library;  // Library name to search for
+  const url = req.query.url;
 
   // Validate input parameters
-  if (!libraryName) return res.json({ status: false, message: "Library parameter is required." });
+  if (!url) return res.json({ status: false, message: "URL parameter is required." });
   if (!apikey) return res.json({ status: false, message: "API key is required." });
 
   // Validate API key
@@ -514,31 +516,33 @@ router.get('/search/jslibrary', async (req, res, next) => {
   }
 
   try {
-    // Construct the URL to search for the JS library
-    const searchUrl = `https://api.cdnjs.com/libraries/${encodeURIComponent(libraryName)}`;
+    // Define the screenshot file path (temporarily stored)
+    const screenshotPath = path.join(__dirname, 'temp_screenshot.png');
 
-    // Fetch the data from cdnjs API
-    const response = await fetch(searchUrl);
-    
-    // If the response is not OK, return an error
-    if (!response.ok) {
-      return res.json({ status: false, message: `Library '${libraryName}' not found.` });
-    }
+    // Capture the screenshot using webshot
+    webshot(url, screenshotPath, function(err) {
+      if (err) {
+        console.error("Error capturing screenshot:", err);
+        return res.json({ status: false, message: "Error capturing screenshot." });
+      }
 
-    // Parse the JSON response from cdnjs
-    const libraryData = await response.json();
+      // Once the screenshot is captured, send it as a response
+      res.sendFile(screenshotPath, (err) => {
+        if (err) {
+          console.error("Error sending screenshot:", err);
+        }
 
-    // Return the library data in the response
-    res.json({
-      status: true,
-      code: 200,
-      creator: `${creator}`,
-      result: libraryData  // Return the full library data
+        // Clean up the screenshot file after sending it
+        fs.unlink(screenshotPath, (err) => {
+          if (err) {
+            console.error("Error deleting screenshot file:", err);
+          }
+        });
+      });
     });
-
   } catch (err) {
-    console.error("Error fetching library data:", err);
-    res.json({ status: false, message: "An error occurred while fetching the library data." });
+    console.error("Error during screenshot process:", err);
+    res.json({ status: false, message: "An error occurred while capturing the screenshot." });
   }
 });
 
@@ -927,8 +931,58 @@ case 'date':
   }
 });
 
-      
-        
+
+
+// Route to capture a screenshot with custom options
+app.get('/capture-screenshot', async (req, res) => {
+  const apikey = req.query.apikey;
+  const url = req.query.url; // URL of the page to capture
+
+  // Validate input parameters
+  if (!url) return res.json({ status: false, message: "URL parameter is required." });
+  if (!apikey) return res.json({ status: false, message: "API key is required." });
+
+  // Validate API key
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: "Invalid API key." });
+  }
+
+  // Define the custom screenshot options
+  const options = {
+    screenSize: {
+      width: 320,
+      height: 480
+    },
+    shotSize: {
+      width: 320,
+      height: 'all'
+    },
+    userAgent: 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.20 (KHTML, like Gecko) Mobile/7B298g'
+  };
+
+  // Path for saving the screenshot temporarily
+  const screenshotPath = path.join(__dirname, 'temp_screenshot.jpeg');
+
+  // Capture the screenshot using webshot
+  webshot(url, screenshotPath, options, function(err) {
+    if (err) {
+      console.error("Error capturing screenshot:", err);
+      return res.json({ status: false, message: "An error occurred while capturing the screenshot." });
+    }
+
+    // Send the screenshot as a response to the client
+    res.sendFile(screenshotPath, (err) => {
+      if (err) {
+        console.error("Error sending file:", err);
+      }
+
+      // Cleanup: Delete the temporary file after sending the response
+      fs.unlink(screenshotPath, (err) => {
+        if (err) console.error("Error deleting temporary file:", err);
+      });
+    });
+  });
+});
 
 
 // Route to search for an app using aptoide-scraper
