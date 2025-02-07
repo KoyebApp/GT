@@ -258,25 +258,35 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+const axios = require('axios');
+const cheerio = require('cheerio');
+const express = require('express');
+const router = express.Router();
 
 router.get('/user-info', async (req, res) => {
     const Apikey = req.query.apikey;
+    const user = req.query.user;  // Get the user query parameter
 
     if (!Apikey) return res.json(loghandler.notparam);
     if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
+    if (!user) return res.json({ status: false, message: "User parameter is missing." });
 
     try {
-        // Fetch data from the search URL for discoverpakistantv
-        const response = await axios.get('https://urlebird.com/search/?q=discoverpakistantv');
+        // Fetch data from the dynamic search URL for the user
+        const response = await axios.get(`https://urlebird.com/search/?q=${user}`, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+            }
+        });
         const html = response.data;
 
         // Initialize cheerio to parse the HTML
         const $ = cheerio.load(html);
 
         // Extract the relevant data using cheerio
-        const username = $('a.uri').attr('href').split('/').pop(); // Extract the username from the URL
-        const name = $('span').first().text().trim(); // Extract the name from the first span
-        const followers = $('span.followers').text().trim(); // Extract the followers count
+        const username = $('a.uri').attr('href').split('/').pop();  // Extract the username from the URL
+        const name = $('span').first().text().trim();  // Extract the name from the first span
+        const followers = $('span.followers').text().trim();  // Extract the followers count
 
         // Send the response with the creator, status, and extracted data
         res.json({
@@ -301,6 +311,8 @@ router.get('/user-info', async (req, res) => {
         });
     }
 });
+
+
 
 
 router.get('/web/ulvis', async (req, res) => {
