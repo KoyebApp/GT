@@ -258,10 +258,6 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
-const axios = require('axios');
-const cheerio = require('cheerio');
-const express = require('express');
-const router = express.Router();
 
 router.get('/user-info', async (req, res) => {
     const Apikey = req.query.apikey;
