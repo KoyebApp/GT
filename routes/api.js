@@ -552,6 +552,52 @@ router.get('/time/check', async (req, res, next) => {
   }
 });
 
+router.get('/ipone/screenshot', async (req, res) => {
+  const url = req.query.url;  // Get the URL from query parameter
+  const apikey = req.query.apikey;  // Retrieve the API key
+
+  if (!url) {
+    return res.json({ status: false, message: 'Url is Required, Provide a URL' });
+  }
+
+  if (!apikey) {
+    return res.json({ status: false, message: 'API key is missing' });
+  }
+
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
+
+  try {
+    // Log URL for debugging
+    console.log('Received URL:', url);
+
+    // Create a screenshot URL using the device type (iphone14promax as an example)
+    const screenshotUrl = `https://image.thum.io/get/iphone14promax/${url}`;
+
+    // Fetch screenshot directly from thum.io
+    let screenshotResponse = await fetch(screenshotUrl);
+
+    if (!screenshotResponse.ok) {
+      const errorDetails = await screenshotResponse.text();
+      throw new Error(`Failed to fetch the screenshot. Status: ${screenshotResponse.status}, Error: ${errorDetails}`);
+    }
+
+    // Get the content type and image buffer
+    const contentType = screenshotResponse.headers.get('Content-Type');
+    let screenshotBuffer = await screenshotResponse.buffer();
+
+    // Set appropriate response headers
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Content-Type', contentType);  // Use dynamic content type
+
+    return res.send(screenshotBuffer);
+
+  } catch (error) {
+    return res.json({ status: false, message: 'Error fetching screenshot', error: error.message });
+  }
+});
+
 
 router.get('/web/screenshot', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
@@ -1425,7 +1471,7 @@ router.get('/info/github', async (req, res, next) => {
   if (listkey.includes(apikey)) {
     try {
       // Fetch GitHub user data from popcat.xyz API
-      const response = await fetch(`https://api.popcat.xyz/github/${encodeURIComponent(username)}`);
+      const response = await fetch(`https://api.popcat.xyz/github/$(username)`);
       
       // Check the content type of the response
       const contentType = response.headers.get('content-type');
@@ -5012,6 +5058,7 @@ router.get('/civit/tags', async (req, res) => {
   }
 });
 
+
 router.get('/lexica', async (req, res) => {
   const prompt = req.query.prompt;  // Retrieve the 'prompt' parameter from the query string
   const apikey = req.query.apikey;  // Retrieve the 'apikey' from the query string
@@ -5040,7 +5087,11 @@ router.get('/lexica', async (req, res) => {
   try {
     // Fetch data from Lexica API
     const response = await fetch('https://lexica.art/api/v1/search?q=' + encodeURIComponent(prompt));
-    
+
+    // Log the response status and headers for debugging
+    console.log('Lexica API response status:', response.status);
+    console.log('Lexica API response headers:', response.headers);
+
     // Check if the response status is OK (status code 200)
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -5054,6 +5105,9 @@ router.get('/lexica', async (req, res) => {
 
     // Parse the JSON response
     const data = await response.json();
+
+    // Log the raw response data for debugging
+    console.log('Lexica API response data:', data);
 
     // Check if there are images in the response
     if (!data.images || data.images.length === 0) {
@@ -5076,8 +5130,10 @@ router.get('/lexica', async (req, res) => {
     res.json(result);
 
   } catch (e) {
-    // Handle any errors that occur during the fetch or response handling
-    console.error(e);
+    // Log the error for debugging
+    console.error('Error fetching from Lexica:', e);
+
+    // Send an error response with the error message
     res.json({
       status: false,
       message: "An error occurred while fetching the data.",
@@ -5259,69 +5315,7 @@ async function uploadImageToImgBB(buffer) {
   }
 }
 
-router.get('/dalle', async (req, res, next) => {
-  const apikey = req.query.apikey;
-  const prompt = req.query.prompt;
 
-  // Validate the API key and prompt
-  if (!apikey) return res.json(loghandler.notparam);
-  if (!prompt) return res.json(loghandler.notquery);
-
-  // Check if API key is valid
-  if (listkey.includes(apikey)) {
-    try {
-      // Send 'prompt' parameter in the API request
-      const response = await fetch(encodeURI(`https://api.gurusensei.workers.dev/dream?prompt=${prompt}`));
-
-      // Check if the response is okay (status code 200)
-      if (!response.ok) {
-        return res.json({ status: false, message: "Failed to fetch from the API." });
-      }
-
-      // Check the Content-Type of the response
-      const contentType = response.headers.get('Content-Type');
-
-      let result;
-
-      // Handle the response based on its Content-Type
-      if (contentType && contentType.includes('image/png')) {
-        // If the response is an image, we handle it as binary data
-        const buffer = await response.buffer();
-
-        // Upload the image to ImgBB
-        const imageUrl = await uploadToImgur(buffer);
-
-        result = {
-          imageUrl: imageUrl  // Returning the URL of the uploaded image
-        };
-      } else if (contentType && contentType.includes('application/json')) {
-        // If the response is JSON, parse it
-        result = await response.json();
-      } else if (contentType && contentType.includes('text/html')) {
-        // If the response is HTML, return it as text
-        result = await response.text();
-      } else {
-        // For other formats, just return the raw text
-        result = await response.text();
-      }
-
-      // Return the result in a JSON response
-      res.json({
-        status: true,
-        creator: `${creator}`,  // Your creator's name or ID
-        result: result,  // The actual data (image URL or parsed response)
-      });
-
-    } catch (e) {
-      // Handle any errors that occur during the fetch or response handling
-      console.error(e);  // Log the error for debugging
-      res.json(loghandler.error);  // Send a generic error response
-    }
-  } else {
-    // If the API key is invalid
-    res.json(loghandler.invalidKey);
-  }
-});
 // TikTok stalk route
 router.get('/stalk/github', async (req, res, next) => {
   const Apikey = req.query.apikey;
@@ -5346,6 +5340,53 @@ router.get('/stalk/github', async (req, res, next) => {
   }
 });
 
+router.get('/dalle', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const prompt = req.query.prompt;
+
+  // Validate the API key and prompt
+  if (!apikey) return res.json(loghandler.notparam);
+  if (!prompt) return res.json(loghandler.notquery);
+
+  // Check if API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Send 'prompt' parameter in the API request
+      const response = await fetch(encodeURI(`https://api.gurusensei.workers.dev/dream?prompt=${prompt}`));
+
+      // Check if the response is okay (status code 200)
+      if (!response.ok) {
+        return res.json({ status: false, message: "Failed to fetch from the API." });
+      }
+
+      // Check the Content-Type of the response
+      const contentType = response.headers.get('Content-Type');
+
+      // If the response is an image (image/png)
+      if (contentType && contentType.includes('image/png')) {
+        const buffer = await response.buffer();  // Get image data as a buffer
+        res.set('Content-Type', 'image/png');  // Set the correct content type
+        return res.send(buffer);  // Send the image buffer directly in the response
+      } else {
+        // Handle non-image responses (e.g., JSON or HTML)
+        const result = await response.text();
+        return res.json({
+          status: true,
+          creator: `${creator}`,
+          result: result,  // Return the raw response (likely text or JSON)
+        });
+      }
+
+    } catch (e) {
+      // Handle any errors that occur during the fetch or response handling
+      console.error(e);  // Log the error for debugging
+      res.json(loghandler.error);  // Send a generic error response
+    }
+  } else {
+    // If the API key is invalid
+    res.json(loghandler.invalidKey);
+  }
+});
 
 
 // TikTok stalk route
