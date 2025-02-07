@@ -259,6 +259,50 @@ router.get('/img/lexica', async (req, res) => {
 });
 
 
+router.get('/user-info', async (req, res) => {
+    const Apikey = req.query.apikey;
+
+    if (!Apikey) return res.json(loghandler.notparam);
+    if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
+
+    try {
+        // Fetch data from the search URL for discoverpakistantv
+        const response = await axios.get('https://urlebird.com/search/?q=discoverpakistantv');
+        const html = response.data;
+
+        // Initialize cheerio to parse the HTML
+        const $ = cheerio.load(html);
+
+        // Extract the relevant data using cheerio
+        const username = $('a.uri').attr('href').split('/').pop(); // Extract the username from the URL
+        const name = $('span').first().text().trim(); // Extract the name from the first span
+        const followers = $('span.followers').text().trim(); // Extract the followers count
+
+        // Send the response with the creator, status, and extracted data
+        res.json({
+            creator: `${creator}`,
+            status: true,
+            result: {
+                username,
+                name,
+                followers
+            }
+        });
+
+    } catch (error) {
+        // Log the error for debugging purposes
+        console.error("Error fetching user data:", error);
+
+        // Send the error response
+        res.json({
+            creator: `${creator}`,
+            status: false,
+            message: `Error fetching the data: ${error.message}`
+        });
+    }
+});
+
+
 router.get('/web/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
 
