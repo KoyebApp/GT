@@ -258,6 +258,35 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+// Route to fetch a random pickup line from Popcat API
+router.get('/web/pickuplines', async (req, res) => {
+  try {
+    // Fetch the pickup line from the Popcat API
+    const response = await axios.get('https://api.popcat.xyz/pickuplines');
+
+    // Check if the response contains the expected data
+    if (response.data && response.data.pickupline) {
+      // Send the pickup line and contributor as the response
+      return res.json({
+        status: true,
+        pickupline: response.data.pickupline, // The pickup line
+        contributor: response.data.contributor, // The contributor's link
+      });
+    } else {
+      throw new Error('Invalid response format from Popcat API');
+    }
+
+  } catch (error) {
+    console.error('Error fetching pickup line:', error.message);
+    return res.json({
+      status: false,
+      message: 'Error fetching pickup line',
+      error: error.message,
+    });
+  }
+});
+
+
 // Route to fetch "Would You Rather" question from Popcat API
 router.get('/web/wyr', async (req, res) => {
   try {
