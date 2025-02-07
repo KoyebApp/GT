@@ -258,9 +258,40 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+// Route to fetch "Would You Rather" question from Popcat API
+router.get('/web/wyr', async (req, res) => {
+  try {
+    // Fetch the WYR question from the Popcat API
+    const response = await axios.get('https://api.popcat.xyz/wyr');
+
+    // Check if the response contains the expected data
+    if (response.data && response.data.ops1 && response.data.ops2) {
+      // Send the WYR question options as the response
+      return res.json({
+        status: true,
+        question: {
+          option1: response.data.ops1, // First option
+          option2: response.data.ops2, // Second option
+        },
+      });
+    } else {
+      throw new Error('Invalid response format from Popcat API');
+    }
+
+  } catch (error) {
+    console.error('Error fetching WYR question:', error.message);
+    return res.json({
+      status: false,
+      message: 'Error fetching "Would You Rather" question',
+      error: error.message,
+    });
+  }
+});
+
+
 
 // Route to fetch a screenshot with custom overlay color and hex
-router.get('/custom/ss', async (req, res) => {
+router.get('/web/info', async (req, res) => {
   const url = req.query.url;
   const hex = req.query.hex || '#30CFD0'; // Default hex color if not provided
   const color = req.query.color || 'white'; // Default background color if not provided
