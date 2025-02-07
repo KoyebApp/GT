@@ -262,15 +262,15 @@ router.get('/web/logo', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
 
   if (!url) {
-    return res.json({ status: false, message: 'URL is required' });
+    return res.status(400).json({ status: false, message: 'URL is required' });
   }
 
   try {
     // Step 1: Fetch the HTML content of the page
-    const response = await axios.get(`https://microlink.io/logo?url=${url}`);
+    const htmlResponse = await axios.get(`https://microlink.io/logo?url=${url}`);
 
     // Step 2: Load the HTML into Cheerio
-    const $ = cheerio.load(response.data);
+    const $ = cheerio.load(htmlResponse.data);
 
     // Step 3: Extract the logo URL from the <img> tag
     const logoUrl = $('img.logo___StyledImage-sc-194yie9-1').attr('src');
@@ -279,15 +279,15 @@ router.get('/web/logo', async (req, res) => {
       throw new Error('Logo not found');
     }
 
-    // Step 4: Return the logo URL
-    return res.json({
-      status: true,
-      message: 'Logo fetched successfully',
-      logoUrl: logoUrl,
-    });
+    // Step 4: Fetch the logo image as a buffer
+    const imageResponse = await axios.get(logoUrl, { responseType: 'arraybuffer' });
+
+    // Step 5: Set the appropriate Content-Type header and send the image in the response
+    res.set('Content-Type', 'image/png'); // Adjust the Content-Type based on the image type
+    res.send(imageResponse.data);
 
   } catch (error) {
-    return res.json({
+    return res.status(500).json({
       status: false,
       message: 'Error fetching logo',
       error: error.message,
