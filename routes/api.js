@@ -268,7 +268,7 @@ router.get('/web/meta', async (req, res) => {
 
   try {
     // Step 1: Fetch the HTML content of the page
-    const htmlResponse = await axios.get(`https://microlink.io/meta?url=${url}`);
+    const htmlResponse = await axios.get(`https://microlink.io/meta?url=${url}&palette=true&audio=true&video=true&iframe=true`);
 
     // Step 2: Load the HTML into Cheerio
     const $ = cheerio.load(htmlResponse.data);
