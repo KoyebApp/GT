@@ -258,6 +258,45 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+router.get('/web/sdk', async (req, res) => {
+  const url = req.query.url; // Get the URL from the query parameter
+
+  if (!url) {
+    return res.status(400).json({ status: false, message: 'URL is required' });
+  }
+
+  try {
+    // Step 1: Fetch the HTML content of the page
+    const htmlResponse = await axios.get(`https://microlink.io/sdk?url=${encodeURIComponent(url)}`);
+
+    // Step 2: Load the HTML into Cheerio
+    const $ = cheerio.load(htmlResponse.data);
+
+    // Step 3: Extract the required data
+    const description = $('.microlink_card__content_description p').attr('title') || '';
+    const imageUrl = $('.microlink_card__media_image').attr('url') || '';
+    const publisher = $('.sc-ljFCIV.hesFEA').attr('title') || '';
+
+    // Step 4: Return the extracted data
+    return res.json({
+      status: true,
+      message: 'Data fetched successfully',
+      data: {
+        description,
+        imageUrl,
+        publisher,
+      },
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: 'Error fetching data',
+      error: error.message,
+    });
+  }
+});
+
 router.get('/web/meta', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
 
