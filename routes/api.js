@@ -525,6 +525,47 @@ router.get('/validate/data', (req, res) => {
 
 
 
+// Route for generating QR code
+router.get('/custom/qrcode', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const data = req.query.data;  // Data to encode in QR code
+  const size = req.query.size || '100x100';  // Default size if not provided
+  const color = req.query.color || '0f0';  // Default color (green) if not provided
+
+  // Validate input parameters
+  if (!data) return res.json({ status: false, message: "Data parameter is required." });
+  if (!apikey) return res.json({ status: false, message: "API key is required." });
+
+  // Validate API key
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: "Invalid API key." });
+  }
+
+  try {
+    let qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data)}&size=${size}&color=${color}`;
+
+    // Handle cases for different input scenarios
+    if (size && color) {
+      qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data)}&size=${size}&color=${color}`;
+    } else if (size) {
+      qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data)}&size=${size}`;
+    } else if (color) {
+      qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data)}&color=${color}`;
+    }
+
+    // Fetch the image from the QR code API
+    const imageResponse = await fetch(qrCodeUrl);
+    const buffer = await imageResponse.buffer();
+
+    // Return the image in the response
+    res.setHeader('Content-Type', 'image/png');
+    res.send(buffer);
+    
+  } catch (err) {
+    console.error("Error generating QR code:", err);
+    res.json({ status: false, message: "An error occurred while generating QR code." });
+  }
+});
 
 
 
