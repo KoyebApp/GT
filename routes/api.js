@@ -258,8 +258,43 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
-
 router.get('/web/ipfind', async (req, res) => {
+  try {
+    // Step 1: Construct the URL with the IP address
+    const url = `https://ipfind.io/ip-address-lookup`;
+
+    // Step 2: Fetch the HTML content of the page
+    const response = await axios.get(url);
+
+    // Step 3: Load the HTML response into Cheerio
+    const $ = cheerio.load(response.data);
+
+    // Step 4: Extract the data from the HTML
+    const data = {};
+    $('tbody tr').each((index, row) => {
+      const th = $(row).find('th').text().trim();
+      const td = $(row).find('td').text().trim();
+      data[th] = td;
+    });
+
+    // Step 5: Return the extracted data
+    return res.json({
+      status: true,
+      message: 'Data fetched successfully',
+      data: data,
+    });
+
+  } catch (error) {
+    return res.json({
+      status: false,
+      message: 'Error fetching data from ipfind.io',
+      error: error.message,
+    });
+  }
+});
+
+
+router.get('/info/ip', async (req, res) => {
   const ipAddress = req.query.ip; // Get the IP address from the query parameter
 
   if (!ipAddress) {
