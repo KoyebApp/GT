@@ -259,9 +259,55 @@ router.get('/img/lexica', async (req, res) => {
 });
 
 
+// Route to fetch a screenshot with custom overlay color and hex
+router.get('/web/screenshot', async (req, res) => {
+  const url = req.query.url;
+  const hex = req.query.hex || '#F76698'; // Default hex color if not provided
+  const color = req.query.color || 'black'; // Default background color if not provided
+  const apikey = req.query.apikey;
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
+  // Validate URL parameter
+  if (!url) {
+    return res.json({
+      status: false,
+      message: 'URL is required',
+    });
+  }
+
+  try {
+    // Fetch the screenshot image from Microlink API
+    const response = await axios.get(
+      `https://api.microlink.io/?url=${url}&overlay.browser=${hex}&overlay.background=${color}&screenshot=true&embed=screenshot.url`,
+      { responseType: 'arraybuffer' } // Set response type to get raw image data
+    );
+
+    // Send the image data as a response
+    res.set('Content-Type', 'image/png'); // Set the content type to PNG
+    res.send(response.data); // Send the image buffer in the response
+
+  } catch (error) {
+    console.error('Error fetching screenshot:', error.message);
+    return res.json({
+      status: false,
+      message: 'Error fetching screenshot image',
+      error: error.message,
+    });
+  }
+});
+
+
 router.get('/web/meta', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
+  const apikey = req.query.apikey;
 
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
   if (!url) {
     return res.status(400).json({ status: false, message: 'URL is required' });
   }
@@ -322,6 +368,12 @@ router.get('/web/logo', async (req, res, next) => {
 
 
 router.get('/self/ip', async (req, res) => {
+  const apikey = req.query.apikey;
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
   try {
     // Step 1: Construct the URL with the IP address
     const url = `https://ipfind.io/ip-address-lookup`;
@@ -360,6 +412,12 @@ router.get('/self/ip', async (req, res) => {
 router.get('/info/ip', async (req, res) => {
   const ipAddress = req.query.ip; // Get the IP address from the query parameter
 
+  const apikey = req.query.apikey;
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
   if (!ipAddress) {
     return res.json({ status: false, message: 'IP address is required' });
   }
@@ -403,6 +461,12 @@ router.get('/info/ip', async (req, res) => {
 router.get('/web/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
 
+  const apikey = req.query.apikey;
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
   if (!url) {
     return res.json({ status: false, message: 'URL is required' });
   }
