@@ -499,6 +499,47 @@ router.get('/time/check', async (req, res, next) => {
   }
 });
 
+router.get('/web/screenshot', async (req, res) => {
+  const url = req.query.url;
+  const apikey = req.query.apikey;
+  
+  if (!url) {
+    return res.json({ status: false, message: 'Url is Required, Give URL' });
+  }
+
+  if (!apikey) {
+    return res.json({ status: false, message: 'API key is missing' });
+  }
+
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
+
+  try {
+    let screenshotResponse = await fetch(`https://image.thum.io/get/fullpage/${encodeURIComponent(url)}`);
+    
+    if (!screenshotResponse.ok) {
+      const errorDetails = await screenshotResponse.text();
+      throw new Error(`Failed to fetch the screenshot. Status: ${screenshotResponse.status}, Error: ${errorDetails}`);
+    }
+
+    // Get the content type from the response
+    const contentType = screenshotResponse.headers.get('Content-Type');
+    
+    // Get the screenshot image buffer
+    let screenshotBuffer = await screenshotResponse.buffer();
+
+    // Set headers to allow CORS and the appropriate content type
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Content-Type', contentType);  // Use dynamic content type
+
+    return res.send(screenshotBuffer);
+
+  } catch (error) {
+    return res.json({ status: false, message: 'Error fetching screenshot', error: error.message });
+  }
+});
+
 
 // Route to validate data
 router.get('/validate/data', (req, res) => {
@@ -4297,48 +4338,6 @@ router.get('/info/movie', async (req, res) => {
     return res.json({ status: false, message: 'Error fetching movie data', error: error.message });
   }
 });
-
-
-// Route to take a screenshot from a URL
-router.get('/web/screenshot', async (req, res) => {
-  const url = req.query.url;  // Retrieve the URL from the query string
-  const apikey = req.query.apikey;  // Retrieve the API key from the query string
-  
-  if (!url) {
-    return res.json({ status: false, message: 'Url is Required, Give URL' });
-  }
-
-  if (!apikey) {
-    return res.json({ status: false, message: 'API key is missing' });
-  }
-
-  // Example API key validation (replace `listkey` with your actual list of valid keys)
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, message: 'Invalid API key' });
-  }
-
-  try {
-    // Fetch the screenshot from Thum.io
-    let screenshotResponse = await fetch(`https://image.thum.io/get/fullpage/${encodeURIComponent(url)}`);
-
-    if (!screenshotResponse.ok) {
-      throw new Error('Failed to fetch the screenshot.');
-    }
-
-    // Get the screenshot image buffer from the response
-    let screenshotBuffer = await screenshotResponse.buffer();
-
-    // Set the appropriate headers for image content (adjust based on actual image format)
-    res.set('Content-Type', 'image/png');  // or change this based on the actual image format (e.g., image/jpeg)
-
-    // Send the screenshot image buffer directly in the response
-    return res.send(screenshotBuffer);
-
-  } catch (error) {
-    return res.json({ status: false, message: 'Error fetching screenshot', error: error.message });
-  }
-});
-
 
 
 // Your route
