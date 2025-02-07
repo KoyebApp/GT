@@ -258,7 +258,6 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
-
 router.get('/web/meta', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
 
@@ -267,51 +266,14 @@ router.get('/web/meta', async (req, res) => {
   }
 
   try {
-    // Step 1: Fetch the HTML content of the page
-    const htmlResponse = await axios.get(`https://microlink.io/meta?url=${url}&palette=true&audio=true&video=true&iframe=true`);
+    // Step 1: Fetch metadata from the Microlink API
+    const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
+    const apiResponse = await axios.get(apiUrl);
 
-    // Step 2: Load the HTML into Cheerio
-    const $ = cheerio.load(htmlResponse.data);
+    // Step 2: Extract the metadata from the API response
+    const metadata = apiResponse.data.data;
 
-    // Step 3: Extract metadata from the HTML
-    const metadata = {
-      lang: $('meta[property="og:locale"]').attr('content') || '',
-      author: $('meta[name="author"]').attr('content') || null,
-      title: $('meta[property="og:title"]').attr('content') || $('title').text() || '',
-      publisher: $('meta[property="og:site_name"]').attr('content') || '',
-      image: {
-        url: $('meta[property="og:image"]').attr('content') || '',
-        type: '', // You may need to extract this from the image URL or other meta tags
-        size: null, // You may need to fetch the image and calculate its size
-        height: parseInt($('meta[property="og:image:height"]').attr('content')) || null,
-        width: parseInt($('meta[property="og:image:width"]').attr('content')) || null,
-        size_pretty: '', // You may need to calculate this
-        palette: [], // You may need to use an external library to extract the palette
-        background_color: $('meta[name="theme-color"]').attr('content') || '',
-        color: '', // You may need to extract this from the page's CSS
-        alternative_color: '', // You may need to extract this from the page's CSS
-      },
-      date: $('meta[property="article:published_time"]').attr('content') || '',
-      url: $('meta[property="og:url"]').attr('content') || url,
-      description: $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content') || '',
-      audio: null, // You may need to extract this from <audio> tags or meta tags
-      logo: {
-        url: $('meta[property="og:logo"]').attr('content') || $('link[rel="icon"]').attr('href') || '',
-        type: '', // You may need to extract this from the logo URL
-        size: null, // You may need to fetch the logo and calculate its size
-        height: null, // You may need to fetch the logo and calculate its height
-        width: null, // You may need to fetch the logo and calculate its width
-        size_pretty: '', // You may need to calculate this
-        palette: [], // You may need to use an external library to extract the palette
-        background_color: '', // You may need to extract this from the logo
-        color: '', // You may need to extract this from the logo
-        alternative_color: '', // You may need to extract this from the logo
-      },
-      iframe: null, // You may need to extract this from <iframe> tags
-      video: null, // You may need to extract this from <video> tags or meta tags
-    };
-
-    // Step 4: Return the metadata
+    // Step 3: Return the metadata
     return res.json({
       status: true,
       message: 'Metadata fetched successfully',
@@ -325,7 +287,7 @@ router.get('/web/meta', async (req, res) => {
       error: error.message,
     });
   }
-});      
+});
 
 
 router.get('/web/logo', async (req, res) => {
