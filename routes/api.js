@@ -377,6 +377,89 @@ router.get('/base/:base', async (req, res) => {
 });
 
 
+// Route to get the current time based on city or country name
+router.get('/time', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const location = req.query.location;  // Location (city or country) to get the time for
+
+  // Validate input parameters
+  if (!location) return res.json(loghandler.nottext);  // Ensure 'location' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Step 1: Try to find the city by city name (lookupViaCity)
+      let lookup = cityTimezones.lookupViaCity(location);
+      
+      // Step 2: If no match, try cityMapping (search for city in the mapping)
+      if (!lookup || lookup.length === 0) {
+        lookup = cityTimezones.cityMapping.filter(city => city.city.toLowerCase().includes(location.toLowerCase()));
+      }
+
+      // Step 3: If still no match, try searching by city, state, or province (findFromCityStateProvince)
+      if (lookup.length === 0) {
+        lookup = cityTimezones.findFromCityStateProvince(location);
+      }
+
+      // Step 4: If no match, try searching by ISO code (iso2/iso3)
+      if (lookup.length === 0) {
+        lookup = cityTimezones.findFromIsoCode(location);
+      }
+
+      // Step 5: If no match, return 404 response
+      if (lookup.length === 0) {
+        return res.status(404).json({
+          status: false,
+          code: 404,
+          message: `No timezone found for ${location}`,
+          creator: `${creator}`
+        });
+      }
+
+      // Use the first found city data (best match)
+      const cityData = lookup[0];
+      
+      // Get the time using the GetTime function (make sure GetTime function is available)
+      const time = GetTime(location);  // Get the time using the GetTime function
+
+      // Return the full data including city info and time
+      res.json({
+        status: true,
+        code: 200,
+        creator: `${creator}`,
+        location: location,
+        time: time, // Current time in the requested location
+        timezone: cityData.timezone,
+        city: cityData.city,
+        country: cityData.country,
+        province: cityData.province,
+        lat: cityData.lat,
+        lng: cityData.lng,
+        population: cityData.pop,
+        isoCode2: cityData.iso2,
+        isoCode3: cityData.iso3
+      });
+
+    } catch (err) {
+      console.error("Error fetching time:", err);
+      res.json({
+        status: false,
+        code: 500,
+        message: "Error fetching data",
+        creator: `${creator}`
+      });
+    }
+  } else {
+    res.json({
+      status: false,
+      code: 401,
+      message: "Invalid API key",
+      creator: `${creator}`
+    });
+  }
+});
+
 
 // Route to validate data
 router.get('/validate/data', (req, res) => {
@@ -445,64 +528,7 @@ router.get('/validate/data', (req, res) => {
 
 
 
-// Route to get the current time based on city or country name
-router.get('/time', async (req, res, next) => {
-  const apikey = req.query.apikey;
-  const location = req.query.location;  // Location (city or country) to get the time for
 
-  // Validate input parameters
-  if (!location) return res.json(loghandler.nottext);  // Ensure 'location' parameter is provided
-  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
-
-  // Check if the API key is valid
-  if (listkey.includes(apikey)) {
-    try {
-      // Get the time by city or country name using GetTime function
-      let lookup = cityTimezones.lookupViaCity(location);
-      if (!lookup || lookup.length === 0) {
-        lookup = cityTimezones.cityMapping(location);
-      }
-
-      if (lookup.length === 0) {
-        lookup = cityTimezones.findFromCityStateProvince(location);
-      }
-
-      if (lookup.length === 0) {
-        lookup = cityTimezones.findFromIsoCode(location);
-      }
-
-      if (lookup.length === 0) {
-        return res.status(404).json({ status: false, message: `No timezone found for ${location}` });
-      }
-
-      const cityData = lookup[0];
-      const time = GetTime(location);  // Get the time using the GetTime function
-
-      // Return the full data including the city info and time
-      res.json({
-        status: true,
-        code: 200,
-        creator: `${creator}`,
-        location: location,
-        time: time, // Current time in the requested location
-        timezone: cityData.timezone,
-        city: cityData.city,
-        country: cityData.country,
-        province: cityData.province,
-        lat: cityData.lat,
-        lng: cityData.lng,
-        population: cityData.pop,
-        isoCode2: cityData.iso2,
-        isoCode3: cityData.iso3,
-      });
-    } catch (err) {
-      console.error("Error fetching time:", err);
-      res.json(loghandler.error);  // If an error occurs, send an error message
-    }
-  } else {
-    res.json(loghandler.invalidKey);  // If the API key is invalid
-  }
-});
 
 
 
