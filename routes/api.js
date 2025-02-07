@@ -281,14 +281,13 @@ router.get('/custom/ss', async (req, res) => {
   try {
     // Fetch the screenshot image from Microlink API
     const response = await axios.get(
-      `https://api.microlink.io/?url=${url}&overlay.browser=${hex}&overlay.background=${color}&screenshot=true&embed=screenshot.url`,
-      { responseType: 'arraybuffer' } // Set response type to get raw image data
-    );
+      `https://api.microlink.io/?url=${url}&overlay.browser=${hex}&overlay.background=${color}&screenshot=true&embed=screenshot.url`, { responseType: 'arraybuffer' });
+    // Set the appropriate content-type for the image (likely PNG)
+      const contentType = response.headers['content-type'];
+      res.set('Content-Type', contentType);
 
-    // Send the image data as a response
-    res.set('Content-Type', 'image/png'); // Set the content type to PNG
-    res.send(response.data); // Send the image buffer in the response
-
+      // Send the image buffer in the response
+      return res.send(response.data);
   } catch (error) {
     console.error('Error fetching screenshot:', error.message);
     return res.json({
