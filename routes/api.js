@@ -301,27 +301,28 @@ router.get('/web/logo', async (req, res, next) => {
   // Check if the API key is valid
   if (listkey.includes(apikey)) {
     try {
-      // Fetch the logo image from Microlink API
-      const response = await axios.get(`https://api.microlink.io/?url=${url}`, {
-        responseType: 'arraybuffer',  // Important: to get the image as buffer
-      });
+      // Fetch logo information from Microlink API
+      const response = await axios.get(`https://api.microlink.io/?url=${url}&palette=true&embed=logo.url`);
 
-      // Extract the logo URL from the API response
-      const logoUrl = response.data.data.logo.url;
+      // Log the full response to inspect the structure
+      console.log('Microlink API response:', response.data);
 
-      if (!logoUrl) {
-        return res.json({ status: false, message: 'Logo not found' });
+      // Ensure the logo field exists in the response data
+      if (response.data.data && response.data.data.logo && response.data.data.logo.url) {
+        const logoUrl = response.data.data.logo.url;
+
+        // Fetch the actual image using the logo URL
+        const imageResponse = await axios.get(logoUrl, { responseType: 'arraybuffer' });
+
+        // Set the appropriate content-type for the image
+        const contentType = imageResponse.headers['content-type'];
+        res.set('Content-Type', contentType);
+        
+        // Send the image buffer in the response
+        return res.send(imageResponse.data);
+      } else {
+        return res.json({ status: false, message: 'Logo not found in Microlink API response' });
       }
-
-      // Fetch the actual image using the logo URL
-      const imageResponse = await axios.get(logoUrl, { responseType: 'arraybuffer' });
-
-      // Set the appropriate content-type for the image
-      const contentType = imageResponse.headers['content-type'];
-      res.set('Content-Type', contentType);
-      
-      // Send the image buffer in the response
-      return res.send(imageResponse.data);
 
     } catch (err) {
       console.error("Error fetching logo image:", err);
@@ -331,8 +332,6 @@ router.get('/web/logo', async (req, res, next) => {
     res.json(loghandler.invalidKey);
   }
 });
-
-
 
 
 router.get('/web/ipfind', async (req, res) => {
