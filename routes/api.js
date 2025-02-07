@@ -376,9 +376,53 @@ router.get('/base/:base', async (req, res) => {
   }
 });
 
+// Route to generate an image based on dynamic text in the URL
+router.get('/make/ogimage', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const text = req.query.text;  // The text to be included in the image URL
+  
+  // Validate input parameters
+  if (!text) return res.json({ status: false, message: "Text parameter is required." });
+  if (!apikey) return res.json({ status: false, message: "API key is required." });
+
+  // Validate API key
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: "Invalid API key." });
+  }
+
+  try {
+    // Construct the URL for the dynamic image
+    const imageUrl = `https://cdn.statically.io/og/${encodeURIComponent(text)}.jpg`;
+
+    // Fetch the image from the constructed URL
+    const imageResponse = await fetch(imageUrl);
+    
+    // If the URL is invalid or the image cannot be fetched, return an error message
+    if (!imageResponse.ok) {
+      return res.json({ status: false, message: "Failed to fetch the image." });
+    }
+
+    // Get the content type of the image (e.g., image/jpeg, image/png)
+    const contentType = imageResponse.headers.get("content-type");
+
+    // Get the image buffer (raw image data)
+    const buffer = await imageResponse.buffer();
+
+    // Set the appropriate response content type
+    res.setHeader('Content-Type', contentType);
+    
+    // Send the image buffer in the response
+    res.send(buffer);
+    
+  } catch (err) {
+    console.error("Error downloading the image:", err);
+    res.json({ status: false, message: "An error occurred while downloading the image." });
+  }
+});
+
 
 // Route to get the current time based on city or country name
-router.get('/time', async (req, res, next) => {
+router.get('/time/check', async (req, res, next) => {
   const apikey = req.query.apikey;
   const location = req.query.location;  // Location (city or country) to get the time for
 
