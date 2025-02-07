@@ -499,10 +499,11 @@ router.get('/time/check', async (req, res, next) => {
   }
 });
 
+
 router.get('/web/screenshot', async (req, res) => {
-  const url = req.query.url;
-  const apikey = req.query.apikey;
-  
+  const url = req.query.url;  // Get the URL from query parameter
+  const apikey = req.query.apikey;  // Retrieve the API key
+
   if (!url) {
     return res.json({ status: false, message: 'Url is Required, Give URL' });
   }
@@ -516,20 +517,22 @@ router.get('/web/screenshot', async (req, res) => {
   }
 
   try {
-    let screenshotResponse = await fetch(`https://image.thum.io/get/fullpage/${encodeURIComponent(url)}`);
-    
+    // Log URL for debugging
+    console.log('Received URL:', url);
+
+    // Fetch screenshot directly (no encoding needed)
+    let screenshotResponse = await fetch(`https://image.thum.io/get/fullpage/${url}`);
+
     if (!screenshotResponse.ok) {
       const errorDetails = await screenshotResponse.text();
       throw new Error(`Failed to fetch the screenshot. Status: ${screenshotResponse.status}, Error: ${errorDetails}`);
     }
 
-    // Get the content type from the response
+    // Get the content type and image buffer
     const contentType = screenshotResponse.headers.get('Content-Type');
-    
-    // Get the screenshot image buffer
     let screenshotBuffer = await screenshotResponse.buffer();
 
-    // Set headers to allow CORS and the appropriate content type
+    // Set appropriate response headers
     res.set('Access-Control-Allow-Origin', '*');
     res.set('Content-Type', contentType);  // Use dynamic content type
 
@@ -539,7 +542,6 @@ router.get('/web/screenshot', async (req, res) => {
     return res.json({ status: false, message: 'Error fetching screenshot', error: error.message });
   }
 });
-
 
 // Route to validate data
 router.get('/validate/data', (req, res) => {
