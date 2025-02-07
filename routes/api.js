@@ -193,6 +193,53 @@ router.delete("/apikey", async (req, res, next) => {
 const Spotify = require('./../lib/utils/Spotify');
 
 
+router.get('/short/ulvis', async (req, res) => {
+  const url = req.query.url;  // Get the URL from query parameter
+  const custom = req.query.custom;  // Get the custom parameter from query parameter
+  const apikey = req.query.apikey;  // Retrieve the API key
+
+  if (!url) {
+    return res.json({ status: false, message: 'Url is Required, Give URL' });
+  }
+
+  if (!custom) {
+    return res.json({ status: false, message: 'Custom parameter is Required' });
+  }
+
+  if (!apikey) {
+    return res.json({ status: false, message: 'API key is missing' });
+  }
+
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
+
+  try {
+    // Directly construct the URL without encoding
+    const apiUrl = `https://ulvis.net/api.php?url=${url}&custom=${custom}`;
+
+    // Fetch the JSON response from the external API
+    const apiResponse = await fetch(apiUrl);
+
+    if (!apiResponse.ok) {
+      const errorDetails = await apiResponse.text();
+      throw new Error(`Failed to fetch data from Ulvis. Status: ${apiResponse.status}, Error: ${errorDetails}`);
+    }
+
+    // Parse the JSON data from the response
+    const jsonData = await apiResponse.json();
+
+    // Send the JSON data as the response
+    return res.json({
+      status: true,
+      message: 'Data fetched successfully',
+      data: jsonData,
+    });
+
+  } catch (error) {
+    return res.json({ status: false, message: 'Error fetching data from Ulvis', error: error.message });
+  }
+});
 
 
 
