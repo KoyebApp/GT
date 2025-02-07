@@ -258,44 +258,6 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
-router.get('/web/sdk', async (req, res) => {
-  const url = req.query.url; // Get the URL from the query parameter
-
-  if (!url) {
-    return res.status(400).json({ status: false, message: 'URL is required' });
-  }
-
-  try {
-    // Step 1: Fetch the HTML content of the page
-    const htmlResponse = await axios.get(`https://microlink.io/sdk?url=${encodeURIComponent(url)}`);
-
-    // Step 2: Load the HTML into Cheerio
-    const $ = cheerio.load(htmlResponse.data);
-
-    // Step 3: Extract the required data
-    const description = $('.microlink_card__content_description p').attr('title') || '';
-    const imageUrl = $('.microlink_card__media_image').attr('url') || '';
-    const publisher = $('.sc-ljFCIV.hesFEA').attr('title') || '';
-
-    // Step 4: Return the extracted data
-    return res.json({
-      status: true,
-      message: 'Data fetched successfully',
-      data: {
-        description,
-        imageUrl,
-        publisher,
-      },
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      status: false,
-      message: 'Error fetching data',
-      error: error.message,
-    });
-  }
-});
 
 router.get('/web/meta', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
@@ -328,7 +290,6 @@ router.get('/web/meta', async (req, res) => {
   }
 });
 
-
 router.get('/web/logo', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
 
@@ -350,7 +311,23 @@ router.get('/web/logo', async (req, res) => {
       throw new Error('Logo not found');
     }
 
-    // Step 4: Return the logo URL
+    // Step 4: Check if the logo URL is base64 encoded
+    if (logoUrl.startsWith('data:image')) {
+      // If it's base64, send it as an image in response
+      const base64Data = logoUrl.split(',')[1];  // Remove the metadata and extract base64 content
+      const imageBuffer = Buffer.from(base64Data, 'base64');  // Convert base64 to binary data
+
+      // Extract the MIME type and image extension from the data
+      const mimeType = logoUrl.split(';')[0].split(':')[1];
+      const ext = mimeType.split('/')[1];  // e.g., png, jpeg
+
+      // Set the appropriate content type in the response
+      res.set('Content-Type', mimeType);
+      res.set('Content-Length', imageBuffer.length);
+      return res.send(imageBuffer);  // Send the image as binary data
+    }
+
+    // If it's a regular URL, return the logo URL
     return res.json({
       status: true,
       message: 'Logo fetched successfully',
@@ -365,6 +342,8 @@ router.get('/web/logo', async (req, res) => {
     });
   }
 });
+
+
 
 router.get('/web/ipfind', async (req, res) => {
   try {
