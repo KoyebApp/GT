@@ -376,7 +376,6 @@ router.get('/base/:base', async (req, res) => {
   }
 });
 
-
 // Route to get the current time based on city or country name
 router.get('/time', async (req, res, next) => {
   const apikey = req.query.apikey;
@@ -389,8 +388,10 @@ router.get('/time', async (req, res, next) => {
   // Check if the API key is valid
   if (listkey.includes(apikey)) {
     try {
+      let lookup = [];
+
       // Step 1: Try to find the city by city name (lookupViaCity)
-      let lookup = cityTimezones.lookupViaCity(location);
+      lookup = cityTimezones.lookupViaCity(location);
       
       // Step 2: If no match, try cityMapping (search for city in the mapping)
       if (!lookup || lookup.length === 0) {
@@ -423,22 +424,14 @@ router.get('/time', async (req, res, next) => {
       // Get the time using the GetTime function (make sure GetTime function is available)
       const time = GetTime(location);  // Get the time using the GetTime function
 
-      // Return the full data including city info and time
+      // Return the full data, including city info and time
       res.json({
         status: true,
         code: 200,
         creator: `${creator}`,
         location: location,
         time: time, // Current time in the requested location
-        timezone: cityData.timezone,
-        city: cityData.city,
-        country: cityData.country,
-        province: cityData.province,
-        lat: cityData.lat,
-        lng: cityData.lng,
-        population: cityData.pop,
-        isoCode2: cityData.iso2,
-        isoCode3: cityData.iso3
+        cityData: cityData // Return the full city data
       });
 
     } catch (err) {
@@ -459,6 +452,7 @@ router.get('/time', async (req, res, next) => {
     });
   }
 });
+
 
 
 // Route to validate data
