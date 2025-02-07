@@ -193,6 +193,7 @@ router.delete("/apikey", async (req, res, next) => {
 const Spotify = require('./../lib/utils/Spotify');
 
 
+
 router.get('/web/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
   const custom = req.query.custom;  // Get the custom parameter from query parameter
@@ -230,6 +231,13 @@ router.get('/web/ulvis', async (req, res) => {
     const contentType = apiResponse.headers.get('Content-Type');
     if (!contentType || !contentType.includes('application/json')) {
       const errorDetails = await apiResponse.text(); // If not JSON, return the raw response
+      // If the response is plain HTML with the URL message, extract the URL from the HTML
+      if (errorDetails.includes('<body>')) {
+        const urlInBody = errorDetails.match(/<body>(.*?)<\/body>/);
+        const errorMessage = urlInBody ? `Custom name already taken. URL: ${urlInBody[1]}` : 'Unexpected error';
+        throw new Error(`Expected JSON, but got HTML. Response: ${errorMessage}`);
+      }
+      // If we can't extract a URL, simply return the raw HTML error message
       throw new Error(`Expected JSON, but got ${contentType}. Response: ${errorDetails}`);
     }
 
