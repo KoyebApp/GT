@@ -460,7 +460,7 @@ router.get('/time', async (req, res, next) => {
       // Get the time by city or country name using GetTime function
       let lookup = cityTimezones.lookupViaCity(location);
       if (!lookup || lookup.length === 0) {
-        lookup = cityTimezones.lookupViaCountry(location);
+        lookup = cityTimezones.cityMapping(location);
       }
 
       if (lookup.length === 0) {
