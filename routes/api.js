@@ -258,6 +258,82 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+router.get('/web/meta', async (req, res) => {
+  const url = req.query.url; // Get the URL from the query parameter
+
+  if (!url) {
+    return res.status(400).json({ status: false, message: 'URL is required' });
+  }
+
+  try {
+    // Step 1: Fetch the HTML content of the page
+    const htmlResponse = await axios.get(`https://microlink.io/meta?url=${url}`);
+
+    // Step 2: Load the HTML into Cheerio
+    const $ = cheerio.load(htmlResponse.data);
+
+    // Step 3: Extract metadata from the HTML
+    const metadata = {
+      lang: $('span.token.property:contains("lang")').next('span.token.string').text().replace(/"/g, ''),
+      author: $('span.token.property:contains("author")').next('span.token.null.keyword').text() || null,
+      title: $('span.token.property:contains("title")').next('span.token.string').text().replace(/"/g, ''),
+      publisher: $('span.token.property:contains("publisher")').next('span.token.string').text().replace(/"/g, ''),
+      image: {
+        url: $('span.token.property:contains("url")').next('span.token.string').text().replace(/"/g, ''),
+        type: $('span.token.property:contains("type")').next('span.token.string').text().replace(/"/g, ''),
+        size: parseInt($('span.token.property:contains("size")').next('span.token.number').text()),
+        height: parseInt($('span.token.property:contains("height")').next('span.token.number').text()),
+        width: parseInt($('span.token.property:contains("width")').next('span.token.number').text()),
+        size_pretty: $('span.token.property:contains("size_pretty")').next('span.token.string').text().replace(/"/g, ''),
+        palette: $('span.token.property:contains("palette")')
+          .next('span.token.punctuation')
+          .nextUntil('span.token.punctuation')
+          .map((i, el) => $(el).text().replace(/"/g, ''))
+          .get(),
+        background_color: $('span.token.property:contains("background_color")').next('span.token.string').text().replace(/"/g, ''),
+        color: $('span.token.property:contains("color")').next('span.token.string').text().replace(/"/g, ''),
+        alternative_color: $('span.token.property:contains("alternative_color")').next('span.token.string').text().replace(/"/g, ''),
+      },
+      date: $('span.token.property:contains("date")').next('span.token.string').text().replace(/"/g, ''),
+      url: $('span.token.property:contains("url")').next('span.token.string').text().replace(/"/g, ''),
+      description: $('span.token.property:contains("description")').next('span.token.string').text().replace(/"/g, ''),
+      audio: $('span.token.property:contains("audio")').next('span.token.null.keyword').text() || null,
+      logo: {
+        url: $('span.token.property:contains("url")').next('span.token.string').text().replace(/"/g, ''),
+        type: $('span.token.property:contains("type")').next('span.token.string').text().replace(/"/g, ''),
+        size: parseInt($('span.token.property:contains("size")').next('span.token.number').text()),
+        height: parseInt($('span.token.property:contains("height")').next('span.token.number').text()),
+        width: parseInt($('span.token.property:contains("width")').next('span.token.number').text()),
+        size_pretty: $('span.token.property:contains("size_pretty")').next('span.token.string').text().replace(/"/g, ''),
+        palette: $('span.token.property:contains("palette")')
+          .next('span.token.punctuation')
+          .nextUntil('span.token.punctuation')
+          .map((i, el) => $(el).text().replace(/"/g, ''))
+          .get(),
+        background_color: $('span.token.property:contains("background_color")').next('span.token.string').text().replace(/"/g, ''),
+        color: $('span.token.property:contains("color")').next('span.token.string').text().replace(/"/g, ''),
+        alternative_color: $('span.token.property:contains("alternative_color")').next('span.token.string').text().replace(/"/g, ''),
+      },
+      iframe: $('span.token.property:contains("iframe")').next('span.token.null.keyword').text() || null,
+      video: $('span.token.property:contains("video")').next('span.token.null.keyword').text() || null,
+    };
+
+    // Step 4: Return the metadata
+    return res.json({
+      status: true,
+      message: 'Metadata fetched successfully',
+      data: metadata,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: 'Error fetching metadata',
+      error: error.message,
+    });
+  }
+});
+
 router.get('/web/logo', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
 
