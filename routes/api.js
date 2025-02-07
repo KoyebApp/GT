@@ -5504,9 +5504,10 @@ router.get('/stalk/tiktok', async (req, res, next) => {
 
   try {
     const data = await Qasim.tiktokStalk(user);
+    console.log('Tiktok Stalk:', data);
     res.json({
       status: true,
-      data
+      result: data,
     });
   } catch (e) {
     res.json({
