@@ -5496,7 +5496,7 @@ router.get('/dalle', async (req, res, next) => {
 // TikTok stalk route
 router.get('/stalk/tiktok', async (req, res, next) => {
   const Apikey = req.query.apikey;
-  const user = req.query.username;
+  const user = req.query.user;
 
   if (!Apikey) return res.json(loghandler.notparam);
   if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
