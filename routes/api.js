@@ -258,6 +258,43 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+router.get('/web/logo', async (req, res) => {
+  const url = req.query.url; // Get the URL from the query parameter
+
+  if (!url) {
+    return res.json({ status: false, message: 'URL is required' });
+  }
+
+  try {
+    // Step 1: Fetch the HTML content of the page
+    const response = await axios.get(`https://microlink.io/logo?url=${url}`);
+
+    // Step 2: Load the HTML into Cheerio
+    const $ = cheerio.load(response.data);
+
+    // Step 3: Extract the logo URL from the <img> tag
+    const logoUrl = $('img.logo___StyledImage-sc-194yie9-1').attr('src');
+
+    if (!logoUrl) {
+      throw new Error('Logo not found');
+    }
+
+    // Step 4: Return the logo URL
+    return res.json({
+      status: true,
+      message: 'Logo fetched successfully',
+      logoUrl: logoUrl,
+    });
+
+  } catch (error) {
+    return res.json({
+      status: false,
+      message: 'Error fetching logo',
+      error: error.message,
+    });
+  }
+});
+
 router.get('/web/ipfind', async (req, res) => {
   try {
     // Step 1: Construct the URL with the IP address
