@@ -7,6 +7,7 @@ const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
 const validator = require('validator');
 const { search } = require('aptoide-scraper');
+const cityTimezones = require('city-timezones');
 const moment = require('moment-timezone');
 const cors = require('cors');
 const QRCode = require('qrcode');
@@ -97,6 +98,7 @@ var { Base, WPUser } = require('./../lib/utils/tools');
 var { Tiktok, FB, Joox } = require('./../lib/utils/downloader');
 var tebakGambar = require('./../lib/utils/tebakGambar');
 const uploadToImgur = require('./../lib/utils/Imgur');
+const { GetTime } = require('./../lib/utils/Time');  // Import the GetTime function
 const Get = require('./../lib/utils/Get');
 
 const creator = 'Qasim Ali 🦋';
@@ -441,49 +443,64 @@ router.get('/validate/data', (req, res) => {
   }
 });
 
-// Route to check the time of a given city or country
-router.get('/time/check', async (req, res) => {
-  const apikey = req.query.apikey; // API key
-  const location = req.query.location; // City or Country name
+
+
+// Route to get the current time based on city or country name
+router.get('/time', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const location = req.query.location;  // Location (city or country) to get the time for
 
   // Validate input parameters
-  if (!location) return res.json({ status: false, code: 400, message: 'Please provide a location.' });
-  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+  if (!location) return res.json(loghandler.nottext);  // Ensure 'location' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
-  }
+  if (listkey.includes(apikey)) {
+    try {
+      // Get the time by city or country name using GetTime function
+      let lookup = cityTimezones.lookupViaCity(location);
+      if (!lookup || lookup.length === 0) {
+        lookup = cityTimezones.lookupViaCountry(location);
+      }
 
-  try {
-    // Check if the location is a valid timezone
-    if (!moment.tz.zone(location)) {
-      return res.json({ status: false, code: 400, message: 'Invalid timezone or location.' });
-    }
+      if (lookup.length === 0) {
+        lookup = cityTimezones.findFromCityStateProvince(location);
+      }
 
-    // Get the current time for the specified location
-    const currentTime = moment().tz(location).format('YYYY-MM-DD HH:mm:ss');
+      if (lookup.length === 0) {
+        lookup = cityTimezones.findFromIsoCode(location);
+      }
 
-    // Send back the complete JSON response
-    res.json({
-      status: true,
-      code: 200,
-      creator: 'Qasim Ali🦋',
-      result: {
+      if (lookup.length === 0) {
+        return res.status(404).json({ status: false, message: `No timezone found for ${location}` });
+      }
+
+      const cityData = lookup[0];
+      const time = GetTime(location);  // Get the time using the GetTime function
+
+      // Return the full data including the city info and time
+      res.json({
+        status: true,
+        code: 200,
+        creator: `${creator}`,
         location: location,
-        currentTime: currentTime,
-        timezone: moment.tz(location).format('z'), // Timezone abbreviation (e.g., UTC, GMT, IST)
-        offset: moment.tz(location).utcOffset(), // UTC offset in minutes
-        dateTime: currentTime,
-      },
-    });
-  } catch (err) {
-    console.error('Error fetching time:', err);
-    res.json({
-      status: false,
-      code: 500,
-      message: 'Error fetching time.',
-    });
+        time: time, // Current time in the requested location
+        timezone: cityData.timezone,
+        city: cityData.city,
+        country: cityData.country,
+        province: cityData.province,
+        lat: cityData.lat,
+        lng: cityData.lng,
+        population: cityData.pop,
+        isoCode2: cityData.iso2,
+        isoCode3: cityData.iso3,
+      });
+    } catch (err) {
+      console.error("Error fetching time:", err);
+      res.json(loghandler.error);  // If an error occurs, send an error message
+    }
+  } else {
+    res.json(loghandler.invalidKey);  // If the API key is invalid
   }
 });
 
