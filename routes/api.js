@@ -259,55 +259,46 @@ router.get('/img/lexica', async (req, res) => {
 });
 
 
-router.get('/user-info', async (req, res) => {
-    const Apikey = req.query.apikey;
-    const user = req.query.user;  // Get the user query parameter
+router.get('/web/ipfind', async (req, res) => {
+  const ipAddress = req.query.ip; // Get the IP address from the query parameter
 
-    if (!Apikey) return res.json(loghandler.notparam);
-    if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
-    if (!user) return res.json({ status: false, message: "User parameter is missing." });
+  if (!ipAddress) {
+    return res.json({ status: false, message: 'IP address is required' });
+  }
 
-    try {
-        // Fetch data from the dynamic search URL for the user
-        const response = await axios.get(`https://urlebird.com/search/?q=${user}`, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-            }
-        });
-        const html = response.data;
+  try {
+    // Step 1: Construct the URL with the IP address
+    const url = `https://ipfind.io/ip-address-lookup/${ipAddress}`;
 
-        // Initialize cheerio to parse the HTML
-        const $ = cheerio.load(html);
+    // Step 2: Fetch the HTML content of the page
+    const response = await axios.get(url);
 
-        // Extract the relevant data using cheerio
-        const username = $('a.uri').attr('href').split('/').pop();  // Extract the username from the URL
-        const name = $('span').first().text().trim();  // Extract the name from the first span
-        const followers = $('span.followers').text().trim();  // Extract the followers count
+    // Step 3: Load the HTML response into Cheerio
+    const $ = cheerio.load(response.data);
 
-        // Send the response with the creator, status, and extracted data
-        res.json({
-            creator: `${creator}`,
-            status: true,
-            result: {
-                username,
-                name,
-                followers
-            }
-        });
+    // Step 4: Extract the data from the HTML
+    const data = {};
+    $('tbody tr').each((index, row) => {
+      const th = $(row).find('th').text().trim();
+      const td = $(row).find('td').text().trim();
+      data[th] = td;
+    });
 
-    } catch (error) {
-        // Log the error for debugging purposes
-        console.error("Error fetching user data:", error);
+    // Step 5: Return the extracted data
+    return res.json({
+      status: true,
+      message: 'Data fetched successfully',
+      data: data,
+    });
 
-        // Send the error response
-        res.json({
-            creator: `${creator}`,
-            status: false,
-            message: `Error fetching the data: ${error.message}`
-        });
-    }
+  } catch (error) {
+    return res.json({
+      status: false,
+      message: 'Error fetching data from ipfind.io',
+      error: error.message,
+    });
+  }
 });
-
 
 
 
