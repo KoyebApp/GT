@@ -290,58 +290,48 @@ router.get('/web/meta', async (req, res) => {
   }
 });
 
-router.get('/web/logo', async (req, res) => {
-  const url = req.query.url; // Get the URL from the query parameter
+router.get('/web/logo', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const url = req.query.url;
 
-  if (!url) {
-    return res.json({ status: false, message: 'URL is required' });
-  }
+  // Validate input parameters
+  if (!url) return res.json(loghandler.noturl);
+  if (!apikey) return res.json(loghandler.notparam);
 
-  try {
-    // Step 1: Fetch the HTML content of the page
-    const response = await axios.get(`https://microlink.io/logo?url=${url}`);
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Fetch the logo image from Microlink API
+      const response = await axios.get(`https://api.microlink.io/?url=${url}&palette=true&embed=logo.url`, {
+        responseType: 'arraybuffer',  // Important: to get the image as buffer
+      });
 
-    // Step 2: Load the HTML into Cheerio
-    const $ = cheerio.load(response.data);
+      // Extract the logo URL from the API response
+      const logoUrl = response.data.data.logo.url;
 
-    // Step 3: Extract the logo URL from the <img> tag
-    const logoUrl = $('img.logo___StyledImage-sc-194yie9-1').attr('src');
+      if (!logoUrl) {
+        return res.json({ status: false, message: 'Logo not found' });
+      }
 
-    if (!logoUrl) {
-      throw new Error('Logo not found');
+      // Fetch the actual image using the logo URL
+      const imageResponse = await axios.get(logoUrl, { responseType: 'arraybuffer' });
+
+      // Set the appropriate content-type for the image
+      const contentType = imageResponse.headers['content-type'];
+      res.set('Content-Type', contentType);
+      
+      // Send the image buffer in the response
+      return res.send(imageResponse.data);
+
+    } catch (err) {
+      console.error("Error fetching logo image:", err);
+      res.json(loghandler.error);
     }
-
-    // Step 4: Check if the logo URL is base64 encoded
-    if (logoUrl.startsWith('data:image')) {
-      // If it's base64, send it as an image in response
-      const base64Data = logoUrl.split(',')[1];  // Remove the metadata and extract base64 content
-      const imageBuffer = Buffer.from(base64Data, 'base64');  // Convert base64 to binary data
-
-      // Extract the MIME type and image extension from the data
-      const mimeType = logoUrl.split(';')[0].split(':')[1];
-      const ext = mimeType.split('/')[1];  // e.g., png, jpeg
-
-      // Set the appropriate content type in the response
-      res.set('Content-Type', mimeType);
-      res.set('Content-Length', imageBuffer.length);
-      return res.send(imageBuffer);  // Send the image as binary data
-    }
-
-    // If it's a regular URL, return the logo URL
-    return res.json({
-      status: true,
-      message: 'Logo fetched successfully',
-      logoUrl: logoUrl,
-    });
-
-  } catch (error) {
-    return res.json({
-      status: false,
-      message: 'Error fetching logo',
-      error: error.message,
-    });
+  } else {
+    res.json(loghandler.invalidKey);
   }
 });
+
 
 
 
