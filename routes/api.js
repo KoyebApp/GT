@@ -707,6 +707,45 @@ router.get('/web/screenshot', async (req, res) => {
   }
 });
 
+// Route to fetch a random quote or line from the Why.txt file
+router.get('/quotes/why', async (req, res) => {
+    const Apikey = req.query.apikey;
+
+    if (!Apikey) return res.json(loghandler.notparam);
+    if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
+
+    try {
+        // Fetch data from the raw URL of the Why.txt file
+        const response = await axios.get('https://raw.githubusercontent.com/GlobalTechInfo/Islamic-Database/main/TXT-DATA/Why.txt');
+        const data = response.data;
+
+        // Split data into lines and filter out empty lines
+        const whyQuotes = data.split('\n').filter(line => line.trim() !== '');
+
+        // Select a random quote/line from the "Why.txt" file
+        const randomWhyQuote = whyQuotes[Math.floor(Math.random() * whyQuotes.length)];
+
+        // Send the response with the creator, status, and random quote
+        res.json({
+            creator: `${creator}`,
+            status: true,
+            result: randomWhyQuote
+        });
+
+    } catch (error) {
+        // Log the error for debugging purposes
+        console.error("Error fetching Why.txt:", error);
+
+        // Send the error response
+        res.json({
+            creator: `${creator}`,
+            status: false,
+            message: `Error fetching the data: ${error.message}`
+        });
+    }
+});
+
+
 // Route to validate data
 router.get('/validate/data', (req, res) => {
   const apikey = req.query.apikey; // API key
