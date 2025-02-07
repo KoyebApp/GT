@@ -302,7 +302,7 @@ router.get('/web/logo', async (req, res, next) => {
   if (listkey.includes(apikey)) {
     try {
       // Fetch the logo image from Microlink API
-      const response = await axios.get(`https://api.microlink.io/?url=${url}&palette=true&embed=logo.url`, {
+      const response = await axios.get(`https://api.microlink.io/?url=${url}`, {
         responseType: 'arraybuffer',  // Important: to get the image as buffer
       });
 
