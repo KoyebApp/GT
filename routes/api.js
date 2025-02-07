@@ -258,6 +258,7 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+
 router.get('/web/meta', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
 
@@ -274,48 +275,40 @@ router.get('/web/meta', async (req, res) => {
 
     // Step 3: Extract metadata from the HTML
     const metadata = {
-      lang: $('span.token.property:contains("lang")').next('span.token.string').text().replace(/"/g, ''),
-      author: $('span.token.property:contains("author")').next('span.token.null.keyword').text() || null,
-      title: $('span.token.property:contains("title")').next('span.token.string').text().replace(/"/g, ''),
-      publisher: $('span.token.property:contains("publisher")').next('span.token.string').text().replace(/"/g, ''),
+      lang: $('meta[property="og:locale"]').attr('content') || '',
+      author: $('meta[name="author"]').attr('content') || null,
+      title: $('meta[property="og:title"]').attr('content') || $('title').text() || '',
+      publisher: $('meta[property="og:site_name"]').attr('content') || '',
       image: {
-        url: $('span.token.property:contains("url")').next('span.token.string').text().replace(/"/g, ''),
-        type: $('span.token.property:contains("type")').next('span.token.string').text().replace(/"/g, ''),
-        size: parseInt($('span.token.property:contains("size")').next('span.token.number').text()),
-        height: parseInt($('span.token.property:contains("height")').next('span.token.number').text()),
-        width: parseInt($('span.token.property:contains("width")').next('span.token.number').text()),
-        size_pretty: $('span.token.property:contains("size_pretty")').next('span.token.string').text().replace(/"/g, ''),
-        palette: $('span.token.property:contains("palette")')
-          .next('span.token.punctuation')
-          .nextUntil('span.token.punctuation')
-          .map((i, el) => $(el).text().replace(/"/g, ''))
-          .get(),
-        background_color: $('span.token.property:contains("background_color")').next('span.token.string').text().replace(/"/g, ''),
-        color: $('span.token.property:contains("color")').next('span.token.string').text().replace(/"/g, ''),
-        alternative_color: $('span.token.property:contains("alternative_color")').next('span.token.string').text().replace(/"/g, ''),
+        url: $('meta[property="og:image"]').attr('content') || '',
+        type: '', // You may need to extract this from the image URL or other meta tags
+        size: null, // You may need to fetch the image and calculate its size
+        height: parseInt($('meta[property="og:image:height"]').attr('content')) || null,
+        width: parseInt($('meta[property="og:image:width"]').attr('content')) || null,
+        size_pretty: '', // You may need to calculate this
+        palette: [], // You may need to use an external library to extract the palette
+        background_color: $('meta[name="theme-color"]').attr('content') || '',
+        color: '', // You may need to extract this from the page's CSS
+        alternative_color: '', // You may need to extract this from the page's CSS
       },
-      date: $('span.token.property:contains("date")').next('span.token.string').text().replace(/"/g, ''),
-      url: $('span.token.property:contains("url")').next('span.token.string').text().replace(/"/g, ''),
-      description: $('span.token.property:contains("description")').next('span.token.string').text().replace(/"/g, ''),
-      audio: $('span.token.property:contains("audio")').next('span.token.null.keyword').text() || null,
+      date: $('meta[property="article:published_time"]').attr('content') || '',
+      url: $('meta[property="og:url"]').attr('content') || url,
+      description: $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content') || '',
+      audio: null, // You may need to extract this from <audio> tags or meta tags
       logo: {
-        url: $('span.token.property:contains("url")').next('span.token.string').text().replace(/"/g, ''),
-        type: $('span.token.property:contains("type")').next('span.token.string').text().replace(/"/g, ''),
-        size: parseInt($('span.token.property:contains("size")').next('span.token.number').text()),
-        height: parseInt($('span.token.property:contains("height")').next('span.token.number').text()),
-        width: parseInt($('span.token.property:contains("width")').next('span.token.number').text()),
-        size_pretty: $('span.token.property:contains("size_pretty")').next('span.token.string').text().replace(/"/g, ''),
-        palette: $('span.token.property:contains("palette")')
-          .next('span.token.punctuation')
-          .nextUntil('span.token.punctuation')
-          .map((i, el) => $(el).text().replace(/"/g, ''))
-          .get(),
-        background_color: $('span.token.property:contains("background_color")').next('span.token.string').text().replace(/"/g, ''),
-        color: $('span.token.property:contains("color")').next('span.token.string').text().replace(/"/g, ''),
-        alternative_color: $('span.token.property:contains("alternative_color")').next('span.token.string').text().replace(/"/g, ''),
+        url: $('meta[property="og:logo"]').attr('content') || $('link[rel="icon"]').attr('href') || '',
+        type: '', // You may need to extract this from the logo URL
+        size: null, // You may need to fetch the logo and calculate its size
+        height: null, // You may need to fetch the logo and calculate its height
+        width: null, // You may need to fetch the logo and calculate its width
+        size_pretty: '', // You may need to calculate this
+        palette: [], // You may need to use an external library to extract the palette
+        background_color: '', // You may need to extract this from the logo
+        color: '', // You may need to extract this from the logo
+        alternative_color: '', // You may need to extract this from the logo
       },
-      iframe: $('span.token.property:contains("iframe")').next('span.token.null.keyword').text() || null,
-      video: $('span.token.property:contains("video")').next('span.token.null.keyword').text() || null,
+      iframe: null, // You may need to extract this from <iframe> tags
+      video: null, // You may need to extract this from <video> tags or meta tags
     };
 
     // Step 4: Return the metadata
@@ -332,7 +325,8 @@ router.get('/web/meta', async (req, res) => {
       error: error.message,
     });
   }
-});
+});      
+
 
 router.get('/web/logo', async (req, res) => {
   const url = req.query.url; // Get the URL from the query parameter
