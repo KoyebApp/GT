@@ -192,8 +192,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 const Spotify = require('./../lib/utils/Spotify');
 
-
-router.get('/short/ulvis', async (req, res) => {
+router.get('/web/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
   const custom = req.query.custom;  // Get the custom parameter from query parameter
   const apikey = req.query.apikey;  // Retrieve the API key
@@ -218,12 +217,19 @@ router.get('/short/ulvis', async (req, res) => {
     // Directly construct the URL without encoding
     const apiUrl = `https://ulvis.net/api.php?url=${url}&custom=${custom}`;
 
-    // Fetch the JSON response from the external API
+    // Fetch the response from the external API
     const apiResponse = await fetch(apiUrl);
 
     if (!apiResponse.ok) {
-      const errorDetails = await apiResponse.text();
+      const errorDetails = await apiResponse.text(); // Get the raw response text
       throw new Error(`Failed to fetch data from Ulvis. Status: ${apiResponse.status}, Error: ${errorDetails}`);
+    }
+
+    // Check if the response content type is JSON
+    const contentType = apiResponse.headers.get('Content-Type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const errorDetails = await apiResponse.text(); // If not JSON, return the raw response
+      throw new Error(`Expected JSON, but got ${contentType}. Response: ${errorDetails}`);
     }
 
     // Parse the JSON data from the response
