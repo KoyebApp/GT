@@ -301,28 +301,15 @@ router.get('/web/logo', async (req, res, next) => {
   // Check if the API key is valid
   if (listkey.includes(apikey)) {
     try {
-      // Fetch logo information from Microlink API
-      const response = await axios.get(`https://api.microlink.io/?url=${url}&palette=true&embed=logo.url`);
+      // Fetch the image directly from Microlink API
+      const response = await axios.get(`https://api.microlink.io/?url=${url}&palette=true&embed=logo.url`, { responseType: 'arraybuffer' });
 
-      // Log the full response to inspect the structure
-      console.log('Microlink API response:', response.data);
+      // Set the appropriate content-type for the image (likely PNG)
+      const contentType = response.headers['content-type'];
+      res.set('Content-Type', contentType);
 
-      // Ensure the logo field exists in the response data
-      if (response.data.data && response.data.data.logo && response.data.data.logo.url) {
-        const logoUrl = response.data.data.logo.url;
-
-        // Fetch the actual image using the logo URL
-        const imageResponse = await axios.get(logoUrl, { responseType: 'arraybuffer' });
-
-        // Set the appropriate content-type for the image
-        const contentType = imageResponse.headers['content-type'];
-        res.set('Content-Type', contentType);
-        
-        // Send the image buffer in the response
-        return res.send(imageResponse.data);
-      } else {
-        return res.json({ status: false, message: 'Logo not found in Microlink API response' });
-      }
+      // Send the image buffer in the response
+      return res.send(response.data);
 
     } catch (err) {
       console.error("Error fetching logo image:", err);
@@ -334,7 +321,7 @@ router.get('/web/logo', async (req, res, next) => {
 });
 
 
-router.get('/web/ipfind', async (req, res) => {
+router.get('/self/ip', async (req, res) => {
   try {
     // Step 1: Construct the URL with the IP address
     const url = `https://ipfind.io/ip-address-lookup`;
