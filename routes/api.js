@@ -317,6 +317,45 @@ router.get('/web/wyr', async (req, res) => {
   }
 });
 
+// Route to fetch a word's definition from the dictionary API
+router.get('/web/dictionary', async (req, res) => {
+  const word = req.query.word;
+
+  // Validate input parameter
+  if (!word) {
+    return res.json({
+      status: false,
+      message: 'Please provide a word to define.',
+    });
+  }
+
+  try {
+    // Fetch the word definition from the dictionary API
+    const response = await axios.get(`https://some-random-api.com/others/dictionary?word=${word}`);
+
+    // Check if the response contains the expected data
+    if (response.data && response.data.word && response.data.definition) {
+      // Return the word and its definition
+      return res.json({
+        status: true,
+        word: response.data.word,
+        definition: response.data.definition,
+      });
+    } else {
+      throw new Error('Invalid response format from dictionary API');
+    }
+
+  } catch (error) {
+    console.error('Error fetching word definition:', error.message);
+    return res.json({
+      status: false,
+      message: 'Error fetching word definition',
+      error: error.message,
+    });
+  }
+});
+
+
 
 
 // Route to fetch a screenshot with custom overlay color and hex
