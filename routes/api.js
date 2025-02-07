@@ -499,6 +499,48 @@ router.get('/time/check', async (req, res, next) => {
   }
 });
 
+// Route for searching JS libraries using cdnjs API
+router.get('/search/jslibrary', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const libraryName = req.query.library;  // Library name to search for
+
+  // Validate input parameters
+  if (!libraryName) return res.json({ status: false, message: "Library parameter is required." });
+  if (!apikey) return res.json({ status: false, message: "API key is required." });
+
+  // Validate API key
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: "Invalid API key." });
+  }
+
+  try {
+    // Construct the URL to search for the JS library
+    const searchUrl = `https://api.cdnjs.com/libraries/${encodeURIComponent(libraryName)}`;
+
+    // Fetch the data from cdnjs API
+    const response = await fetch(searchUrl);
+    
+    // If the response is not OK, return an error
+    if (!response.ok) {
+      return res.json({ status: false, message: `Library '${libraryName}' not found.` });
+    }
+
+    // Parse the JSON response from cdnjs
+    const libraryData = await response.json();
+
+    // Return the library data in the response
+    res.json({
+      status: true,
+      code: 200,
+      creator: `${creator}`,
+      result: libraryData  // Return the full library data
+    });
+
+  } catch (err) {
+    console.error("Error fetching library data:", err);
+    res.json({ status: false, message: "An error occurred while fetching the library data." });
+  }
+});
 
 
 // Route to validate data
