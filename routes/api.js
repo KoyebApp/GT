@@ -376,6 +376,7 @@ router.get('/base/:base', async (req, res) => {
   }
 });
 
+
 // Route to get the current time based on city or country name
 router.get('/time', async (req, res, next) => {
   const apikey = req.query.apikey;
@@ -418,20 +419,21 @@ router.get('/time', async (req, res, next) => {
         });
       }
 
-      // Use the first found city data (best match)
-      const cityData = lookup[0];
-      
-      // Get the time using the GetTime function (make sure GetTime function is available)
-      const time = GetTime(location);  // Get the time using the GetTime function
+      // Step 6: Process multiple city results if available (return all of them under "result")
+      const timeData = lookup.map(cityData => {
+        const time = GetTime(cityData.city);  // Get time using the city's name
+        return { 
+          ...cityData, // Return the full city data
+          time: time   // Attach time for each city
+        };
+      });
 
-      // Return the full data, including city info and time
+      // Return the full data under "result", including all available data (not predefined)
       res.json({
         status: true,
         code: 200,
         creator: `${creator}`,
-        location: location,
-        time: time, // Current time in the requested location
-        cityData: cityData // Return the full city data
+        result: timeData  // Return the entire data for each city, including time
       });
 
     } catch (err) {
