@@ -196,63 +196,48 @@ const Spotify = require('./../lib/utils/Spotify');
 
 router.get('/web/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
-  const custom = req.query.custom;  // Get the custom parameter from query parameter
-  const apikey = req.query.apikey;  // Retrieve the API key
 
   if (!url) {
-    return res.json({ status: false, message: 'Url is Required, Give URL' });
-  }
-
-  if (!custom) {
-    return res.json({ status: false, message: 'Custom parameter is Required' });
-  }
-
-  if (!apikey) {
-    return res.json({ status: false, message: 'API key is missing' });
-  }
-
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, message: 'Invalid API key' });
+    return res.json({ status: false, message: 'URL is required' });
   }
 
   try {
-    // Directly construct the URL without encoding
-    const apiUrl = `https://ulvis.net/api.php?url=${url}&custom=${custom}`;
+    // Construct the API URL
+    const apiUrl = `https://ulvis.net/api.php?url=${url}`;
 
-    // Fetch the response from the external API
+    // Fetch the response from the Ulvis API
     const apiResponse = await fetch(apiUrl);
 
     if (!apiResponse.ok) {
-      const errorDetails = await apiResponse.text(); // Get the raw response text
-      throw new Error(`Failed to fetch data from Ulvis. Status: ${apiResponse.status}, Error: ${errorDetails}`);
+      throw new Error('Failed to fetch data from Ulvis');
     }
 
-    // Check if the response content type is JSON
+    // Check if the response is HTML (instead of JSON)
     const contentType = apiResponse.headers.get('Content-Type');
     if (!contentType || !contentType.includes('application/json')) {
-      const errorDetails = await apiResponse.text(); // If not JSON, return the raw response
-      // If the response is plain HTML with the URL message, extract the URL from the HTML
-      if (errorDetails.includes('<body>')) {
-        const urlInBody = errorDetails.match(/<body>(.*?)<\/body>/);
-        const errorMessage = urlInBody ? `Custom name already taken. URL: ${urlInBody[1]}` : 'Unexpected error';
-        throw new Error(`Expected JSON, but got HTML. Response: ${errorMessage}`);
-      }
-      // If we can't extract a URL, simply return the raw HTML error message
-      throw new Error(`Expected JSON, but got ${contentType}. Response: ${errorDetails}`);
+      const errorDetails = await apiResponse.text(); // Get the raw response text
+      // Load the HTML response into Cheerio
+      const $ = cheerio.load(errorDetails);
+      const extractedUrl = $('body').text(); // Extract the URL from the <body> tag
+
+      // Return the extracted URL in the response
+      return res.json({
+        status: true,
+        message: 'URL extracted from HTML body',
+        url: extractedUrl, // The extracted URL from the body
+      });
     }
 
-    // Parse the JSON data from the response
+    // If the response is JSON (normal case)
     const jsonData = await apiResponse.json();
 
-    // Send the JSON data as the response
     return res.json({
       status: true,
       message: 'Data fetched successfully',
-      data: jsonData,
+      data: jsonData, // The actual JSON response from Ulvis
     });
 
   } catch (error) {
-    // Send the error message with a description of the issue
     return res.json({
       status: false,
       message: 'Error fetching data from Ulvis',
@@ -260,6 +245,7 @@ router.get('/web/ulvis', async (req, res) => {
     });
   }
 });
+
 
 
 
