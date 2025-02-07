@@ -18,7 +18,6 @@ const request = require('request');
 const { translate } = require('@vitalets/google-translate-api');
 const { Anime } = require('@shineiichijo/marika');
 const fs = require('fs');
-const webshot = require('webshot');
 const ffmpeg = require('fluent-ffmpeg');
 const mime = require('mime-types');
 const mega = require('megajs');
@@ -497,52 +496,6 @@ router.get('/time/check', async (req, res, next) => {
       message: "Invalid API key",
       creator: `${creator}`
     });
-  }
-});
-
-
-// Route for taking a screenshot of a webpage
-router.get('/mb/screenshot', async (req, res, next) => {
-  const apikey = req.query.apikey;
-  const url = req.query.url;
-
-  // Validate input parameters
-  if (!url) return res.json({ status: false, message: "URL parameter is required." });
-  if (!apikey) return res.json({ status: false, message: "API key is required." });
-
-  // Validate API key
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, message: "Invalid API key." });
-  }
-
-  try {
-    // Define the screenshot file path (temporarily stored)
-    const screenshotPath = path.join(__dirname, 'temp_screenshot.png');
-
-    // Capture the screenshot using webshot
-    webshot(url, screenshotPath, function(err) {
-      if (err) {
-        console.error("Error capturing screenshot:", err);
-        return res.json({ status: false, message: "Error capturing screenshot." });
-      }
-
-      // Once the screenshot is captured, send it as a response
-      res.sendFile(screenshotPath, (err) => {
-        if (err) {
-          console.error("Error sending screenshot:", err);
-        }
-
-        // Clean up the screenshot file after sending it
-        fs.unlink(screenshotPath, (err) => {
-          if (err) {
-            console.error("Error deleting screenshot file:", err);
-          }
-        });
-      });
-    });
-  } catch (err) {
-    console.error("Error during screenshot process:", err);
-    res.json({ status: false, message: "An error occurred while capturing the screenshot." });
   }
 });
 
