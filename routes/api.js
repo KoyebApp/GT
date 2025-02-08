@@ -484,25 +484,36 @@ router.get('/download/savefrom', async (req, res) => {
     if (!apikey) return res.json(loghandler.notparam);
 
     try {
-        // Step 1: Fetch the download page
+        console.log('Fetching download page...'); // Debug log
         const pageResponse = await axios.get('https://en1.savefrom.net/', {
             params: { url },
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             },
+            timeout: 10000, // Add a timeout of 10 seconds
         });
 
-        // Step 2: Parse the download link from the page
+        console.log('Page fetched successfully. Parsing HTML...'); // Debug log
         const $ = cheerio.load(pageResponse.data);
+
+        // Debug: Log the entire HTML to inspect the structure
+        // console.log(pageResponse.data);
+
         const downloadLink = $('a.link-download').attr('href');
 
         if (!downloadLink) {
+            console.error('Download link not found in the page.'); // Debug log
             return res.status(404).json({ error: 'Download link not found' });
         }
 
+        console.log('Download link found:', downloadLink); // Debug log
         res.json({ downloadLink });
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error('Error in /download/savefrom:', error.message); // Debug log
+        if (error.response) {
+            console.error('Response data:', error.response.data); // Debug log
+            console.error('Response status:', error.response.status); // Debug log
+        }
         res.status(500).json({ error: 'Failed to fetch download link' });
     }
 });
