@@ -520,7 +520,7 @@ router.get('/download/loader', async (req, res) => {
         const response = await axios.get('https://loader.to/ajax/download.php', {
             params: {
                 url: url,
-                format: 'mp4',
+                format: '360',
             },
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
