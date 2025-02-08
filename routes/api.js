@@ -528,13 +528,8 @@ router.get('/download/loader', async (req, res) => {
         });
 
         const { data } = response;
-        const downloadLink = data.download_url;
 
-        if (!downloadLink) {
-            return res.status(404).json({ error: 'Download link not found' });
-        }
-
-        res.json({ downloadLink });
+        res.json({ data });
     } catch (error) {
         console.error(error); // Log the error for debugging
         res.status(500).json({ error: 'Failed to fetch download link' });
