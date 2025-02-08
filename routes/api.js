@@ -499,7 +499,7 @@ router.get('/download/savefrom', async (req, res) => {
         // Debug: Log the entire HTML to inspect the structure
         // console.log(pageResponse.data);
 
-        const downloadLink = $('a.link-download').attr('href');
+        const downloadLink = $('div.download-button a').attr('href');
 
         if (!downloadLink) {
             console.error('Download link not found in the page.'); // Debug log
