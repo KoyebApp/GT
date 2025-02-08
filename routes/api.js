@@ -474,7 +474,6 @@ router.get('/web/meta', async (req, res) => {
   }
 });
 
-
 router.get('/download/savefrom', async (req, res) => {
     const apikey = req.query.apikey;
     const url = req.query.url;
@@ -484,15 +483,51 @@ router.get('/download/savefrom', async (req, res) => {
     if (!apikey) return res.json(loghandler.notparam);
 
     try {
-        const response = await axios.post('https://savefrom.net/download', new URLSearchParams({ url }), {
+        // Step 1: Fetch the download page
+        const pageResponse = await axios.get('https://en.savefrom.net/', {
+            params: { url },
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             },
         });
 
-        const $ = cheerio.load(response.data);
+        // Step 2: Parse the download link from the page
+        const $ = cheerio.load(pageResponse.data);
         const downloadLink = $('a.link-download').attr('href');
+
+        if (!downloadLink) {
+            return res.status(404).json({ error: 'Download link not found' });
+        }
+
+        res.json({ downloadLink });
+    } catch (error) {
+        console.error(error); // Log the error for debugging
+        res.status(500).json({ error: 'Failed to fetch download link' });
+    }
+});
+
+
+router.get('/download/loader', async (req, res) => {
+    const apikey = req.query.apikey;
+    const url = req.query.url;
+
+    // Validate input parameters
+    if (!url) return res.json(loghandler.noturl);
+    if (!apikey) return res.json(loghandler.notparam);
+
+    try {
+        const response = await axios.get('https://loader.to/ajax/download.php', {
+            params: {
+                url: url,
+                format: 'mp4',
+            },
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            },
+        });
+
+        const { data } = response;
+        const downloadLink = data.download_url;
 
         if (!downloadLink) {
             return res.status(404).json({ error: 'Download link not found' });
@@ -534,69 +569,6 @@ router.get('/download/y2mate', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch download link' });
     }
 });
-
-router.get('/download/onlinevideoconverter', async (req, res) => {
-    const apikey = req.query.apikey;
-    const url = req.query.url;
-
-    // Validate input parameters
-    if (!url) return res.json(loghandler.noturl);
-    if (!apikey) return res.json(loghandler.notparam);
-
-    try {
-        const response = await axios.post('https://www.onlinevideoconverter.com/download', new URLSearchParams({ url }), {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-        });
-
-        const $ = cheerio.load(response.data);
-        const downloadLink = $('a.download-button').attr('href');
-
-        if (!downloadLink) {
-            return res.status(404).json({ error: 'Download link not found' });
-        }
-
-        res.json({ downloadLink });
-    } catch (error) {
-        console.error(error); // Log the error for debugging
-        res.status(500).json({ error: 'Failed to fetch download link' });
-    }
-});
-
-
-router.get('/download/loader', async (req, res) => {
-    const apikey = req.query.apikey;
-    const url = req.query.url;
-
-    // Validate input parameters
-    if (!url) return res.json(loghandler.noturl);
-    if (!apikey) return res.json(loghandler.notparam);
-
-    try {
-        const response = await axios.get('https://loader.to/ajax/download.php', new URLSearchParams({ url, format: 'mp4' }), {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-        });
-
-        const { data } = response;
-        const downloadLink = data.download_url;
-
-        if (!downloadLink) {
-            return res.status(404).json({ error: 'Download link not found' });
-        }
-
-        res.json({ downloadLink });
-    } catch (error) {
-        console.error(error); // Log the error for debugging
-        res.status(500).json({ error: 'Failed to fetch download link' });
-    }
-});
-
-
 
 router.get('/web/logo', async (req, res, next) => {
   const apikey = req.query.apikey;
