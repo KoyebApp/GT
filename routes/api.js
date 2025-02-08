@@ -258,59 +258,6 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
-router.get('/download/load', async (req, res) => {
-    const apikey = req.query.apikey;
-    const url = req.query.url;
-
-    // Validate input parameters
-    if (!url) return res.json(loghandler.noturl);
-    if (!apikey) return res.json(loghandler.notparam);
-
-    try {
-        // Step 1: Fetch available formats
-        const formatResponse = await axios.get('https://loader.to/ajax/get Formats.php', {
-            params: { url },
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-        });
-
-        const { data: formats } = formatResponse;
-
-        // Step 2: Select the best available format
-        let selectedFormat = formats.find((f) => f.format === 'mp4'); // Try mp4 first
-        if (!selectedFormat) {
-            selectedFormat = formats[0]; // Fallback to the first available format
-        }
-
-        if (!selectedFormat) {
-            return res.status(404).json({ error: 'No available formats found' });
-        }
-
-        // Step 3: Fetch the download link for the selected format
-        const downloadResponse = await axios.get('https://loader.to/ajax/download.php', {
-            params: {
-                url: url,
-                format: selectedFormat.format,
-            },
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-        });
-
-        const { data: downloadData } = downloadResponse;
-        const downloadLink = downloadData.download_url;
-
-        if (!downloadLink) {
-            return res.status(404).json({ error: 'Download link not found' });
-        }
-
-        res.json({ downloadLink, format: selectedFormat.format });
-    } catch (error) {
-        console.error(error); // Log the error for debugging
-        res.status(500).json({ error: 'Failed to fetch download link' });
-    }
-});
 
 // Route to fetch a random pickup line from Popcat API
 router.get('/web/pickuplines', async (req, res) => {
@@ -538,7 +485,7 @@ router.get('/download/savefrom', async (req, res) => {
 
     try {
         // Step 1: Fetch the download page
-        const pageResponse = await axios.get('https://en.savefrom.net/', {
+        const pageResponse = await axios.get('https://en1.savefrom.net/', {
             params: { url },
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -609,6 +556,8 @@ router.get('/download/y2mate', async (req, res) => {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             },
         });
+
+      const $ = cheerio.load(response.data);
 
         const { data } = response;
         const downloadLink = data.links?.mp4?.['360p']?.url;
