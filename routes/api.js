@@ -575,7 +575,7 @@ router.get('/download/loader', async (req, res) => {
     if (!apikey) return res.json(loghandler.notparam);
 
     try {
-        const response = await axios.post('https://loader.to/ajax/download.php', new URLSearchParams({ url, format: 'mp4' }), {
+        const response = await axios.get('https://loader.to/ajax/download.php', new URLSearchParams({ url, format: 'mp4' }), {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
