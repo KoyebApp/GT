@@ -16,12 +16,13 @@
 </head>
 
 <body id="page-top">
+
   <div id="wrapper">
     <!-- Sidebar -->
     <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
         <div class="sidebar-brand-icon">
-        	<img src="img/logo/logo2.png">
+          <img src="img/logo/logo2.png">
         </div>
         <div class="sidebar-brand-text mx-3">API Qasim</div>
       </a>
@@ -29,64 +30,154 @@
       <li class="nav-item active">
         <a class="nav-link" href="../docs">
           <i class="fas fa-fw fa-code"></i>
-          <span>Home Page</span></a>
+          <span>Home Page</span>
+        </a>
       </li>
       <hr class="sidebar-divider">
       <div class="sidebar-heading">
         API Features
       </div>
+
+      <!-- Social Media API Button -->
       <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBootstrap"
-          aria-expanded="true" aria-controls="collapseBootstrap">
+        <a class="nav-link" href="#" id="socialMediaApiBtn">
           <i class="fas fa-download"></i>
           <span>Social Media API</span>
         </a>
-        <!-- Section to display the API list in the center -->
-<div id="apiSection" class="container mt-5" style="display:none;">
-    <h1 class="text-center">Social Media API Endpoints</h1>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>API Name</th>
-                    <th>Parameters</th>
-                    <th>Information</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Facebook Video</td>
-                    <td>url, apikey</td>
-                    <td>Download Facebook video</td>
-                    <td><a href="/api/download/fb?url=https://www.facebook.com/share/r/19D8ernAys/&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
-                </tr>
-                <tr>
-                    <td>Tiktok Video</td>
-                    <td>url, apikey</td>
-                    <td>Download Tiktok video</td>
-                    <td><a href="/api/download/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
-                </tr>
-                <tr>
-                    <td>Twitter Video</td>
-                    <td>url, apikey</td>
-                    <td>Download Twitter video</td>
-                    <td><a href="/api/download/twitter?url=https://x.com/__alaskri/status/1869290878164152823?t=kszcF0ksQJztifLRSGQL2g&s=19&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
-                </tr>
-                <tr>
-                    <td>Instagram Video</td>
-                    <td>url, apikey</td>
-                    <td>Download Instagram video</td>
-                    <td><a href="/api/download/igdl?url=https://www.instagram.com/p/CNtpwxuH5NK/?igshid=g26k5coikzwr&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
-                </tr>
-                <!-- Add more rows for each API endpoint -->
-            </tbody>
-        </table>
-    </div>
-</div>
-        
       </li>
+
+      <!-- Example: Another Section for Later -->
       <li class="nav-item">
+        <a class="nav-link" href="#" id="anotherApiBtn">
+          <i class="fas fa-cloud"></i>
+          <span>Another API</span>
+        </a>
+      </li>
+
+      <!-- Add more buttons for other sections here -->
+    </ul>
+
+    <!-- Placeholder for Social Media API Section -->
+    <div id="apiSection" class="container mt-5" style="display:none;">
+      <h1 class="text-center">Social Media API Endpoints</h1>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>API Name</th>
+              <th>Parameters</th>
+              <th>Information</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Facebook Video</td>
+              <td>url, apikey</td>
+              <td>Download Facebook video</td>
+              <td><a href="/api/download/fb?url=https://www.facebook.com/share/r/19D8ernAys/&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+            </tr>
+            <tr>
+              <td>Tiktok Video</td>
+              <td>url, apikey</td>
+              <td>Download Tiktok video</td>
+              <td><a href="/api/download/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+            </tr>
+            <tr>
+              <td>Twitter Video</td>
+              <td>url, apikey</td>
+              <td>Download Twitter video</td>
+              <td><a href="/api/download/twitter?url=https://x.com/__alaskri/status/1869290878164152823?t=kszcF0ksQJztifLRSGQL2g&s=19&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+            </tr>
+            <tr>
+              <td>Instagram Video</td>
+              <td>url, apikey</td>
+              <td>Download Instagram video</td>
+              <td><a href="/api/download/igdl?url=https://www.instagram.com/p/CNtpwxuH5NK/?igshid=g26k5coikzwr&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Placeholder for Another API Section -->
+    <div id="anotherApiSection" class="container mt-5" style="display:none;">
+      <h1 class="text-center">Another API Endpoints</h1>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>API Name</th>
+              <th>Parameters</th>
+              <th>Information</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Example API</td>
+              <td>param1, param2</td>
+              <td>Example action description</td>
+              <td><a href="/api/example" class="btn btn-primary" target="_blank">Try</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- You can add more sections like this below -->
+    <!-- Example: Another API Section for Future Use -->
+    <div id="yetAnotherApiSection" class="container mt-5" style="display:none;">
+      <h1 class="text-center">Yet Another API</h1>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>API Name</th>
+              <th>Parameters</th>
+              <th>Information</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sample API</td>
+              <td>url, apikey</td>
+              <td>Download sample content</td>
+              <td><a href="/api/sample" class="btn btn-primary" target="_blank">Try</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript to Handle Button Click Event -->
+  <script>
+    // Function to toggle visibility of the API sections
+    function toggleSection(sectionId) {
+      // Hide all sections
+      var sections = document.querySelectorAll('.container.mt-5');
+      sections.forEach(function(section) {
+        section.style.display = 'none';
+      });
+
+      // Show the selected section
+      var selectedSection = document.getElementById(sectionId);
+      selectedSection.style.display = 'block';
+    }
+
+    // Event Listeners for each button
+    document.getElementById("socialMediaApiBtn").addEventListener("click", function() {
+      toggleSection("apiSection");
+    });
+
+    document.getElementById("anotherApiBtn").addEventListener("click", function() {
+      toggleSection("anotherApiSection");
+    });
+
+    // Add more event listeners for other sections as you need
+     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVideo" aria-expanded="true"
           aria-controls="collapseVideo">
           <i class="fas fa-fw fa-video"></i>
