@@ -259,6 +259,44 @@ router.get('/img/lexica', async (req, res) => {
 });
 
 
+// Route to fetch GitHub-related data using the popcat.xyz API
+router.get('/image/github', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const text = req.query.text;  // Text or query parameter for GitHub
+
+  // Validate input parameters
+  if (!text) return res.json(loghandler.nottext);  // Ensure 'text' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Use axios to fetch data from the Popcat API
+      const response = await axios.get(`https://api.popcat.xyz/github/${encodeURIComponent(text)}`);
+      
+      // Ensure the response is OK (status 200)
+      if (response.status !== 200) {
+        return res.json({
+          status: false,
+          code: 500,
+          message: 'Error fetching GitHub data from Popcat API.',
+        });
+      }
+
+      // Send the response data directly
+      return res.json(response.data);
+
+    } catch (err) {
+      console.error("Error fetching GitHub data:", err);
+      return res.json(loghandler.error);
+    }
+  } else {
+    return res.json(loghandler.invalidKey);
+  }
+});
+
+
+
 // Route to fetch a random pickup line from Popcat API
 router.get('/web/pickuplines', async (req, res) => {
   const apikey = req.query.apikey;
