@@ -202,15 +202,6 @@ router.get('/download/mega', async (req, res, next) => {
   // Check if URL is provided
   if (!url) return res.json({ status: false, creator: `${creator}`, message: "Please provide the MEGA URL" });
 
-  // Validate the MEGA URL format
-  if (!url.includes('#')) {
-    return res.json({
-      status: false,
-      creator: `${creator}`,
-      message: "Invalid MEGA URL: The URL must include a '#' followed by the decryption key."
-    });
-  }
-
   try {
     // Log the URL for debugging
     console.log("Provided URL:", url);
