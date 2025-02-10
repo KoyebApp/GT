@@ -261,6 +261,11 @@ router.get('/img/lexica', async (req, res) => {
 
 // Route to fetch a random pickup line from Popcat API
 router.get('/web/pickuplines', async (req, res) => {
+  const apikey = req.query.apikey;
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
   
   if (listkey.includes(apikey)) {
   try {
