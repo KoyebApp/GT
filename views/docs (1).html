@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Rest API - Qasim</title>
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  
+  <link href="css/ruang-admin.min.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+        <div class="sidebar-brand-icon">
+        	<img src="img/logo/logo2.png">
+        </div>
+        <div class="sidebar-brand-text mx-3">API Qasim</div>
+      </a>
+      <hr class="sidebar-divider my-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="../docs">
+          <i class="fas fa-fw fa-code"></i>
+          <span>Home Page</span></a>
+      </li>
+      <hr class="sidebar-divider">
+      <div class="sidebar-heading">
+        API Features
+      </div>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBootstrap"
+          aria-expanded="true" aria-controls="collapseBootstrap">
+          <i class="fas fa-download"></i>
+          <span>Social Media API</span>
+        </a>
+        <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Media Features</h6>
+            <a class="collapse-item" href="/api/download/fb?url=https://www.facebook.com/share/r/19D8ernAys/&apikey=APIKEY">Facebook Video</a>
+            <a class="collapse-item" href="/api/video/fb?apikey=APIKEY&url=https://www.facebook.com/share/v/1GhECtKkPm/">Facebook Video2</a>
+            <a class="collapse-item" href="/api/dl/facebook?apikey=APIKEY&url=https://www.facebook.com/share/v/1GhECtKkPm/">Facebook Video3</a>
+            <a class="collapse-item" href="/api/download/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY">Tiktok Video</a>
+            <a class="collapse-item" href="/api/audio/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY">Tiktok MP3</a>
+            <a class="collapse-item" href="/api/download/twitter?url=https://x.com/__alaskri/status/1869290878164152823?t=kszcF0ksQJztifLRSGQL2g&s=19&apikey=APIKEY">Twitter DL</a>
+            <a class="collapse-item" href="/api/search/pinterest?query=technology&apikey=APIKEY">Pinterest DL</a>
+            <a class="collapse-item" href="/api/image/Wikimedia?title=ignite&apikey=APIKEY">Wikimedia DL</a>
+            <a class="collapse-item" href="/api/media/umma?url=https://www.ummamedia.co.za/2021/12/25/putin-insulting-prophet-muhammad-is-not-freedom-of-expression/&apikey=APIKEY">Mediauma DL</a>
+            <a class="collapse-item" href="/api/download/wallpaper?title=technology&apikey=APIKEY">Wallpaper DL</a>
+            <a class="collapse-item" href="/api/download/igdl?url=https://www.instagram.com/p/CNtpwxuH5NK/?igshid=g26k5coikzwr&apikey=APIKEY">Instagram DL</a>
+            <a class="collapse-item" href="/api/video/ig?apikey=APIKEY&url=https://www.instagram.com/reel/DFR3YLhRt4c/?igsh=OXh3eGhybjN5Y3N4">Instagram DL2</a>
+            <a class="collapse-item" href="/api/search/sticker?query=cats&apikey=APIKEY">Sticker DL</a>
+            <a class="collapse-item" href="/api/download/ytmp4?url=https://youtu.be/Nq5rzeJ5Ab4&apikey=APIKEY">YT Video</a>
+            <a class="collapse-item" href="/api//download/ytmp3?url=https://youtu.be/Nq5rzeJ5Ab4&apikey=APIKEY">YT Audio</a>
+            <a class="collapse-item" href="/api/search/yt?query=blue&apikey=APIKEY">YT Search</a>
+            <a class="collapse-item" href="/api/download/git?url=https://github.com/GlobalTechInfo/MEGA-AI&apikey=APIKEY">Git Clone</a>
+            <a class="collapse-item" href="/api/download/mediafire?url=https://www.mediafire.com/file/vk396efk7xz41ib/IMG-20241219-WA0007.jpg/file&apikey=APIKEY">Mediafire DL</a>
+            <h6 class="collapse-header">Stalker Features</h6>
+            <a class="collapse-item" href="/api/stalk/ig?apikey=APIKEY&username=truepakistanofficial">Instagram Stalk</a>
+            <a class="collapse-item" href="/api/stalk/tiktok?apikey=APIKEY&user=discoverpakistantv">Tiktok Stalk</a>
+            <a class="collapse-item" href="/api/stalk/npm?apikey=APIKEY&query=api-qasim">NPM Stalk</a>
+            <a class="collapse-item" href="/api/stalk/npm2?apikey=APIKEY&query=cheerio">NPM Stalk2</a>
+            <a class="collapse-item" href="/api/stalk/github?apikey=APIKEY&user=GlobalTechInfo">Github Stalk</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVideo" aria-expanded="true"
+          aria-controls="collapseVideo">
+          <i class="fas fa-fw fa-video"></i>
+          <span>Video Download</span>
+        </a>
+        <div id="collapseVideo" class="collapse" aria-labelledby="headingText" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Only Videos</h6>
+            <a class="collapse-item" href="/api/video/twitter?apikey=APIKEY&url=https://x.com/N0manPTI/status/1884415543182086151?s=19">Twitter Video</a>
+            <a class="collapse-item" href="/api/audio/yt?apikey=APIKEY&url=https://youtube.com/shorts/F5bQfU1rJ_Q?si=EQsTkJvWVhntfDFQ">YT Audio</a>
+            <a class="collapse-item" href="/api/video/yt?apikey=APIKEY&url=https://youtube.com/shorts/F5bQfU1rJ_Q?si=EQsTkJvWVhntfDFQ">YT Video</a>
+            <a class="collapse-item" href="/api/video/likee?apikey=APIKEY&url=https://l.likee.video/v/qCY0bf">Likee Video</a>
+            <a class="collapse-item" href="/api/video/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY">Tiktok Video</a>
+            <a class="collapse-item" href="/api/dl/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY">Tiktok Video2</a>
+            <a class="collapse-item" href="/api/dl/instagram?apikey=APIKEY&url=https://www.instagram.com/reel/DFR3YLhRt4c/?igsh=OXh3eGhybjN5Y3N4">Instagram</a>
+            <a class="collapse-item" href="/api/video/gdrive?apikey=APIKEY&url=https://drive.google.com/file/d/18a7rQBLTPmghCFxBMuOa7QTZG6J1uEha/view?usp=drivesdk">Gdrive Video</a>
+            <a class="collapse-item" href="/api/video/threads?apikey=APIKEY&url=https://www.threads.net/@ok__munda_/post/DFZ3DquNa3O?xmt=AQGz-lEcAlE1n6AFe6vTIohrEmFXrDJrfnsHRtPkIF26uA">Threads Video</a>
+            <a class="collapse-item" href="/api/video/pinterest?apikey=APIKEY&url=https://pin.it/3tD9lNPFc">Pinterest Video</a>
+            </div>
+            </div>
+      </li>
+      
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMusic" aria-expanded="true"
+          aria-controls="collapseMusic">
+          <i class="fas fa-music"></i>
+          <span>Music Api</span>
+        </a>
+        <div id="collapseMusic" class="collapse" aria-labelledby="headingMusic" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Music  API</h6>
+            <a class="collapse-item" href="/api/search/itunes?apikey=APIKEY&name=nokia">Itunes Search</a>
+            <a class="collapse-item" href="/api/music/joox?apikey=APIKEY&query=monolog pamungkas">Joox Download</a>
+            <a class="collapse-item" href="/api/download/ringtone?title=nokia&apikey=APIKEY">Ringtone Download</a>
+            <a class="collapse-item" href="/api/music/spotify?apikey=APIKEY&query=blue">Spotify Search</a>
+      <a class="collapse-item" href="/api/music/lyrics?query=sayang&apikey=APIKEY">Lyrics Search</a>
+            </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseIslamic" aria-expanded="true"
+          aria-controls="collapseIslamic">
+          <i class="fas fa-star-and-crescent"></i>
+          <span>Islamic Features</span>
+        </a>
+        <div id="collapseIslamic" class="collapse" aria-labelledby="headingIslamic" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Islamic  API</h6>
+            <a class="collapse-item" href="/api/muslim/quran?surah=1&ayat=2&apikey=APIKEY">Al-Quran</a>
+            <a class="collapse-item" href="/api/muslim/hadits?kitab=bukhari&nomor=52&apikey=APIKEY">Hadith Sahih</a>
+            <a class="collapse-item" href="/api/muslim/asmaulhusna?apikey=APIKEY">Asma-ul-Husna</a>
+            <a class="collapse-item" href="/api/muslim/tahlil?apikey=APIKEY">Tahlil</a>
+            <a class="collapse-item" href="/api/muslim/wirid?apikey=APIKEY">Wirid</a>
+            <a class="collapse-item" href="/api/muslim/ayatkursi?apikey=APIKEY">Ayat-ul-Kursi</a>
+            <a class="collapse-item" href="/api/muslim/doaharian?apikey=APIKEY">Doaharian</a>
+            <a class="collapse-item" href="/api/muslim/bacaanshalat?apikey=APIKEY">Bacaan Prayer</a>
+            <a class="collapse-item" href="/api/muslim/niatshalat?apikey=APIKEY">Prayer Niat</a>
+            <a class="collapse-item" href="/api/muslim/niatshubuh?apikey=APIKEY">Fajar Niat</a>
+            <a class="collapse-item" href="/api/muslim/niatdzuhur?apikey=APIKEY">Dzuhur Niat</a>
+            <a class="collapse-item" href="/api/muslim/niatashar?apikey=APIKEY">Asar Niat</a>
+            <a class="collapse-item" href="/api/muslim/niatmaghrib?apikey=APIKEY">Maghrib Niat</a>
+            <a class="collapse-item" href="/api/muslim/niatisha?apikey=APIKEY">Isha Niat</a>
+            <a class="collapse-item" href="/api/muslim/kisahnabi?nabi=muhammad&apikey=APIKEY">Prophet Info</a>
+          </div>
+        </div>
+      </li>
+       <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseWallpaper" aria-expanded="true"
+          aria-controls="collapseKodepos">
+          <i class="fas fa-image"></i>
+          <span>Random Wallpaper</span>
+        </a>
+        <div id="collapseWallpaper" class="collapse" aria-labelledby="headingKodepos" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Random Image API</h6>
+            <a class="collapse-item" href="/api//search/pinterest?query=technology&apikey=APIKEY">Pinterest</a> 
+             <a class="collapse-item" href="/api/wallpaper/teknologi?apikey=APIKEY">Technology</a>
+            <a class="collapse-item" href="/api/wallpaper/programming?apikey=APIKEY">Programming</a>
+            <a class="collapse-item" href="/api/wallpaper/cyberspace?apikey=APIKEY">CyberSpace</a>
+            <a class="collapse-item" href="/api/image/game?apikey=APIKEY">Game WallP</a>
+            <a class="collapse-item" href="/api/wallpaper/muslim?apikey=APIKEY">Muslim</a>
+            <a class="collapse-item" href="/api/wallpaper/pegunungan?apikey=APIKEY">Mountain</a>
+            <a class="collapse-item" href="api/image/messi?apikey=APIKEY">Messi</a>
+            <a class="collapse-item" href="api/image/cr7?apikey=APIKEY">Ronaldo</a>
+            <a class="collapse-item" href="/api/maker/dadu?apikey=APIKEY">DADU</a>
+            <h6 class="collapse-header">Time Line API</h6>
+            <a class="collapse-item" href="/api/asupan?apikey=APIKEY">Random Asupan</a>
+             </div>
+            </div>
+            </li>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMaker" aria-expanded="true"
+          aria-controls="collapseMaker">
+          <i class="fas fa-fw fa-images"></i>
+          <span>Image Maker API</span>
+        </a>
+        <div id="collapseMaker" class="collapse" aria-labelledby="headingText" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">All-In-One</h6>
+            <a class="collapse-item" href="/api/image/quote?apikey=APIKEY&text=API-QASIM&text2=GlobalTechInfo">Image Maker</a>
+            <h6 class="collapse-header">Memes-Maker</h6>
+            <a class="collapse-item" href="/api/image/drake?text1=Other API&text2=API Qasim&apikey=APIKEY">Meme Drake</a>
+            <a class="collapse-item" href="/api/image/biden?text=API Qasim&apikey=APIKEY">Biden Tweet</a>
+            <a class="collapse-item" href="/api/image/alert?text=New Notification&apikey=APIKEY">Iphone Alert</a>
+            <a class="collapse-item" href="/api/image/caution?text=Sharp Curve Ahead&apikey=APIKEY">Caution</a>
+            </div>
+            </div>
+        </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEphoto" aria-expanded="true"
+          aria-controls="collapseEphoto">
+          <i class="fas fa-fw fa-camera"></i>
+          <span>Ephoto 360 API</span>
+        </a>
+        <div id="collapseEphoto" class="collapse" aria-labelledby="headingText" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Ephoto 360</h6>
+            <a class="collapse-item" href="/api/ephoto/foggy?text=API QASIM&apikey=APIKEY">Foggy Glass</a>
+            <a class="collapse-item" href="/api/ephoto/mascot?text=API QASIM&apikey=APIKEY">Mascot Logo</a>
+            <a class="collapse-item" href="/api/ephoto/galaxy?text=API QASIM&apikey=APIKEY">Galaxy Style</a>
+            <a class="collapse-item" href="/api/ephoto/golden?text=API QASIM&apikey=APIKEY">Gold Letter</a>
+            <a class="collapse-item" href="/api/ephoto/wgalaxy?text=API QASIM&apikey=APIKEY">Write Galaxy</a>
+            <a class="collapse-item" href="/api/ephoto/mettalic?text=API QASIM&apikey=APIKEY">Metallic Text</a>
+            <a class="collapse-item" href="/api/ephoto/gradient?text=API QASIM&apikey=APIKEY">3D Gradient</a>
+            <a class="collapse-item" href="/api/ephoto/snake?text=API QASIM&apikey=APIKEY">Snake Effect</a>
+            <a class="collapse-item" href="/api/ephoto/metal?text=API QASIM&apikey=APIKEY">Metal Text</a>
+            <a class="collapse-item" href="/api/ephoto/3dsilver?text=API QASIM&apikey=APIKEY">3D Silver</a>
+            <a class="collapse-item" href="/api/ephoto/jewel?text=API QASIM&apikey=APIKEY">Jewel Effect</a>
+            <a class="collapse-item" href="/api/ephoto/blackpink?text=API QASIM&apikey=APIKEY">Black Pink</a>
+            <a class="collapse-item" href="/api/ephoto/cubic?text=API QASIM&apikey=APIKEY">3D Cubic</a>
+            <a class="collapse-item" href="/api/ephoto/sand?text=API QASIM&apikey=APIKEY">Sand Text</a>
+            <a class="collapse-item" href="/api/ephoto/nigeria?text=API QASIM&apikey=APIKEY">Nigeria Flag</a>
+            <a class="collapse-item" href="/api/ephoto/gaming?text=API QASIM&apikey=APIKEY">Gaming Logo</a>
+            <a class="collapse-item" href="/api/ephoto/gold?text=API QASIM&apikey=APIKEY">Gold Pro</a>
+            <a class="collapse-item" href="/api/ephoto/paintsplat?text=API QASIM&apikey=APIKEY">Paint Splatter</a>
+            <a class="collapse-item" href="/api/ephoto/colorful?text=API QASIM&apikey=APIKEY">3D Colourful</a>
+            <a class="collapse-item" href="/api/ephoto/matrix?text=API QASIM&apikey=APIKEY">Matrix Text</a>
+            <a class="collapse-item" href="/api/ephoto/angelwing?text=API QASIM&apikey=APIKEY">Angel Wings</a>
+            <a class="collapse-item" href="/api/ephoto/papercut?text=API QASIM&apikey=APIKEY">Paper Cut</a>
+            <a class="collapse-item" href="/api/ephoto/hacker?text=API QASIM&apikey=APIKEY">Anonymous Hacker</a>
+            <a class="collapse-item" href="/api/ephoto/ballon?text=API QASIM&apikey=APIKEY">Foil Balloon</a>
+            <a class="collapse-item" href="/api/ephoto/gsilver?text=API QASIM&apikey=APIKEY">Glossy Silver</a>
+            <a class="collapse-item" href="/api/ephoto/galaxy2?text=API QASIM&apikey=APIKEY">Galaxy Text</a>
+            <a class="collapse-item" href="/api/ephoto/circlemascot?text=API QASIM&apikey=APIKEY">Circle Logo</a>
+            <a class="collapse-item" href="/api/ephoto/typography?text=API QASIM&apikey=APIKEY">Typography Art</a>
+            <a class="collapse-item" href="/api/ephoto/star?text=API QASIM&apikey=APIKEY">Metal Star</a>
+            </div>
+            </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseApk" aria-expanded="true"
+          aria-controls="collapseApk">
+          <i class="fas fa-star"></i>
+          <span>Apk Search</span>
+        </a>
+        <div id="collapseApk" class="collapse" aria-labelledby="headingText" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <a class="collapse-item" href="/api/apk/happymod?query=Picsart&apikey=APIKEY">HappyMod</a>
+            <a class="collapse-item" href="/api/playstore?query=Facebook&apikey=APIKEY">PlayStore</a>
+            <a class="collapse-item" href="/api/apkmirror?query=Telegram&apikey=APIKEY">ApkMirror</a>
+            <a class="collapse-item" href="/api/androidapk?query=WhatsApp&apikey=APIKEY">Android1</a>
+            <a class="collapse-item" href="/api/aptoide/search?query=Instagram&apikey=APIKEY">Aptoide</a>
+            <a class="collapse-item" href="/api/apk/steam?q=Minecraft&apikey=APIKEY">Steam</a>
+            </div>
+            </div>
+      </li>
+      <li class="nav-item">
+  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRandom"
+    aria-expanded="true" aria-controls="#collapseRandom">
+    <i class="fas fa-robot"></i>
+    <span>AI Features</span>
+  </a>
+  <div id="collapseRandom" class="collapse" aria-labelledby="headingWhatsapp" data-parent="#accordionSidebar">
+    <div class="bg-white py-2 collapse-inner rounded">
+      <h6 class="collapse-header">AI Features</h6>
+      <a class="collapse-item" href="/api/civit/models?text=1&apikey=APIKEY">Civit Models</a>
+      <a class="collapse-item" href="/api/civit/images?text=1&apikey=APIKEY">Civit Images</a>
+      <a class="collapse-item" href="/api/civit/creators?text=1&apikey=APIKEY">Civit Creators</a>
+      <a class="collapse-item" href="/api/civit/tags?text=1&apikey=APIKEY">Civit Tags</a>
+      <a class="collapse-item" href="/api/dalle?prompt=a black horse&apikey=APIKEY">Dall-E Art</a>
+      <a class="collapse-item" href="/api/lexica?prompt=a black dog&apikey=APIKEY">Lexica Art</a>
+      <a class="collapse-item" href="/api/llama?question=Do you knows about Pakistan&apikey=APIKEY">Llama</a>
+      <a class="collapse-item" href="/api/gpt?text=Do You Know About Pakistan&apikey=APIKEY">ChatGpt</a>
+    </div>
+  </div>
+      </li>
+      
+      
+      <li class="nav-item">
+  <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSearchAPI"
+    aria-expanded="true" aria-controls="#collapseSearchAPI">
+    <i class="fas fa-search"></i>
+    <span>Search API</span>
+  </a>
+  <div id="collapseSearchAPI" class="collapse" aria-labelledby="headingSearchAPI" data-parent="#accordionSidebar">
+    <div class="bg-white py-2 collapse-inner rounded">
+      <h6 class="collapse-header">Search API</h6>
+      <a class="collapse-item" href="/api/search/wattpad?query=Japan&apikey=APIKEY">Wattpad Search</a>
+      <a class="collapse-item" href="/api/download/webtoons?query=sky&apikey=APIKEY">Webtoons Search</a>
+      <a class="collapse-item" href="/api/download/gimage?query=Nature&apikey=APIKEY">Google Image</a>
+      <a class="collapse-item" href="/api/search/itunes?apikey=APIKEY&name=nokia">Itunes Search</a>
+      <a class="collapse-item" href="/api/mangatoon?name=akira&apikey=APIKEY">Manga Search</a>
+      <a class="collapse-item" href="/api/search/reddit?name=GlobalTech&apikey=APIKEY">Reddit Search</a>
+      <a class="collapse-item" href="/api/tech/news?apikey=APIKEY">Tech News</a>
+    </div>
+  </div>
+      </li>
+      
+      
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseQuotes"
+          aria-expanded="true" aria-controls="collapseQuotes">
+          <i class="fas fa-random"></i>
+          <span>Quotes API</span>
+        </a>
+        <div id="collapseQuotes" class="collapse" aria-labelledby="headingGithub" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Random API</h6>
+            <a class="collapse-item" href="/api/quotes/islamic?apikey=APIKEY">Islamic Quotes</a>
+            <a class="collapse-item" href="/api/quotes/anime?apikey=APIKEY">Quotes Anime</a>
+            <a class="collapse-item" href="/api/quotes/funfacts?apikey=APIKEY">Fun Facts</a>
+            <a class="collapse-item" href="/api/quotes/motivational?apikey=APIKEY">Motivational</a>
+            <a class="collapse-item" href="/api/quotes/programming?apikey=APIKEY">Programming</a>
+            <a class="collapse-item" href="/api/quotes/techtips?apikey=APIKEY">Tech Tips</a>
+            <a class="collapse-item" href="/api/quotes/lifehacks?apikey=APIKEY">Life Hacks</a>
+            <a class="collapse-item" href="/api/quotes/pickupline?apikey=APIKEY">Pickup Line</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAnime" aria-expanded="true"
+          aria-controls="collapseAnime">
+          <i class="fas fa-cat"></i>
+          <span>Anime Image API</span>
+        </a>
+        <div id="collapseAnime" class="collapse" aria-labelledby="headingAnime" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Manga Features</h6>
+            <a class="collapse-item" href="/api/anime/akira?apikey=APIKEY">Akira</a>
+            <a class="collapse-item" href="/api/anime/akiyama?apikey=APIKEY">Akiyama</a>
+            <a class="collapse-item" href="/api/anime/anna?apikey=APIKEY">Anna</a>
+            <a class="collapse-item" href="/api/anime/cosplay?apikey=APIKEY">Cosplay</a>
+            <a class="collapse-item" href="/api/anime/eba?apikey=APIKEY">Eba</a>
+            <a class="collapse-item" href="/api/anime/elaina?apikey=APIKEY">Elaina</a>
+            <a class="collapse-item" href="/api/anime/erza?apikey=APIKEY">Erza</a>
+            <a class="collapse-item" href="/api/anime/emilia?apikey=APIKEY">Emilia</a>
+            <a class="collapse-item" href="/api/anime/chiho?apikey=APIKEY">Chiho</a>
+            <a class="collapse-item" href="/api/anime/itachi?apikey=APIKEY">Itachi</a>
+            <a class="collapse-item" href="/api/anime/miku?apikey=APIKEY">Miku</a>
+            <a class="collapse-item" href="/api/anime/nezuko?apikey=APIKEY">Nezuko</a>
+            <a class="collapse-item" href="/api/anime/hentai?apikey=APIKEY">Hentai</a>
+            <a class="collapse-item" href="/api/anime/sagiri?apikey=APIKEY">Sagiri</a>
+            <a class="collapse-item" href="/api/anime/mikasa?apikey=APIKEY">Mikasa</a>
+            <a class="collapse-item" href="/api/anime/sasuke?apikey=APIKEY">Sasuke</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseGames" aria-expanded="true" aria-controls="collapseForm">
+          <i class="fas fa-laugh-beam"></i>
+           <span>Fun API</span>
+       </a>
+      <div id="collapseGames" class="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
+       <div class="py-2 collapse-inner rounded">
+         <h6 class="collapse-header">Fun Features</h6>
+            <a class="collapse-item" href="/api/kuis/quiz?apikey=APIKEY">QuizWiz</a>
+         <a class="collapse-item" href="/api/quotes/joke?apikey=APIKEY">Jokes</a>
+         </div>
+         </div>
+        </li>
+       <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseItem" aria-expanded="true" aria-controls="collapseForm">
+          <i class="fas fa-wrench"></i>
+           <span>Tools API</span>
+       </a>
+      <div id="collapseItem" class="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
+       <div class="py-2 collapse-inner rounded">
+         <h6 class="collapse-header">Tools Features</h6>
+         <a class="collapse-item" href="/api/text/style?teks=Qasim&apikey=APIKEY">Fancy Text</a>
+         <a class="collapse-item" href="/api/text/morse/?text=GlobalTech&apikey=APIKEY">Morse Text</a>
+         <a class="collapse-item" href="/api/text/reverse?text=GlobalTech&apikey=APIKEY">Reverse Text</a>
+         <a class="collapse-item" href="/api/translate?lang=id&text=Love You All&apikey=APIKEY">Translate</a>
+         <a class="collapse-item" href="/api/image/code?apikey=APIKEY&code=const Qasim = require('api-qasim')">Code Image</a>
+         <a class="collapse-item" href="/api/tools/define?apikey=APIKEY&word=Palestine">Define Word</a>
+         <a class="collapse-item" href="/api/web/screenshot?url=https://github.com/GlobalTechInfo&apikey=APIKEY">SS Mobile</a>
+         <a class="collapse-item" href="/api/pc/screenshot?url=https://github.com/GlobalTechInfo&apikey=APIKEY">SS Computer</a>
+         <a class="collapse-item" href="/api/generate/qr?text=some text here&apikey=APIKEY">Make QR</a>
+            <a class="collapse-item" href="/api/short/tinyurl?url=https://google.com&apikey=APIKEY">Tiny Url</a>
+         <a class="collapse-item" href="/api/short/bitly?apikey=APIKEY&url=https://github.com">Bitly Url</a>
+         <h6 class="collapse-header">Encrypt Tools</h6>
+         <a class="collapse-item" href="/api/encode/binary?text=Qasim&apikey=APIKEY">Binary Encrypt</a>
+            <a class="collapse-item" href="/api/base?apikey=APIKEY&type=base64&encode=QasimApis">Base64 Encrypt</a>
+            <a class="collapse-item" href="/api/base?apikey=APIKEY&type=base32&encode=QasimApis">Base32 Encrypt</a>
+         <h6 class="collapse-header">Decrypt Tools</h6>
+         <a class="collapse-item" href="/api/decode/binary?text=0111000101100001011100110110100101101101&apikey=APIKEY">Binary Decrypt</a>
+            <a class="collapse-item" href="/api/base?apikey=APIKEY&type=base64&decode=UWFzaW1BcGlz">Base64 Decrypt</a>
+            <a class="collapse-item" href="/api/base?apikey=APIKEY&type=base32&decode=a5gq6ubd85r6jwr">Base32 Decrypt</a>
+         </div>
+         </div>
+        </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseInfo" aria-expanded="true"
+          aria-controls="collapseother">
+          <i class="fas fa-info"></i>
+          <span>Info API</span>
+        </a>
+        <div id="collapseInfo" class="collapse" aria-labelledby="headingother" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Information</h6>
+            <a class="collapse-item" href="/api/twitter/trends?country=Pakistan&apikey=APIKEY">Trends Info</a>
+            <a class="collapse-item" href="/api/anime/info?query=akira&apikey=APIKEY">Anime Info</a>
+            <a class="collapse-item" href="/api/hex/color?color=ffcc99&apikey=APIKEY">HexColor Info</a>
+            <a class="collapse-item" href="/api/info/movie?title=game of thrones&apikey=APIKEY">Movie Info</a>
+            <a class="collapse-item" href="/api/info/weather?apikey=APIKEY&city=Karachi">Weather Info</a>
+            <a class="collapse-item" href="/api/info/npm?query=axios&apikey=APIKEY">NPM Info</a>
+            <a class="collapse-item" href="/api/meaning/name?name=John&apikey=APIKEY">Name Info</a>
+            <a class="collapse-item" href="/api/info/covidworld?apikey=APIKEY">Covid Info</a>
+            <a class="collapse-item" href="/api/search/wiki?query=Pakistan&apikey=APIKEY">Wikipedia</a>
+          </div>
+        </div>
+      </li>
+      <hr class="sidebar-divider">
+      <div class="sidebar-heading">
+<div class="version"><b>Contact me</b></div>
+      </div>
+      <li class="nav-item">
+            <a class="nav-link collapsed" href="https://wa.me/923444844060">
+            <i class="fab fa-fw fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link collapsed" href="https://github.com/GlobalTechInfo">
+            <i class="fab fa-fw fa-github"></i>
+                    <span>Github</span>
+            </a>
+      </li>
+      <li class="nav-item">
+            <a class="nav-link collapsed" href="https://t.me/GlobalTechOwner">
+            <i class="fab fa-fw fa-telegram"></i>
+                    <span>Telegram</span>
+            </a>
+      </li>
+      <hr class="sidebar-divider">
+      <div class="version"><b>Made With ♥️ By Qasim Ali</b></div>
+    </ul>
+    <!-- Sidebar -->
+      <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav class="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top">
+          <button id="sidebarToggleTop" class="btn btn-link rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown no-arrow">
+              
+              </a>
+              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                aria-labelledby="searchDropdown">
+                <form class="navbar-search">
+                  <div class="input-group">
+                    <input type="text" class="form-control bg-light border-1 small" placeholder="Search for..."
+                      aria-label="Search" aria-describedby="basic-addon2" style="border-color: #6a5acd;">
+                    <div class="input-group-append">
+                      <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </li> 
+            <li class="nav-item dropdown no-arrow mx-1">
+              <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+              </a>
+              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="messagesDropdown">
+              </div>
+            </li>
+            <div class="topbar-divider d-none d-sm-block"></div>
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <img class="img-profile rounded-circle" src="https://i.ibb.co/MD7NFfN/Photo-Room-20240923-221819.png" style="max-width: 60px">
+                <span class="ml-2 d-none d-lg-inline text-white small">Qasim</span>
+              </a>
+              </div>
+            </li>
+          </ul>
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+             <h1 class="text-xs font-weight-bold text-uppercase text-center mb-1">Rest APIs - Qasim</h1>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Home Page</li>
+            </ol>
+          </div>
+<footer class="sticky-footer bg-black">
+  <div class="col-lg-6">
+       <div class="card mb-4">
+        <div class="card-header py-3">
+         <div class="card-body">
+           <div class="row align-item-center">
+              <img class="shadow mb-4" width="250px" height="300px" src="https://i.ibb.co/swV9BvY/IMG-20241219-WA0007.jpg">
+                   </div>
+                  </div>
+                </div>
+              </div> 
+            </div>
+      <div class="col-lg-6">
+       <div class="card mb-4">
+        <div class="card-header py-3">
+         <div class="card-body">
+          <div class="row align-item-center">
+           <div id="demo" class="alert alert-info alert-dismissible" role="alert">
+            <div id="Statistic"></div>
+             <span id="tgl">00</span> - <span id="bln">00</span> - <span id="thn"></span>
+            </div>
+           </div>
+          </div>
+         </div> 
+        </div>
+       </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-uppercase mb-1">Visitor Count</div>
+                      <br>
+                      <div class="h5 mb-0 font-weight-bold text-green-800" id="visits">00</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-eye fa-2x text-primary"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-uppercase mb-1">Count Down Eid-Ul-Fitar</div>
+                      <br>
+                      <div class="h6 mb-0 font-weight-bold text-pink-600 text-uppercase">
+                        <span class="text-danger" id="hari">00</span> Days 
+                        <span class="text-danger" id="jam">00</span> Hours 
+                        <span class="text-danger" id="menit">00</span> Minutes 
+                        <span class="text-danger" id="detik">00</span> Seconds
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                     <i class="fas fa-star-and-crescent fa-2x text-primary"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        <!---Container Fluid-->
+      <!-- Footer -->
+     <form action="/api/checkapikey">
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col mr-2">
+           <div class="h6 mb-0 font-weight-bold text-dark-800 text-uppercase">
+          <h6 class="text-center">[+] ApiKey Validation [+]</h6>
+          </div>
+           <input type="password" class="form-control" placeholder="Check Your apikey" name="apikey" required=""><br>
+            <button class="btn btn-danger btn-icon-split">
+             <span class="icon text-white-50">
+              <i class="fas fa-check"></i>
+             </span>
+             <span class="text">Check</span>
+            </button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+      </form>
+      <div class="col-lg-6">
+       <div class="card mb-4">
+        <div class="card-header py-3">
+         <div class="card-body">
+             <div class="card m-3 text-center shadow">
+               <p class="card-header shadow-sm bg-primary text-white text-uppercase">About Me</p>
+              <div class="text-center">
+        <img src="https://i.ibb.co/S4Bvd5Jc/4911f31b721996402c1c8695e3beb961-2.png" class="rounded-circle shadow mb-3" alt="Qasim" width="160px" height="150px">
+      </div>
+      <div class="copyright text-center my-auto">
+     <p class="card-text text-shadow">Thanks To Allah Almighty ❤️<br></p><div class="text-xs font-weight-bold text-uppercase">
+       <h6 class="text-uppercase">Developer Message</h6><br>
+       Going To Add More Endpoints In Future, Contact Me For Custom Endpoints Or Contribution<br><br><br><br>
+     </div>
+     </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>Copyright &copy; 2025 - Developed By
+              <b>Qasim Ali</b>
+            </span>
+          </div>
+        </div>
+      </div>
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div>
+    <audio autoplay="true" src="https://a.top4top.io/m_1757ageic0.m4a"></audio>
+  <!-- Scroll to top -->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+</script>
+<script async src="https://abacus.jasoncameron.dev/hit/globaltech-api.onrender.com/visits?callback=cb"></script>
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="js/ruang-admin.js"></script>
+  <script src="vendor/chart.js/Chart.min.js"></script>
+  <script src="js/demo/chart-area-demo.js"></script>  
+</body>
+
+</html>
