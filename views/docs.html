@@ -14,6 +14,126 @@
   
   <link href="css/ruang-admin.min.css" rel="stylesheet">
 </head>
+  <style>
+    h1 {
+        text-align: center;
+    }
+.text-container {
+    display: inline-flex;
+    align-items: center;
+}
+
+.fire-text {
+    font-size: 2.5em;
+    color: #ff5733;
+    text-shadow: 0 0 10px #ff5733, 0 0 20px #ff5733, 0 0 30px #ff5733; 
+    animation: burn 0.5s infinite alternate; 
+    display: inline-block;
+    white-space: nowrap; 
+}
+
+@keyframes burn {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+.fire-emoji {
+    font-size: 0.9em; 
+    color: #ff5733;
+}
+    .button-style {
+        background-color: rgba(0, 0, 128, 0.0); 
+        color: #fff; 
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        outline: none !important; 
+        border: 0; 
+    }
+    .button-style:active {
+        outline: none !important;
+        border: 0; 
+    }
+    .age-restriction-icon {
+        background-color: transparent;
+        color: white;
+        padding: 5px 0px;
+        font-weight: bold;
+        font-size: 16px;
+        text-align: left;
+        white-space: nowrap;
+        margin-right: 5px
+    }
+
+    .scroll-mouse-enter {
+        max-height: 400px;
+        overflow-y: hidden;
+    }
+
+    .medium-scroll {
+        max-height: 300px;
+    }
+
+    .scroll-visible{
+        overflow-y: scroll;
+    }
+
+    .scroll-mouse-enter::-webkit-scrollbar {
+        width: 5px;
+    }
+
+
+    .scroll-mouse-enter::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+
+    .scroll-mouse-enter::-webkit-scrollbar-thumb {
+        background: #b9b8b837;
+        border-radius: 6px;
+    }
+
+
+    .scroll-mouse-enter::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    @media (max-width: 1024px) {
+        .scroll-mouse-enter{
+            overflow-y: scroll;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .age-restriction-icon {
+        padding: 5px 0; 
+        margin-left: 10px; 
+      }
+    }    
+        #info-box {
+            position: absolute;
+            top: 0px;
+            right: 10px;
+            background-color: transparent;
+            padding: 10px;
+            text-align: center;
+            width: 60px; 
+            height: 60px; 
+        }
+        #corner-image {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%; 
+            height: auto;
+        }
+        #powered-text {
+            font-size: 50%; 
+            color: #999; 
+        }
+  </style>
 
 <body id="page-top">
   <div id="wrapper">
