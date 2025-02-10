@@ -258,6 +258,49 @@ router.get('/img/lexica', async (req, res) => {
   }
 });
 
+// Route to fetch image from whowouldwin API and return the image directly
+router.get('/image/whowouldwin', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const image1 = req.query.image1;  // URL for the first image
+  const image2 = req.query.image2;  // URL for the second image
+
+  // Validate input parameters
+  if (!image1 || !image2) return res.json(loghandler.nottext);  // Ensure both 'image1' and 'image2' parameters are provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Use axios to fetch the image from the Popcat API
+      const response = await axios.get(`https://api.popcat.xyz/whowouldwin?image1=${encodeURIComponent(image1)}&image2=${encodeURIComponent(image2)}`, {
+        responseType: 'arraybuffer',  // Ensure the response is treated as binary data (image)
+      });
+
+      // Ensure the response is OK (status 200)
+      if (response.status !== 200) {
+        return res.json({
+          status: false,
+          code: 500,
+          message: 'Error fetching image from Popcat API.',
+        });
+      }
+
+      // Set the appropriate headers for image content (PNG assumed, but could be different)
+      res.set('Content-Type', 'image/png');  // Adjust MIME type if needed based on the image format
+
+      // Send the image buffer directly in the response
+      return res.send(response.data);
+
+    } catch (err) {
+      console.error("Error fetching image from whowouldwin:", err);
+      return res.json(loghandler.error);
+    }
+  } else {
+    return res.json(loghandler.invalidKey);
+  }
+});
+
+
 
 // Route to fetch GitHub-related data using the popcat.xyz API
 router.get('/image/github', async (req, res, next) => {
