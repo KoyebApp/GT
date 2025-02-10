@@ -37,7 +37,7 @@ const { downloadInstagram, downloadFacebook, downloadTikTok } = require('./../li
 
 // In-memory storage for tracking requests for qasim key (can be replaced with a database or Redis)
 const requestCounts = {};
-const dailyLimit = 10000; // Set the daily limit for `qasim`
+const dailyLimit = 3000; // Set the daily limit for `qasim`
 
 // Function to reset daily limit after 24 hours (you can use a cron job to reset every 24 hours)
 const resetDailyLimit = (apikey) => {
@@ -61,7 +61,7 @@ const rateLimitMiddleware = (req, res, next) => {
   if (!apikey) return res.json(loghandler.notparam);
 
   // Allow unlimited access for APIKEY and MEGA-AI
-  if (apikey === "qasim" || apikey === "MEGA-AI") {
+  if (apikey === "Suhail" || apikey === "Guru") {
     return next(); // Skip rate limiting for these keys
   }
 
@@ -261,6 +261,8 @@ router.get('/img/lexica', async (req, res) => {
 
 // Route to fetch a random pickup line from Popcat API
 router.get('/web/pickuplines', async (req, res) => {
+  
+  if (listkey.includes(apikey)) {
   try {
     // Fetch the pickup line from the Popcat API
     const response = await axios.get('https://api.popcat.xyz/pickuplines');
@@ -284,6 +286,9 @@ router.get('/web/pickuplines', async (req, res) => {
       message: 'Error fetching pickup line',
       error: error.message,
     });
+  }
+    } else {
+    return res.json(loghandler.invalidKey);
   }
 });
 
@@ -1755,54 +1760,49 @@ router.get('/translate', async (req, res, next) => {
   }
 });
 
-// Route to generate a welcome card using popcat.xyz API
-router.get('/welcomecard', async (req, res, next) => {
+// Route to add Pooh label to text using popcat.xyz API
+router.get('/image/pooh', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const background = req.query.background;  // Background image URL
-  const text1 = req.query.text1;  // First text
-  const text2 = req.query.text2;  // Second text
-  const text3 = req.query.text3;  // Third text
+  const text1 = req.query.text1;  // First text parameter
+  const text2 = req.query.text2;  // Second text parameter
 
   // Validate input parameters
-  if (!background || !text1 || !text2 || !text3) {
-    return res.json(loghandler.notquery);  // Ensure all required parameters are provided
-  }
+  if (!text1 || !text2) return res.json(loghandler.nottext);  // Ensure both 'text1' and 'text2' parameters are provided
   if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
   if (listkey.includes(apikey)) {
     try {
-      // Generate the welcome card from popcat.xyz API
-      const response = await fetch(`https://api.popcat.xyz/welcomecard?background=${encodeURIComponent(background)}&text1=${encodeURIComponent(text1)}&text2=${encodeURIComponent(text2)}&text3=${encodeURIComponent(text3)}`);
+      // Fetch the Pooh label image from popcat.xyz API
+      const response = await fetch(`https://api.popcat.xyz/pooh?text1=${encodeURIComponent(text1)}&text2=${encodeURIComponent(text2)}`);
       
-      // Check if the response contains the image URL
-      const welcomeCardResult = await response.json();
-
-      if (welcomeCardResult && welcomeCardResult.image) {
-        // Fetch the image as a buffer
-        const imageBuffer = await (await fetch(welcomeCardResult.image)).buffer();
-
-        // Set the appropriate headers for image content
-        res.set('Content-Type', 'image/png');  // or whatever the content type of the image is
-
-        // Send the image buffer directly in the response
-        return res.send(imageBuffer);
-
-      } else {
+      // Ensure the response is OK (status 200)
+      if (!response.ok) {
         return res.json({
           status: false,
-          code: 404,
-          message: 'Welcome card not found.',
+          code: 500,
+          message: 'Error fetching Pooh label from API.',
         });
       }
+
+      // Get the image buffer (no need to parse as JSON since it's an image)
+      const imageBuffer = await response.buffer();
+
+      // Set the appropriate headers for image content
+      res.set('Content-Type', 'image/png');  // or change this based on the actual image format
+
+      // Send the image buffer directly in the response
+      return res.send(imageBuffer);
+
     } catch (err) {
-      console.error("Error generating welcome card:", err);
+      console.error("Error fetching Pooh label:", err);
       return res.json(loghandler.error);
     }
   } else {
     return res.json(loghandler.invalidKey);
   }
 });
+
 
 
 // Route to generate a Drake meme using popcat.xyz API
@@ -1826,7 +1826,7 @@ router.get('/image/drake', async (req, res, next) => {
         return res.json({
           status: false,
           code: 500,
-          message: 'Error fetching Drake meme from Popcat API.',
+          message: 'Error fetching Drake meme from API.',
         });
       }
 
@@ -1869,7 +1869,7 @@ router.get('/pc/screenshot', async (req, res, next) => {
         return res.json({
           status: false,
           code: 500,
-          message: 'Error fetching screenshot from Popcat API.',
+          message: 'Error fetching screenshot from API.',
         });
       }
 
@@ -2106,7 +2106,7 @@ router.get('/image/biden', async (req, res, next) => {
         return res.json({
           status: false,
           code: 500,
-          message: 'Error fetching Biden meme from Popcat API.',
+          message: 'Error fetching Biden meme from API.',
         });
       }
 
@@ -2148,7 +2148,7 @@ router.get('/image/alert', async (req, res, next) => {
         return res.json({
           status: false,
           code: 500,
-          message: 'Error fetching alert label from Popcat API.',
+          message: 'Error fetching alert label from API.',
         });
       }
 
@@ -2191,7 +2191,7 @@ router.get('/image/caution', async (req, res, next) => {
         return res.json({
           status: false,
           code: 500,
-          message: 'Error fetching caution label from Popcat API.',
+          message: 'Error fetching caution label from API.',
         });
       }
 
@@ -2206,6 +2206,49 @@ router.get('/image/caution', async (req, res, next) => {
 
     } catch (err) {
       console.error("Error fetching caution label:", err);
+      return res.json(loghandler.error);
+    }
+  } else {
+    return res.json(loghandler.invalidKey);
+  }
+});
+
+
+// Route to add Pikachu label to text using popcat.xyz API
+router.get('/image/pikachu', async (req, res, next) => {
+  const apikey = req.query.apikey;
+  const text = req.query.text;  // Text to add Pikachu label to
+
+  // Validate input parameters
+  if (!text) return res.json(loghandler.nottext);  // Ensure 'text' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
+
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Fetch the Pikachu label image from popcat.xyz API
+      const response = await fetch(`https://api.popcat.xyz/pikachu?text=${encodeURIComponent(text)}`);
+      
+      // Ensure the response is OK (status 200)
+      if (!response.ok) {
+        return res.json({
+          status: false,
+          code: 500,
+          message: 'Error fetching Pikachu label from API.',
+        });
+      }
+
+      // Get the image buffer (no need to parse as JSON since it's an image)
+      const imageBuffer = await response.buffer();
+
+      // Set the appropriate headers for image content
+      res.set('Content-Type', 'image/png');  // or change this based on the actual image format
+
+      // Send the image buffer directly in the response
+      return res.send(imageBuffer);
+
+    } catch (err) {
+      console.error("Error fetching Pikachu label:", err);
       return res.json(loghandler.error);
     }
   } else {
