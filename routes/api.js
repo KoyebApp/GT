@@ -300,6 +300,7 @@ router.get('/web/pickuplines', async (req, res) => {
 // Route to fetch domain information from the DomainsDB API
 router.get('/web/domain-info', async (req, res) => {
   const domain = req.query.domain;
+  const apikey = req.query.apikey;
 
   // Validate input parameter
   if (!domain) {
@@ -308,6 +309,12 @@ router.get('/web/domain-info', async (req, res) => {
       message: 'Please provide a domain to search.',
     });
   }
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
+  if (listkey.includes(apikey)) {
 
   try {
     // Fetch domain information from DomainsDB API
@@ -335,11 +342,22 @@ router.get('/web/domain-info', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 
 // Route to fetch "Would You Rather" question from Popcat API
 router.get('/web/wyr', async (req, res) => {
+  
+  const apikey = req.query.apikey;
+
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
+  if (listkey.includes(apikey)) {
   try {
     // Fetch the WYR question from the Popcat API
     const response = await axios.get('https://api.popcat.xyz/wyr');
@@ -366,13 +384,16 @@ router.get('/web/wyr', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 // Route to fetch a word's definition from the dictionary API
 router.get('/web/dictionary', async (req, res) => {
   const word = req.query.word;
-
-  // Validate input parameter
+  const apikey = req.query.apikey;
+    // Validate input parameter
   if (!word) {
     return res.json({
       status: false,
@@ -380,6 +401,11 @@ router.get('/web/dictionary', async (req, res) => {
     });
   }
 
+  if (!apikey) {
+    return res.json({ status: false, message: "API key is missing." });
+  }
+  
+  if (listkey.includes(apikey)) {
   try {
     // Fetch the word definition from the dictionary API
     const response = await axios.get(`https://some-random-api.com/others/dictionary?word=${word}`);
@@ -404,6 +430,9 @@ router.get('/web/dictionary', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 
@@ -427,7 +456,8 @@ router.get('/web/info', async (req, res) => {
       message: 'URL is required',
     });
   }
-
+  
+  if (listkey.includes(apikey)) {
   try {
     // Fetch the screenshot image from Microlink API
     const response = await axios.get(
@@ -446,6 +476,9 @@ router.get('/web/info', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 
@@ -460,6 +493,8 @@ router.get('/web/meta', async (req, res) => {
   if (!url) {
     return res.status(400).json({ status: false, message: 'URL is required' });
   }
+  
+  if (listkey.includes(apikey)) {
 
   try {
     // Step 1: Fetch metadata from the Microlink API
@@ -483,6 +518,9 @@ router.get('/web/meta', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 router.get('/download/savefrom', async (req, res) => {
@@ -492,6 +530,7 @@ router.get('/download/savefrom', async (req, res) => {
     // Validate input parameters
     if (!url) return res.json(loghandler.noturl);
     if (!apikey) return res.json(loghandler.notparam);
+  if (listkey.includes(apikey)) {
 
     try {
         console.log('Fetching download page...'); // Debug log
@@ -526,6 +565,9 @@ router.get('/download/savefrom', async (req, res) => {
         }
         res.status(500).json({ error: 'Failed to fetch download link' });
     }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 
@@ -536,6 +578,8 @@ router.get('/download/loader', async (req, res) => {
     // Validate input parameters
     if (!url) return res.json(loghandler.noturl);
     if (!apikey) return res.json(loghandler.notparam);
+  
+  if (listkey.includes(apikey)) {
 
     try {
         const response = await axios.get('https://loader.to/ajax/download.php', {
@@ -555,6 +599,9 @@ router.get('/download/loader', async (req, res) => {
         console.error(error); // Log the error for debugging
         res.status(500).json({ error: 'Failed to fetch download link' });
     }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 router.get('/download/y2mate', async (req, res) => {
@@ -564,6 +611,8 @@ router.get('/download/y2mate', async (req, res) => {
     // Validate input parameters
     if (!url) return res.json(loghandler.noturl);
     if (!apikey) return res.json(loghandler.notparam);
+  
+  if (listkey.includes(apikey)) {
 
     try {
         const response = await axios.post('https://www.y2mate.com/mates/analyzeV2/ajax', new URLSearchParams({ url }), {
@@ -587,6 +636,9 @@ router.get('/download/y2mate', async (req, res) => {
         console.error(error); // Log the error for debugging
         res.status(500).json({ error: 'Failed to fetch download link' });
     }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 router.get('/web/logo', async (req, res, next) => {
@@ -627,6 +679,7 @@ router.get('/self/ip', async (req, res) => {
     return res.json({ status: false, message: "API key is missing." });
   }
   
+  if (listkey.includes(apikey)) {
   try {
     // Step 1: Construct the URL with the IP address
     const url = `https://ipfind.io/ip-address-lookup`;
@@ -659,6 +712,9 @@ router.get('/self/ip', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 
@@ -673,7 +729,8 @@ router.get('/info/ip', async (req, res) => {
   
   if (!ipAddress) {
     return res.json({ status: false, message: 'IP address is required' });
-  }
+  } 
+  if (listkey.includes(apikey)) {
 
   try {
     // Step 1: Construct the URL with the IP address
@@ -707,6 +764,9 @@ router.get('/info/ip', async (req, res) => {
       error: error.message,
     });
   }
+    } else {
+    return res.json(loghandler.invalidKey);
+  }
 });
 
 
@@ -723,6 +783,8 @@ router.get('/web/ulvis', async (req, res) => {
   if (!url) {
     return res.json({ status: false, message: 'URL is required' });
   }
+  
+  if (listkey.includes(apikey)) {
 
   try {
     // Construct the API URL
@@ -766,6 +828,9 @@ router.get('/web/ulvis', async (req, res) => {
       message: 'Error fetching data from Ulvis',
       error: error.message,
     });
+  }
+    } else {
+    return res.json(loghandler.invalidKey);
   }
 });
 
@@ -2012,81 +2077,6 @@ router.get('/apk/steam', async (req, res, next) => {
     }
   } else {
     return res.json(loghandler.invalidKey);
-  }
-});
-
-// Route to fetch GitHub user data using popcat.xyz API
-router.get('/info/github', async (req, res, next) => {
-  const apikey = req.query.apikey;
-  const username = req.query.username;  // GitHub username (e.g., 'GlobalTechInfo')
-
-  // Validate input parameters
-  if (!username) return res.json(loghandler.notusername);  // Ensure 'username' parameter is provided
-  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
-
-  // Check if the API key is valid
-  if (listkey.includes(apikey)) {
-    try {
-      // Fetch GitHub user data from popcat.xyz API
-      const response = await fetch(`https://api.popcat.xyz/github/$(username)`);
-      
-      // Check the content type of the response
-      const contentType = response.headers.get('content-type');
-
-      // If the response is JSON, parse it
-      if (contentType && contentType.includes('application/json')) {
-        const githubResult = await response.json();
-
-        // Check if the result contains GitHub data
-        if (githubResult && githubResult.login) {
-          res.json({
-            status: true,
-            code: 200,
-            creator: `${creator}`,
-            result: githubResult, // Send the GitHub user data
-          });
-        } else {
-          res.json({
-            status: false,
-            code: 404,
-            message: 'GitHub user not found.',
-          });
-        }
-      }
-      // If the response is HTML (e.g., error page from GitHub), send a 404 or error response
-      else if (contentType && contentType.includes('text/html')) {
-        const htmlResponse = await response.text();
-
-        // If the HTML response contains "Not Found", assume the user doesn't exist
-        if (htmlResponse.includes('Not Found')) {
-          res.json({
-            status: false,
-            code: 404,
-            message: 'GitHub user not found (HTML response).',
-          });
-        } else {
-          res.json({
-            status: false,
-            code: 415,
-            message: 'Unsupported HTML response received.',
-          });
-        }
-      }
-      // If the response is neither JSON nor HTML, return unsupported media type
-      else {
-        res.json({
-          status: false,
-          code: 415,
-          message: 'Unsupported media type received.',
-        });
-      }
-
-    } catch (err) {
-      console.error("Error fetching GitHub user data:", err);
-      res.json(loghandler.error);
-    }
-  } else {
-    res.json(loghandler.invalidKey);
   }
 });
 
@@ -4520,41 +4510,6 @@ router.get('/video/gdrive', async (req, res) => {
     }
 });
 
-
-router.get('/search/courses', async (req, res) => {
-  const apikey = req.query.apikey;  // Retrieve the API key from the query string
-
-  if (!apikey) {
-    return res.json({ status: false, message: 'API key is missing' });
-  }
-
-  // Example API key validation (replace `listkey` with your actual list of valid keys)
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, message: 'Invalid API key' });
-  }
-
-  try {
-    // Fetch courses from the EduScout API
-    let response = await fetch('https://eduscout.vercel.app/api/courses');
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch courses');
-    }
-
-    let json = await response.json();
-
-    // Return the selected courses as JSON response
-    return res.json({
-      status: true,
-      creator: 'Qasim Ali🦋',
-      json
-    });
-
-  } catch (error) {
-    console.error('Error:', error);
-    return res.json({ status: false, message: 'Error fetching courses' });
-  }
-});
 
 router.get('/short/bitly', async (req, res) => {
   const url = req.query.url;
