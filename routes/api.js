@@ -202,24 +202,21 @@ router.get('/download/mega', async (req, res, next) => {
   // Check if URL is provided
   if (!url) return res.json({ status: false, creator: `${creator}`, message: "Please provide the MEGA URL" });
 
+  // Validate the MEGA URL format
+  if (!url.includes('#')) {
+    return res.json({
+      status: false,
+      creator: `${creator}`,
+      message: "Invalid MEGA URL: The URL must include a '#' followed by the decryption key."
+    });
+  }
+
   try {
-    // Decode the URL to ensure special characters are properly handled
-    const decodedUrl = decodeURIComponent(url);
+    // Log the URL for debugging
+    console.log("Provided URL:", url);
 
-    // Validate the MEGA URL format
-    if (!decodedUrl.includes('#')) {
-      return res.json({
-        status: false,
-        creator: `${creator}`,
-        message: "Invalid MEGA URL: No hash found. Ensure the URL includes a decryption key."
-      });
-    }
-
-    // Log the decoded URL for debugging
-    console.log("Decoded URL:", decodedUrl);
-
-    // Parse the file from the provided MEGA URL
-    const file = mega.File.fromURL(decodedUrl);
+    // Parse the file from the provided MEGA URL (use the URL as it is)
+    const file = mega.File.fromURL(url);
     await file.loadAttributes();
 
     // Log file information
@@ -254,6 +251,7 @@ router.get('/download/mega', async (req, res, next) => {
     });
   }
 });
+
 
 const Spotify = require('./../lib/utils/Spotify');
 
