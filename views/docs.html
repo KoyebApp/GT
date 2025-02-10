@@ -41,35 +41,50 @@
           <i class="fas fa-download"></i>
           <span>Social Media API</span>
         </a>
-        <div id="collapseBootstrap" class="collapse" aria-labelledby="headingBootstrap" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Media Features</h6>
-            <a class="collapse-item" href="/api/download/fb?url=https://www.facebook.com/share/r/19D8ernAys/&apikey=APIKEY">Facebook Video</a>
-            <a class="collapse-item" href="/api/video/fb?apikey=APIKEY&url=https://www.facebook.com/share/v/1GhECtKkPm/">Facebook Video2</a>
-            <a class="collapse-item" href="/api/dl/facebook?apikey=APIKEY&url=https://www.facebook.com/share/v/1GhECtKkPm/">Facebook Video3</a>
-            <a class="collapse-item" href="/api/download/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY">Tiktok Video</a>
-            <a class="collapse-item" href="/api/audio/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY">Tiktok MP3</a>
-            <a class="collapse-item" href="/api/download/twitter?url=https://x.com/__alaskri/status/1869290878164152823?t=kszcF0ksQJztifLRSGQL2g&s=19&apikey=APIKEY">Twitter DL</a>
-            <a class="collapse-item" href="/api/search/pinterest?query=technology&apikey=APIKEY">Pinterest DL</a>
-            <a class="collapse-item" href="/api/image/Wikimedia?title=ignite&apikey=APIKEY">Wikimedia DL</a>
-            <a class="collapse-item" href="/api/media/umma?url=https://www.ummamedia.co.za/2021/12/25/putin-insulting-prophet-muhammad-is-not-freedom-of-expression/&apikey=APIKEY">Mediauma DL</a>
-            <a class="collapse-item" href="/api/download/wallpaper?title=technology&apikey=APIKEY">Wallpaper DL</a>
-            <a class="collapse-item" href="/api/download/igdl?url=https://www.instagram.com/p/CNtpwxuH5NK/?igshid=g26k5coikzwr&apikey=APIKEY">Instagram DL</a>
-            <a class="collapse-item" href="/api/video/ig?apikey=APIKEY&url=https://www.instagram.com/reel/DFR3YLhRt4c/?igsh=OXh3eGhybjN5Y3N4">Instagram DL2</a>
-            <a class="collapse-item" href="/api/search/sticker?query=cats&apikey=APIKEY">Sticker DL</a>
-            <a class="collapse-item" href="/api/download/ytmp4?url=https://youtu.be/Nq5rzeJ5Ab4&apikey=APIKEY">YT Video</a>
-            <a class="collapse-item" href="/api//download/ytmp3?url=https://youtu.be/Nq5rzeJ5Ab4&apikey=APIKEY">YT Audio</a>
-            <a class="collapse-item" href="/api/search/yt?query=blue&apikey=APIKEY">YT Search</a>
-            <a class="collapse-item" href="/api/download/git?url=https://github.com/GlobalTechInfo/MEGA-AI&apikey=APIKEY">Git Clone</a>
-            <a class="collapse-item" href="/api/download/mediafire?url=https://www.mediafire.com/file/vk396efk7xz41ib/IMG-20241219-WA0007.jpg/file&apikey=APIKEY">Mediafire DL</a>
-            <h6 class="collapse-header">Stalker Features</h6>
-            <a class="collapse-item" href="/api/stalk/ig?apikey=APIKEY&username=truepakistanofficial">Instagram Stalk</a>
-            <a class="collapse-item" href="/api/stalk/tiktok?apikey=APIKEY&user=discoverpakistantv">Tiktok Stalk</a>
-            <a class="collapse-item" href="/api/stalk/npm?apikey=APIKEY&query=api-qasim">NPM Stalk</a>
-            <a class="collapse-item" href="/api/stalk/npm2?apikey=APIKEY&query=cheerio">NPM Stalk2</a>
-            <a class="collapse-item" href="/api/stalk/github?apikey=APIKEY&user=GlobalTechInfo">Github Stalk</a>
-          </div>
-        </div>
+        <!-- Section to display the API list in the center -->
+<div id="apiSection" class="container mt-5" style="display:none;">
+    <h1 class="text-center">Social Media API Endpoints</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>API Name</th>
+                    <th>Parameters</th>
+                    <th>Information</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Facebook Video</td>
+                    <td>url, apikey</td>
+                    <td>Download Facebook video</td>
+                    <td><a href="/api/download/fb?url=https://www.facebook.com/share/r/19D8ernAys/&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+                </tr>
+                <tr>
+                    <td>Tiktok Video</td>
+                    <td>url, apikey</td>
+                    <td>Download Tiktok video</td>
+                    <td><a href="/api/download/tiktok?url=https://vm.tiktok.com/ZS6LrgDYL&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+                </tr>
+                <tr>
+                    <td>Twitter Video</td>
+                    <td>url, apikey</td>
+                    <td>Download Twitter video</td>
+                    <td><a href="/api/download/twitter?url=https://x.com/__alaskri/status/1869290878164152823?t=kszcF0ksQJztifLRSGQL2g&s=19&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+                </tr>
+                <tr>
+                    <td>Instagram Video</td>
+                    <td>url, apikey</td>
+                    <td>Download Instagram video</td>
+                    <td><a href="/api/download/igdl?url=https://www.instagram.com/p/CNtpwxuH5NK/?igshid=g26k5coikzwr&apikey=APIKEY" class="btn btn-primary" target="_blank">Try</a></td>
+                </tr>
+                <!-- Add more rows for each API endpoint -->
+            </tbody>
+        </table>
+    </div>
+</div>
+        
       </li>
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseVideo" aria-expanded="true"
