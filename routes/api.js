@@ -190,6 +190,71 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+router.get('/download/mega', async (req, res, next) => {
+  const Apikey = req.query.apikey;
+  const url = req.query.url;
+  const fileSizeLimit = 200 * 1024 * 1024; // 200 MB in bytes
+
+  // Validate API key
+  if (!Apikey) return res.json(loghandler.notparam);
+  if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
+
+  // Check if URL is provided
+  if (!url) return res.json({ status: false, creator: `${creator}`, message: "Please provide the MEGA URL" });
+
+  try {
+    // Decode the URL to ensure special characters are properly handled
+    const decodedUrl = decodeURIComponent(url);
+
+    // Validate the MEGA URL format
+    if (!decodedUrl.includes('#')) {
+      return res.json({
+        status: false,
+        creator: `${creator}`,
+        message: "Invalid MEGA URL: No hash found. Ensure the URL includes a decryption key."
+      });
+    }
+
+    // Log the decoded URL for debugging
+    console.log("Decoded URL:", decodedUrl);
+
+    // Parse the file from the provided MEGA URL
+    const file = mega.File.fromURL(decodedUrl);
+    await file.loadAttributes();
+
+    // Log file information
+    console.log(`File Name: ${file.name}, File Size: ${file.size} bytes`);
+
+    // Check if the file size exceeds the defined limit for this route
+    if (file.size > fileSizeLimit) {
+      return res.json({
+        status: false,
+        creator: `${creator}`,
+        message: `File size exceeds the ${fileSizeLimit / (1024 * 1024)} MB limit. Please try with a smaller file.`
+      });
+    }
+
+    // Download the file as a buffer
+    const fileBuffer = await file.downloadBuffer();
+
+    // Set the response header for file download
+    res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+    res.setHeader('Content-Type', 'application/octet-stream');
+
+    // Send the file buffer as the response
+    res.end(fileBuffer);
+
+  } catch (error) {
+    // Handle any errors gracefully
+    console.error("Error with MEGA URL:", error.message);
+    res.json({
+      status: false,
+      creator: `${creator}`,
+      message: `Error: ${error.message}`
+    });
+  }
+});
+
 const Spotify = require('./../lib/utils/Spotify');
 
 const fetchWithRetry = async (url, retries = 3, delay = 1000) => {
@@ -912,62 +977,6 @@ router.get('/web/ulvis', async (req, res) => {
   }
     } else {
     return res.json(loghandler.invalidKey);
-  }
-});
-
-
-
-
-router.get('/download/mega', async (req, res, next) => {
-  const Apikey = req.query.apikey;
-  const url = req.query.url;
-  const fileSizeLimit = 200 * 1024 * 1024; // 200 MB in bytes, you can modify this inside the route
-
-  // Validate API key
-  if (!Apikey) return res.json(loghandler.notparam);
-  if (!listkey.includes(Apikey)) return res.json(loghandler.invalidKey);
-
-  // Check if URL is provided
-  if (!url) return res.json({ status: false, creator: `${creator}`, message: "Please provide the MEGA URL" });
-
-  try {
-    // Decode the URL to ensure special characters are properly handled
-    const decodedUrl = decodeURIComponent(url);
-
-    // Parse the file from the provided MEGA URL
-    const file = mega.File.fromURL(decodedUrl);
-    await file.loadAttributes();
-    
-    // Log file information
-    console.log(`File Name: ${file.name}, File Size: ${file.size} bytes`);
-
-    // Check if the file size exceeds the defined limit for this route
-    if (file.size > fileSizeLimit) {
-      return res.json({
-        status: false,
-        creator: `${creator}`,
-        message: `File size exceeds the ${fileSizeLimit / (1024 * 1024)} MB limit. Please try with a smaller file.`
-      });
-    }
-
-    // Download the file as a buffer
-    const fileBuffer = await file.downloadBuffer();
-
-    // Set the response header for file download (e.g., as a downloadable file)
-    res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
-    res.setHeader('Content-Type', 'application/octet-stream');
-
-    // Send the file buffer as the response
-    res.end(fileBuffer);
-
-  } catch (error) {
-    // Handle any errors gracefully
-    console.error("Error with MEGA URL:", error.message);
-    res.json({
-      status: false,
-      creator: `${creator}`,
-      message: `Error: ${error.message}`
-    });
   }
 });
 
