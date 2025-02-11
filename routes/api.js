@@ -211,31 +211,25 @@ router.get('/openai-completion', async (req, res) => {
     // Dynamically import OpenAI module
     const OpenAI = await import('openai');
 
-    // Create OpenAI client
-    const openai = new OpenAI.default({
-      apiKey: process.env.OPENAI_API_KEY, // Ensure the OpenAI API key is loaded from environment variables
+// Create a new OpenAI client instance using the API key from environment variables
+const client = new OpenAI({
+  apiKey: process.env['OPENAI_API_KEY'], // Replace with your actual OpenAI API Key
+});
+  try {
+    // Generate content using OpenAI's chat completion model
+    const chatCompletion = await client.chat.completions.create({
+      model: 'gpt-4o', // Use your desired model, e.g., gpt-4o
+      messages: [{ role: 'user', content: prompt }],
     });
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', // Specify the OpenAI model to use
-      reasoning_effort: 'medium',
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      store: true,
-    });
-
-    // Return the result from OpenAI
+    // Return the generated text as a response
     return res.json({
       status: true,
-      response: completion.choices[0].message.content,
+      text: chatCompletion.choices[0].message.content, // Get the content from the completion
     });
-  } catch (err) {
-    console.error('Error during OpenAI completion:', err);
-    return res.json({ status: false, message: 'An error occurred while generating the completion.', error: err.message });
+  } catch (error) {
+    console.error('Error generating content:', error);
+    return res.json({ status: false, message: 'Error generating content.', error: error.message });
   }
 });
 
