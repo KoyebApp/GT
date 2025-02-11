@@ -10,6 +10,8 @@ const validator = require('validator');
 const { search } = require('aptoide-scraper');
 const cityTimezones = require('city-timezones');
 const moment = require('moment-timezone');
+const getGPT4js = require("gpt4js");
+const GPT4js = await getGPT4js();
 const cors = require('cors');
 const QRCode = require('qrcode');
 const fetch = require('node-fetch');
@@ -208,9 +210,6 @@ router.get('/gpt4-chat', async (req, res) => {
   }
 
   try {
-    // Dynamically import gpt4js module
-    const getGPT4js = await import('gpt4js');
-    const GPT4js = await getGPT4js();
 
     const messages = [{ role: "user", content: prompt }];
     const options = {
