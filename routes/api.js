@@ -18,7 +18,6 @@ const request = require('request');
 const { translate } = require('@vitalets/google-translate-api');
 const { Anime } = require('@shineiichijo/marika');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const geminiModule = await import('gemini-ai');
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const mime = require('mime-types');
@@ -192,9 +191,6 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-// Dynamically import AI SDK modules
-const deepseekModule = await import('@ai-sdk/deepseek');
-const { generateText } = await import('ai');
 
 // New route to generate text based on the AI model and prompt
 app.get('/generate-text', async (req, res) => {
@@ -212,9 +208,13 @@ app.get('/generate-text', async (req, res) => {
       return res.json(loghandler.invalidKey);  // API key is invalid
     }
 
+    // Dynamically import the modules
+    const { deepseek } = await import('@ai-sdk/deepseek');
+    const { generateText } = await import('ai');
+
     // Call the AI model to generate text based on the prompt
     const { text } = await generateText({
-      model: deepseekModule.deepseek('deepseek-chat'),
+      model: deepseek('deepseek-chat'),  // Pass the deepseek model
       prompt: prompt,  // Use the provided prompt
     });
 
@@ -226,7 +226,6 @@ app.get('/generate-text', async (req, res) => {
     return res.json(loghandler.error);  // Return error message if something goes wrong
   }
 });
-
 
 // Dynamically import Google Generative AI modules
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -272,10 +271,6 @@ app.get('/generate-content', async (req, res) => {
   }
 });
 
-
-// Dynamic import for Gemini
-
-
 // Route to interact with Gemini AI
 app.get('/gemini-chat', async (req, res) => {
   try {
@@ -292,9 +287,12 @@ app.get('/gemini-chat', async (req, res) => {
       return res.json(loghandler.invalidKey);  // API key is invalid
     }
 
-    // Initialize Gemini AI
-    const gemini = new geminiModule.default(process.env.GOOGLE_API_KEY);  // Use the API key from environment
-    const chat = gemini.createChat();
+    // Dynamically import Gemini module (using `await import`)
+    const { default: Gemini } = await import('gemini-ai');  // Dynamically import the Gemini class
+
+    // Initialize Gemini AI with the API key from environment
+    const gemini = new Gemini(process.env.GOOGLE_API_KEY);  // Pass the API key from environment
+    const chat = gemini.createChat();  // Create a chat instance
 
     // Ask the prompt to Gemini AI and get the response
     const response = await chat.ask(prompt);
