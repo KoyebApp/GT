@@ -194,7 +194,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 
 // New route to generate text based on the AI model and prompt
-app.get('/generate-text', async (req, res) => {
+router.get('/generate-text', async (req, res) => {
   try {
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
