@@ -193,7 +193,7 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
-app.get('/openai-completion', async (req, res) => {
+router.get('/openai-completion', async (req, res) => {
   const apikey = req.query.apikey; // Get the API key from the query
   const prompt = req.query.prompt || "Write a bash script that takes a matrix represented as a string with format '[1,2],[3,4],[5,6]' and prints the transpose in the same format.";  // Get the prompt or default prompt
 
