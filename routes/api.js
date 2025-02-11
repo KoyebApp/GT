@@ -1,4 +1,5 @@
 __path = process.cwd();
+require('dotenv').config();
 
 // Required modules
 const express = require('express');
