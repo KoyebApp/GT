@@ -100,6 +100,7 @@ var { Base, WPUser } = require('./../lib/utils/tools');
 var { Tiktok, FB, Joox } = require('./../lib/utils/downloader');
 var tebakGambar = require('./../lib/utils/tebakGambar');
 const uploadToImgur = require('./../lib/utils/Imgur');
+const morphic = require('./../lib/morph');
 const { GetTime } = require('./../lib/utils/Time');  // Import the GetTime function
 const Get = require('./../lib/utils/Get');
 
@@ -193,77 +194,17 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
-// Function to generate a random hash
-function generateLogHash() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let hash = '';
-  for (let i = 0; i < 7; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    hash += characters[randomIndex];
-  }
-  return hash;
-}
 
-// URL for Blackbox API
-const url = 'https://www.blackbox.ai/api/chat';
 
-// Custom headers for Blackbox API
-const headers = {
-  accept: '*/*',
-  'accept-language': 'en-US,en;q=0.9',
-  'content-type': 'application/json',
-  origin: 'https://www.blackbox.ai',
-  priority: 'u=1, i',
-  referer: 'https://www.blackbox.ai/chat/lqUeb20',
-  'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-};
-
-async function blackbox(prompt, logHash = generateLogHash()) {
-  const body = JSON.stringify({
-    messages: [{ id: logHash, content: prompt, role: 'user' }],
-    id: logHash,
-    previewToken: null,
-    userId: null,
-    codeModelMode: true,
-    agentMode: {},
-    trendingAgentMode: {},
-    isMicMode: false,
-    maxTokens: 1024,
-    isChromeExt: false,
-    githubToken: null,
-    clickedAnswer2: false,
-    clickedAnswer3: false,
-    clickedForceWebSearch: false,
-    visitFromDelta: null,
-  });
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: body,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.text();
-    return data;
-  } catch (error) {
-    console.error('Error:', error);
-    return null;
-  }
-}
-  router.get('/blackbox-chat', async (req, res) => {
+  router.get('/morphic-chat', async (req, res) => {
     const apikey = req.query.apikey;
-    const prompt = req.query.prompt;
+    const query = req.query.query;
 
     // Validate input parameters
-    if (!apikey || !prompt) {
+    if (!apikey || !query) {
       return res.json({
         status: false,
-        message: 'API key and prompt are required.',
+        message: 'API key and query are required.',
       });
     }
 
@@ -276,25 +217,25 @@ async function blackbox(prompt, logHash = generateLogHash()) {
     }
 
     try {
-      // Call the Blackbox API to generate the response
-      const response = await blackbox(prompt);
+      // Call the Morphic API to generate the response
+      const response = await morphic(query);
 
       // If no response is returned, return an error
       if (!response) {
         return res.json({
           status: false,
-          message: 'Error generating response from Blackbox API.',
+          message: 'Error generating response from Morphic API.',
         });
       }
 
-      // Return the response from Blackbox API
+      // Return the response from Morphic API
       return res.json({
         status: true,
         message: response,
       });
 
     } catch (err) {
-      console.error('Error in Blackbox chatbot route:', err);
+      console.error('Error in Morphic chatbot route:', err);
       return res.json({
         status: false,
         message: 'An error occurred while processing your message.',
@@ -302,9 +243,6 @@ async function blackbox(prompt, logHash = generateLogHash()) {
       });
     }
   });
-
-
-
 
 
 
