@@ -209,12 +209,14 @@ router.get('/gpt4-chat', async (req, res) => {
   }
 
   try {
-    const GPT4js = await getGPT4js();
+    // Import GPT4js dynamically (CommonJS or ESM as needed)
+    const GPT4js = await import('gpt4js');
 
+    // Prepare the message and options
     const messages = [{ role: "user", content: prompt }];
     const options = {
       provider: "Aryahcr",  // Use Aryahcr provider
-      model: "gpt-4o-free",
+      model: "gpt-4o-free", // GPT-4 model
     };
 
     // Create provider using Aryahcr
@@ -231,14 +233,16 @@ router.get('/gpt4-chat', async (req, res) => {
 
   } catch (err) {
     console.error('Error during GPT-4 chat:', err);
+
+    // Return error response if something goes wrong
     return res.json({
       status: false,
       message: 'An error occurred while generating text.',
-      error: err.message,
+      error: err.message,  // Include the error message
     });
   }
 });
-
+  
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
