@@ -25,6 +25,7 @@
     "url": "https://github.com/KoyebApp/GlobalTech-API/issues"
   },
   "dependencies": {
+    "@ai-sdk/deepseek": "^0.1.8",
     "@vitalets/google-translate-api": "^9.2.0",
     "@google/generative-ai": "^0.21.0",
     "@shineiichijo/marika": "^2.0.6",
