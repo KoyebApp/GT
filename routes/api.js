@@ -3,8 +3,6 @@ require('dotenv').config();
 
 // Required modules
 const express = require('express');
-const { G4F } = require("g4f");
-const g4f = new G4F();
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
@@ -195,84 +193,69 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-// Route to handle chat completion
-router.get('/g4f-chat', async (req, res) => {
+// Route to search using Google SR with dynamic import
+router.get('/google/search', async (req, res) => {
   const apikey = req.query.apikey;
-  const message = req.query.message;
+  const query = req.query.query;
 
   // Validate input parameters
-  if (!apikey || !message) {
-    return res.status(400).json({
+  if (!apikey || !query) {
+    return res.json({
       status: false,
-      message: 'Please provide both the API key and message.',
+      message: 'Please provide both the API key and query.',
     });
   }
 
-  // Check if the API key is valid
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
   if (!listkey.includes(apikey)) {
-    return res.status(401).json({
+    return res.json({
       status: false,
       message: 'Invalid API Key provided.',
     });
   }
 
-  
-try {
-  const requestBody = {
-    messages: [
-      { role: "user", content: message }
-    ]
-  };
-
-  const response = await g4f.chatCompletion(requestBody);
-
-  // Log the full response for debugging
-  console.log('G4F Raw Response:', response);
-
-  // Handle streaming response (if applicable)
-  let fullResponse = '';
-  for await (const chunk of response) {
-    fullResponse += chunk;
-  }
-
-  // Log the full response after streaming
-  console.log('G4F Full Response:', fullResponse);
-
-  // Parse the response if it's JSON
-  let responseData;
   try {
-    responseData = JSON.parse(fullResponse);
+    // Dynamically import google-sr in the async function
+    const { search, OrganicResult, DictionaryResult, ResultTypes } = await import('google-sr');
+
+    // Perform the search using the provided query and result types
+    const queryResult = await search({
+      query: query,
+      resultTypes: [OrganicResult, DictionaryResult],  // specify which types you want to fetch
+      requestConfig: {
+        params: {
+          safe: 'active',  // enable safe mode
+        },
+      },
+    });
+
+    // Log the result to check the format (optional)
+    console.log(queryResult);
+
+    // Respond with the first search result or an error if no results are found
+    if (queryResult.length > 0) {
+      return res.json({
+        status: true,
+        results: queryResult,  // Return the search results
+      });
+    } else {
+      return res.json({
+        status: false,
+        message: 'No results found.',
+      });
+    }
   } catch (err) {
-    // If parsing fails, assume the response is plain text
-    responseData = { content: fullResponse };
-  }
+    console.error('Error in google-search route:', err);
 
-  // Extract the content
-  const content = responseData.content;
-
-  // Check if the content is valid
-  if (!content) {
-    console.error('Invalid or empty content:', content);
-    return res.status(500).json({
+    return res.json({
       status: false,
-      message: 'Invalid response from G4F API.',
+      message: 'An error occurred while processing your search.',
+      error: err.message,
     });
   }
+});
 
-  // Return the response
-  return res.json({
-    status: true,
-    message: content,
-  });
-} catch (err) {
-  console.error('Error in g4f-chat route:', err);
-  return res.status(500).json({
-    status: false,
-    message: 'An error occurred while processing your message.',
-    error: err.message,
-  });
-}
-  });
+
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
