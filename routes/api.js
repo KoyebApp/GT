@@ -192,100 +192,121 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-let conversationHistory = [];
 
-router.get('/chatbot', async (req, res, next) => {
-  const message = req.query.message; // Get the message from the query
-
-  // Validate input parameters
-  if (!message) {
-    return res.json({
-      status: false,
-      message: 'Please provide  a message.',
-    });
+// Function to generate a random hash
+function generateLogHash() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let hash = '';
+  for (let i = 0; i < 7; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    hash += characters[randomIndex];
   }
+  return hash;
+}
+
+// URL for Blackbox API
+const url = 'https://www.blackbox.ai/api/chat';
+
+// Custom headers for Blackbox API
+const headers = {
+  accept: '*/*',
+  'accept-language': 'en-US,en;q=0.9',
+  'content-type': 'application/json',
+  origin: 'https://www.blackbox.ai',
+  priority: 'u=1, i',
+  referer: 'https://www.blackbox.ai/chat/lqUeb20',
+  'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+};
+
+async function blackbox(prompt, logHash = generateLogHash()) {
+  const body = JSON.stringify({
+    messages: [{ id: logHash, content: prompt, role: 'user' }],
+    id: logHash,
+    previewToken: null,
+    userId: null,
+    codeModelMode: true,
+    agentMode: {},
+    trendingAgentMode: {},
+    isMicMode: false,
+    maxTokens: 1024,
+    isChromeExt: false,
+    githubToken: null,
+    clickedAnswer2: false,
+    clickedAnswer3: false,
+    clickedForceWebSearch: false,
+    visitFromDelta: null,
+  });
 
   try {
-    // Add the user's message to the conversation history
-    conversationHistory.push({ role: 'user', content: message });
-
-    // Dynamically import OpenAI
-    const { OpenAI } = await import('openai');
-
-    // Initialize OpenAI client with the API key from .env file
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY, // Use the API key from .env
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: body,
     });
 
-    // Generate a response using OpenAI's GPT model (gpt-3.5-turbo)
-    const completion = await client.chat.completions.create({
-      model: 'gpt-3.5-turbo', // Use free plan access model
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant of Qasim.' },
-        ...conversationHistory, // Include entire conversation history
-      ],
-      max_tokens: 150, // Token limit for free plan
-    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
-    // Extract the generated response from OpenAI's completion object
-    const response = completion.choices[0].message.content;
-
-    // Add the assistant's response to the conversation history
-    conversationHistory.push({ role: 'assistant', content: response });
-
-    // Return the chatbot response as JSON
-    return res.json({
-      status: true,
-      message: response,
-    });
-
-  } catch (err) {
-    console.error('Error in chatbot route:', err);
-
-    // Handle error response if an exception occurs
-    return res.json({
-      status: false,
-      message: 'An error occurred while processing your message.',
-      error: err.message, // Return specific error message for debugging
-    });
+    const data = await response.text();
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
   }
-});
-
-
-// New route to generate text based on the AI model and prompt
-router.get('/generate-text', async (req, res) => {
-  try {
-    const apikey = req.query.apikey;  // Get the API key from the query
-    const prompt = req.query.prompt;  // Get the prompt from the query
+}
+  router.get('/blackbox-chat', async (req, res) => {
+    const apikey = req.query.apikey;
+    const prompt = req.query.prompt;
 
     // Validate input parameters
     if (!apikey || !prompt) {
-      return res.json(loghandler.notparam);  // Ensure both API key and prompt are provided
+      return res.json({
+        status: false,
+        message: 'API key and prompt are required.',
+      });
     }
 
-    // Check if the API key is valid
+    // Check if the API key is valid (replace listkey with your valid key checking logic)
     if (!listkey.includes(apikey)) {
-      return res.json(loghandler.invalidKey);  // API key is invalid
+      return res.json({
+        status: false,
+        message: 'Invalid API Key provided.',
+      });
     }
 
-    // Dynamically import the modules
-    const { deepseek } = await import('@ai-sdk/deepseek');
-    const { generateText } = await import('ai');
+    try {
+      // Call the Blackbox API to generate the response
+      const response = await blackbox(prompt);
 
-    // Call the AI model to generate text based on the prompt
-    const { text } = await generateText({
-      model: deepseek('deepseek-chat'),  // Pass the deepseek model
-      prompt: prompt,  // Use the provided prompt
-    });
+      // If no response is returned, return an error
+      if (!response) {
+        return res.json({
+          status: false,
+          message: 'Error generating response from Blackbox API.',
+        });
+      }
 
-    // Return the generated text
-    return res.json({ status: true, text });
+      // Return the response from Blackbox API
+      return res.json({
+        status: true,
+        message: response,
+      });
 
-  } catch (err) {
-    console.error('Error generating text:', err);
-    return res.json(loghandler.error);  // Return error message if something goes wrong
-  }
-});
+    } catch (err) {
+      console.error('Error in Blackbox chatbot route:', err);
+      return res.json({
+        status: false,
+        message: 'An error occurred while processing your message.',
+        error: err.message,
+      });
+    }
+  });
+};
+
+
+
+
 
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -471,54 +492,7 @@ const fetchWithRetry = async (url, retries = 3, delay = 1000) => {
   }
 };
 
-router.get('/img/lexica', async (req, res) => {
-  const prompt = req.query.prompt;
-  const apikey = req.query.apikey;
 
-  if (!apikey) {
-    return res.json({ status: false, message: "API key is missing." });
-  }
-
-  if (!prompt) {
-    return res.json({ status: false, message: "Please provide a prompt." });
-  }
-
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, message: 'Invalid API key' });
-  }
-
-  try {
-    // Use the retry function for making the request
-    const response = await fetchWithRetry('https://lexica.art/api/v1/search?q=' + encodeURIComponent(prompt));
-    const data = await response.json();
-
-    if (!data.images || data.images.length === 0) {
-      return res.json({
-        status: false,
-        message: "No images found for the given prompt."
-      });
-    }
-
-    const result = {
-      status: true,
-      creator: "Qasim Ali 🦋",
-      result: data,
-      additionalInfo: "Generated by Lexica",
-      link: "https://whatsapp.com/channel/0029VagJIAr3bbVBCpEkAM07"
-    };
-
-    res.json(result);
-
-  } catch (e) {
-    console.error('Error fetching from Lexica:', e);
-
-    res.json({
-      status: false,
-      message: "An error occurred while fetching the data.",
-      error: e.message
-    });
-  }
-});
 
 // Route to fetch image from whowouldwin API and return the image directly
 router.get('/image/whowouldwin', async (req, res, next) => {
