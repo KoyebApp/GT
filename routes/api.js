@@ -192,55 +192,52 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-router.get('/google-search', async (req, res) => {
-  const apikey = req.query.apikey;  // Get the API key from the query
-  const searchQuery = req.query.query;  // Get the search query from the query
+
+app.get('/openai-completion', async (req, res) => {
+  const apikey = req.query.apikey; // Get the API key from the query
+  const prompt = req.query.prompt || "Write a bash script that takes a matrix represented as a string with format '[1,2],[3,4],[5,6]' and prints the transpose in the same format.";  // Get the prompt or default prompt
 
   // Validate input parameters
-  if (!apikey || !searchQuery) {
-    return res.json(loghandler.notparam);  // Ensure both API key and search query are provided
+  if (!apikey || !prompt) {
+    return res.json({ status: false, message: 'API key and prompt are required.' });
   }
 
-  // Check if the API key is valid
+  // Check if the API key is valid (replace `listkey` with your valid key checking logic)
   if (!listkey.includes(apikey)) {
-    return res.json(loghandler.invalidKey);  // API key is invalid
+    return res.json({ status: false, message: 'Invalid API key.' });
   }
 
   try {
-    // Dynamically import the googlethis module
-    const google = await import('googlethis');
+    // Dynamically import OpenAI module
+    const OpenAI = await import('openai');
 
-    const options = {
-      page: 25,
-      safe: false,  // Safe Search
-      parse_ads: false,  // If set to true, sponsored results will be parsed
-      additional_params: {
-        hl: 'en',
-      },
-    };
+    // Create OpenAI client
+    const openai = new OpenAI.default({
+      apiKey: process.env.OPENAI_API_KEY, // Ensure the OpenAI API key is loaded from environment variables
+    });
 
-    // Perform the search using the provided search query
-    const response = await google.search(searchQuery, options);
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo', // Specify the OpenAI model to use
+      reasoning_effort: 'medium',
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      store: true,
+    });
 
-    console.log(response);
-    
-    // Return the search results
+    // Return the result from OpenAI
     return res.json({
       status: true,
-      results: response,
+      response: completion.choices[0].message.content,
     });
-
   } catch (err) {
-    console.error('Error during Google search:', err);
-    return res.json({
-      status: false,
-      message: 'An error occurred while performing the Google search.',
-      error: err.message,
-    });
+    console.error('Error during OpenAI completion:', err);
+    return res.json({ status: false, message: 'An error occurred while generating the completion.', error: err.message });
   }
 });
-
-  
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
