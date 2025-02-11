@@ -217,8 +217,15 @@ router.get('/g4f-chat', async (req, res) => {
   }
 
   try {
-    // Call g4f's chatCompletion function with the message as a string
-    const response = await g4f.chatCompletion(message); // Pass the message directly
+    // Prepare the request body in the correct format
+    const requestBody = {
+      messages: [
+        { role: "user", content: message }
+      ]
+    };
+
+    // Call g4f's chatCompletion function with the correct format
+    const response = await g4f.chatCompletion(requestBody);
 
     // Log the full response for debugging
     console.log('G4F Raw Response:', response);
@@ -253,7 +260,6 @@ router.get('/g4f-chat', async (req, res) => {
     });
   }
 });
-
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
