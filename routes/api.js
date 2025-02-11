@@ -228,7 +228,7 @@ router.get('/generate-text', async (req, res) => {
 });
 
 // Dynamically import Google Generative AI modules
-const genAI = new GoogleGenerativeAI(AIzaSyDzdNkFouvOmCczG3ez0oD98-E7uKFF7UA);
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Route to generate content based on prompt and image
@@ -290,8 +290,11 @@ router.get('/gemini-chat', async (req, res) => {
     // Dynamically import Gemini module (using `await import`)
     const { default: Gemini } = await import('gemini-ai');  // Dynamically import the Gemini class
 
+    // Retrieve the API Key from environment
+    const API_KEY = process.env.API_KEY;
+
     // Initialize Gemini AI with the API key from environment
-    const gemini = new Gemini(AIzaSyDzdNkFouvOmCczG3ez0oD98-E7uKFF7UA);  // Pass the API key from environment
+    const gemini = new Gemini(API_KEY);  // Pass the API key from environment
     const chat = gemini.createChat();  // Create a chat instance
 
     // Ask the prompt to Gemini AI and get the response
@@ -305,9 +308,16 @@ router.get('/gemini-chat', async (req, res) => {
 
   } catch (err) {
     console.error('Error interacting with Gemini AI:', err);
-    return res.json(loghandler.error);  // Return error message if something goes wrong
+    
+    // Return error message if something goes wrong
+    return res.json({
+      status: false,
+      message: 'An error occurred while interacting with Gemini AI.',
+      error: err.message  // Include error message in response for debugging
+    });
   }
 });
+
 
 router.get('/download/mega', async (req, res, next) => {
   const Apikey = req.query.apikey;
