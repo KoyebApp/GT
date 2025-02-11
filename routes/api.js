@@ -192,6 +192,78 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+// Load environment variables from the .env file
+require('dotenv').config();
+
+let conversationHistory = [];
+
+router.get('/chatbot', async (req, res, next) => {
+  const apikey = req.query.apikey; // Get the API key from the query
+  const message = req.query.message; // Get the message from the query
+
+  // Validate input parameters
+  if (!apikey || !message) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and message.',
+    });
+  }
+
+  // Check if the provided API key matches the key in the .env file
+  if (apikey !== process.env.OPENAI_API_KEY) {
+    return res.json({
+      status: false,
+      code: 406,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Add the user's message to the conversation history
+    conversationHistory.push({ role: 'user', content: message });
+
+    // Dynamically import OpenAI
+    const { OpenAI } = await import('openai');
+
+    // Initialize OpenAI client with the API key from .env file
+    const client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY, // Use the API key from .env
+    });
+
+    // Generate a response using OpenAI's GPT model (gpt-3.5-turbo)
+    const completion = await client.chat.completions.create({
+      model: 'gpt-3.5-turbo', // Use free plan access model
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant.' },
+        ...conversationHistory, // Include entire conversation history
+      ],
+      max_tokens: 150, // Token limit for free plan
+    });
+
+    // Extract the generated response from OpenAI's completion object
+    const response = completion.choices[0].message.content;
+
+    // Add the assistant's response to the conversation history
+    conversationHistory.push({ role: 'assistant', content: response });
+
+    // Return the chatbot response as JSON
+    return res.json({
+      status: true,
+      message: response,
+    });
+
+  } catch (err) {
+    console.error('Error in chatbot route:', err);
+
+    // Handle error response if an exception occurs
+    return res.json({
+      status: false,
+      message: 'An error occurred while processing your message.',
+      error: err.message, // Return specific error message for debugging
+    });
+  }
+});
+
 
 // New route to generate text based on the AI model and prompt
 router.get('/generate-text', async (req, res) => {
