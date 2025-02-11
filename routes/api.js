@@ -18,7 +18,6 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const request = require('request');
 const { translate } = require('@vitalets/google-translate-api');
-const { translate } = require('bing-translate-api');
 const { Anime } = require('@shineiichijo/marika');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
@@ -271,6 +270,7 @@ router.get('/ms/translate', async (req, res) => {
       message: 'Invalid API Key provided.',
     });
   }
+  const { translate } = await import('bing-translate-api');
 
   try {
     // Perform translation using bing-translate-api
