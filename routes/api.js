@@ -195,7 +195,7 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-// Route to handle the chat completion
+// Route to handle chat completion
 router.get('/g4f-chat', async (req, res) => {
   const apikey = req.query.apikey;
   const message = req.query.message;
@@ -217,15 +217,16 @@ router.get('/g4f-chat', async (req, res) => {
   }
 
   try {
-    // Prepare the messages array with the user's input
+    // Prepare the messages array with the user's input and system instruction (optional)
     const messages = [
-      { role: "user", content: message }
+      { role: "system", content: "You're an expert bot in coding." },  // Optional instruction
+      { role: "user", content: message }  // User's message
     ];
 
     // Call g4f's chatCompletion function to get the response
     const response = await g4f.chatCompletion(messages);
 
-    // Log the full response for debugging
+    // Log the full response for debugging (optional)
     console.log('G4F Raw Response:', response);
 
     // Check if the response contains a 'choices' array
@@ -240,7 +241,7 @@ router.get('/g4f-chat', async (req, res) => {
     // Return the response from the G4F API
     return res.json({
       status: true,
-      message: response.choices[0].message.content,
+      message: response.choices[0].message.content, // Extract the text content of the response
     });
 
   } catch (err) {
