@@ -36,6 +36,7 @@
     "base-64": "^1.0.0",
     "base32": "0.0.6",
     "base-x": "^5.0.0",
+    "bing-scraper": "^1.4.11",
     "chalk": "^4.1.0",
     "chatgpt-scraper": "^1.0.1",
     "child_process": "^1.0.2",
