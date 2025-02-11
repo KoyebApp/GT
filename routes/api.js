@@ -877,9 +877,6 @@ router.get('/web/meta', async (req, res) => {
   }
 });
 
-
-
-
 router.get('/download/loader', async (req, res) => {
     const apikey = req.query.apikey;
     const url = req.query.url;
@@ -1044,7 +1041,7 @@ router.get('/info/ip', async (req, res) => {
 
 
 
-router.get('/web/ulvis', async (req, res) => {
+router.get('/short/ulvis', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
 
   const apikey = req.query.apikey;
@@ -1280,7 +1277,7 @@ router.get('/make/ogimage', async (req, res, next) => {
 
 
 // Route to get the current time based on city or country name
-router.get('/time/check', async (req, res, next) => {
+router.get('/time/search', async (req, res, next) => {
   const apikey = req.query.apikey;
   const location = req.query.location;  // Location (city or country) to get the time for
 
@@ -1557,12 +1554,12 @@ router.get('/validate/data', (req, res) => {
 // Route for generating QR code
 router.get('/custom/qrcode', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const data = req.query.data;  // Data to encode in QR code
+  const data = req.query.text;  // Data to encode in QR code
   const size = req.query.size;  // Default size if not provided
   const color = req.query.color;  // Default color (green) if not provided
 
   // Validate input parameters
-  if (!data) return res.json({ status: false, message: "Data parameter is required." });
+  if (!data) return res.json({ status: false, message: "Text is required." });
   if (!apikey) return res.json({ status: false, message: "API key is required." });
 
   // Validate API key
