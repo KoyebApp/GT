@@ -7,6 +7,8 @@ const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
 const validator = require('validator');
+const { deepseek } = require('@ai-sdk/deepseek');
+const { generateText } = require('ai');
 const { search } = require('aptoide-scraper');
 const cityTimezones = require('city-timezones');
 const moment = require('moment-timezone');
@@ -210,10 +212,6 @@ router.get('/generate-text', async (req, res, next) => {
     }
 
   try {
-
-    // Dynamically import the modules
-    const { deepseek } = await import('@ai-sdk/deepseek');
-    const { generateText } = await import('ai');
 
     // Call the AI model to generate text based on the prompt
     const { text } = await generateText({
