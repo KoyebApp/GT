@@ -193,14 +193,13 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-
-router.get('/gpt4-chat', async (req, res) => {
+app.get('/google-search', async (req, res) => {
   const apikey = req.query.apikey;  // Get the API key from the query
-  const prompt = req.query.prompt;  // Get the prompt from the query
+  const searchQuery = req.query.query;  // Get the search query from the query
 
   // Validate input parameters
-  if (!apikey || !prompt) {
-    return res.json(loghandler.notparam);  // Ensure API key and prompt are provided
+  if (!apikey || !searchQuery) {
+    return res.json(loghandler.notparam);  // Ensure both API key and search query are provided
   }
 
   // Check if the API key is valid
@@ -209,39 +208,37 @@ router.get('/gpt4-chat', async (req, res) => {
   }
 
   try {
-    // Import GPT4js dynamically (CommonJS or ESM as needed)
-    const GPT4js = await import('gpt4js');
+    // Dynamically import the googlethis module
+    const google = await import('googlethis');
 
-    // Prepare the message and options
-    const messages = [{ role: "user", content: prompt }];
     const options = {
-      provider: "Nextway",  // Use Aryahcr provider
-      model: "gpt-4o-free", // GPT-4 model
+      page: 0,
+      safe: false,  // Safe Search
+      parse_ads: false,  // If set to true, sponsored results will be parsed
+      additional_params: {
+        hl: 'en',
+      },
     };
 
-    // Create provider using Aryahcr
-    const provider = GPT4js.createProvider(options.provider);
+    // Perform the search using the provided search query
+    const response = await google.search(searchQuery, options);
 
-    // Call the chatCompletion method
-    const text = await provider.chatCompletion(messages, options);
-
-    // Return the generated text
+    // Return the search results
     return res.json({
       status: true,
-      text: text,  // Generated text from GPT-4 using Aryahcr
+      results: response,
     });
 
   } catch (err) {
-    console.error('Error during GPT-4 chat:', err);
-
-    // Return error response if something goes wrong
+    console.error('Error during Google search:', err);
     return res.json({
       status: false,
-      message: 'An error occurred while generating text.',
-      error: err.message,  // Include the error message
+      message: 'An error occurred while performing the Google search.',
+      error: err.message,
     });
   }
 });
+
   
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
