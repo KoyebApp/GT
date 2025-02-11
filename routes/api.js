@@ -192,7 +192,7 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-app.get('/google-search', async (req, res) => {
+router.get('/google-search', async (req, res) => {
   const apikey = req.query.apikey;  // Get the API key from the query
   const searchQuery = req.query.query;  // Get the search query from the query
 
