@@ -216,51 +216,62 @@ router.get('/g4f-chat', async (req, res) => {
     });
   }
 
+  
+try {
+  const requestBody = {
+    messages: [
+      { role: "user", content: message }
+    ]
+  };
+
+  const response = await g4f.chatCompletion(requestBody);
+
+  // Log the full response for debugging
+  console.log('G4F Raw Response:', response);
+
+  // Handle streaming response (if applicable)
+  let fullResponse = '';
+  for await (const chunk of response) {
+    fullResponse += chunk;
+  }
+
+  // Log the full response after streaming
+  console.log('G4F Full Response:', fullResponse);
+
+  // Parse the response if it's JSON
+  let responseData;
   try {
-    // Prepare the request body in the correct format
-    const requestBody = {
-      messages: [
-        { role: "user", content: message }
-      ]
-    };
-
-    // Call g4f's chatCompletion function with the correct format
-    const response = await g4f.chatCompletion(requestBody);
-
-    // Log the full response for debugging
-    console.log('G4F Raw Response:', response);
-
-    // Handle streaming response (if applicable)
-    let fullResponse = '';
-    for await (const chunk of response) {
-      fullResponse += chunk;
-    }
-
-    // Check if the response is valid
-    if (!fullResponse) {
-      console.error('Invalid or empty response:', fullResponse);
-      return res.status(500).json({
-        status: false,
-        message: 'Invalid response from G4F API.',
-      });
-    }
-
-    // Return the response
-    return res.json({
-      status: true,
-      message: fullResponse,
-    });
-
+    responseData = JSON.parse(fullResponse);
   } catch (err) {
-    console.error('Error in g4f-chat route:', err);
+    // If parsing fails, assume the response is plain text
+    responseData = { content: fullResponse };
+  }
+
+  // Extract the content
+  const content = responseData.content;
+
+  // Check if the content is valid
+  if (!content) {
+    console.error('Invalid or empty content:', content);
     return res.status(500).json({
       status: false,
-      message: 'An error occurred while processing your message.',
-      error: err.message,
+      message: 'Invalid response from G4F API.',
     });
   }
-});
 
+  // Return the response
+  return res.json({
+    status: true,
+    message: content,
+  });
+} catch (err) {
+  console.error('Error in g4f-chat route:', err);
+  return res.status(500).json({
+    status: false,
+    message: 'An error occurred while processing your message.',
+    error: err.message,
+  });
+}
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
