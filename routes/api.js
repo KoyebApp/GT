@@ -195,7 +195,6 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-
 // Route to handle the chat completion
 router.get('/g4f-chat', async (req, res) => {
   const apikey = req.query.apikey;
@@ -225,15 +224,28 @@ router.get('/g4f-chat', async (req, res) => {
 
     // Call g4f's chatCompletion function to get the response
     const response = await g4f.chatCompletion(messages);
-    
+
+    // Log the full response for debugging
+    console.log('G4F Response:', response);
+
+    // Check if the response is valid
+    if (!response || !response.choices || response.choices.length === 0) {
+      return res.json({
+        status: false,
+        message: 'Invalid response from G4F API.',
+      });
+    }
+
     // Return the response from the G4F API
     return res.json({
       status: true,
-      message: response,
+      message: response.choices[0].message.content,
     });
-    
+
   } catch (err) {
     console.error('Error in g4f-chat route:', err);
+
+    // Provide more detailed error information
     return res.json({
       status: false,
       message: 'An error occurred while processing your message.',
@@ -242,8 +254,6 @@ router.get('/g4f-chat', async (req, res) => {
   }
 });
 
-
-  
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
