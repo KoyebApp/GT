@@ -230,27 +230,40 @@ router.get('/generate-text', async (req, res, next) => {
   }
 });
 
-// Dynamically import Google Generative AI modules
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Route to generate content based on prompt and image
 router.get('/generate-content', async (req, res, next) => {
-  
-    const apikey = req.query.apikey;  // Get the API key from the query
-    const prompt = req.query.prompt;  // Get the prompt from the query
-    const imagePath = req.query.imagePath;  // Get the image path from the query
+  const apikey = req.query.apikey;  // Get the API key from the query
+  const prompt = req.query.prompt;  // Get the prompt from the query
+  const imagePath = req.query.imagePath;  // Get the image path from the query
 
-    // Validate input parameters
-    if (!apikey || !prompt || !imagePath) {
-      return res.json(loghandler.notparam);  // Ensure API key, prompt, and image path are provided
-    }
+  // Validate input parameters
+  if (!apikey || !prompt || !imagePath) {
+    return res.json({ 
+      status: false, 
+      message: "Please provide the API key, prompt, and image path." 
+    });
+  }
 
-    // Check if the API key is valid
-    if (!listkey.includes(apikey)) {
-      return res.json(loghandler.invalidKey);  // API key is invalid
-    }
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      code: 406,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
   try {
+    // Ensure the image exists at the provided path
+    if (!fs.existsSync(imagePath)) {
+      return res.json({
+        status: false,
+        message: 'Image file not found at the provided path.',
+      });
+    }
 
     // Read and encode the image to base64
     const image = {
@@ -263,7 +276,10 @@ router.get('/generate-content', async (req, res, next) => {
     // Generate content using the AI model with the prompt and image
     const result = await model.generateContent([prompt, image]);
 
-    // Return the generated content
+    // Delete the image file after processing
+    fs.unlinkSync(imagePath);
+
+    // Return the generated content (You can adjust this as needed based on the response format)
     return res.json({
       status: true,
       text: result.response.text(),  // Content generated from AI model
@@ -271,9 +287,20 @@ router.get('/generate-content', async (req, res, next) => {
 
   } catch (err) {
     console.error('Error generating content:', err);
-    return res.json(loghandler.error);  // Return error message if something goes wrong
+
+    // Attempt to delete the image if an error occurs during processing
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);  // Remove the image from the filesystem
+    }
+
+    return res.json({
+      status: false,
+      message: 'An error occurred while generating content.',
+      error: err.message,
+    });
   }
 });
+
 
 // Route to interact with Gemini AI
 router.get('/gemini-chat', async (req, res, next) => {
