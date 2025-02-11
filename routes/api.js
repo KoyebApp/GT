@@ -193,7 +193,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 
 // New route to generate text based on the AI model and prompt
-app.get('/generate-text', async (req, res) => {
+router.get('/generate-text', async (req, res) => {
   try {
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
@@ -232,7 +232,7 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Route to generate content based on prompt and image
-app.get('/generate-content', async (req, res) => {
+router.get('/generate-content', async (req, res) => {
   try {
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
@@ -272,7 +272,7 @@ app.get('/generate-content', async (req, res) => {
 });
 
 // Route to interact with Gemini AI
-app.get('/gemini-chat', async (req, res) => {
+router.get('/gemini-chat', async (req, res) => {
   try {
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
