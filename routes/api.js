@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Required modules
 const express = require('express');
-const { G4F } = require('g4f');
+const { G4F } = require("g4f");
 const g4f = new G4F();
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
@@ -203,22 +203,22 @@ router.get('/g4f-chat', async (req, res) => {
 
   // Validate input parameters
   if (!apikey || !message) {
-    return res.json({
+    return res.status(400).json({
       status: false,
       message: 'Please provide both the API key and message.',
     });
   }
 
-  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  // Check if the API key is valid
   if (!listkey.includes(apikey)) {
-    return res.json({
+    return res.status(401).json({
       status: false,
       message: 'Invalid API Key provided.',
     });
   }
 
   try {
-    // Prepare the messages array with just the user's input (no system role in this case)
+    // Prepare the messages array with the user's input
     const messages = [
       { role: "user", content: message }  // User's message directly
     ];
@@ -232,7 +232,7 @@ router.get('/g4f-chat', async (req, res) => {
     // Check if the response contains a 'choices' array
     if (!response || !response.choices || response.choices.length === 0) {
       console.error('Invalid or empty response:', response);
-      return res.json({
+      return res.status(500).json({
         status: false,
         message: 'Invalid response from G4F API.',
       });
@@ -248,14 +248,13 @@ router.get('/g4f-chat', async (req, res) => {
     console.error('Error in g4f-chat route:', err);
 
     // Provide more detailed error information
-    return res.json({
+    return res.status(500).json({
       status: false,
       message: 'An error occurred while processing your message.',
       error: err.message,
     });
   }
 });
-
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
