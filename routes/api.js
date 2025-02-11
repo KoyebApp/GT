@@ -195,7 +195,6 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-
 // Route to handle chat completion
 router.get('/g4f-chat', async (req, res) => {
   const apikey = req.query.apikey;
@@ -218,36 +217,35 @@ router.get('/g4f-chat', async (req, res) => {
   }
 
   try {
-    // Prepare the messages array with the user's input
-    const messages = [
-      { role: "user", content: message }  // User's message directly
-    ];
+    // Call g4f's chatCompletion function with the message as a string
+    const response = await g4f.chatCompletion(message); // Pass the message directly
 
-    // Call g4f's chatCompletion function to get the response
-    const response = await g4f.chatCompletion(messages);
-
-    // Log the full response for debugging (optional)
+    // Log the full response for debugging
     console.log('G4F Raw Response:', response);
 
-    // Check if the response contains a 'choices' array
-    if (!response || !response.choices || response.choices.length === 0) {
-      console.error('Invalid or empty response:', response);
+    // Handle streaming response (if applicable)
+    let fullResponse = '';
+    for await (const chunk of response) {
+      fullResponse += chunk;
+    }
+
+    // Check if the response is valid
+    if (!fullResponse) {
+      console.error('Invalid or empty response:', fullResponse);
       return res.status(500).json({
         status: false,
         message: 'Invalid response from G4F API.',
       });
     }
 
-    // Return the response from the G4F API
+    // Return the response
     return res.json({
       status: true,
-      message: response.choices[0].message.content, // Extract the text content of the response
+      message: fullResponse,
     });
 
   } catch (err) {
     console.error('Error in g4f-chat route:', err);
-
-    // Provide more detailed error information
     return res.status(500).json({
       status: false,
       message: 'An error occurred while processing your message.',
@@ -255,6 +253,7 @@ router.get('/g4f-chat', async (req, res) => {
     });
   }
 });
+
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
