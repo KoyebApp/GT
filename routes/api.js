@@ -222,6 +222,8 @@ router.get('/google-search', async (req, res) => {
     // Perform the search using the provided search query
     const response = await google.search(searchQuery, options);
 
+    console.log(response);
+    
     // Return the search results
     return res.json({
       status: true,
