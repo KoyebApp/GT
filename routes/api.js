@@ -27,6 +27,7 @@ const mime = require('mime-types');
 const mega = require('megajs');
 const path = require('path');
 const Qasim = require('api-qasim');
+const { youtube, music, unsplash, pinterest, facebook, instagram, photofunia, apkmody, tiktok, diffusion } = require('@xct007/frieren-scraper');
 const FormData = require('form-data');
 const dotenv = require('dotenv').config();
 const { color, bgcolor } = require(__path + '/lib/color.js');
@@ -193,6 +194,57 @@ router.delete("/apikey", async (req, res, next) => {
   res.json({
     message: 'API key successfully deleted'
   });
+});
+
+
+ // Importing the youtube object from the scraper package
+
+// Route to download video from YouTube
+router.get('/downloadyt', async (req, res) => {
+  const apikey = req.query.apikey;
+  const videoUrl = req.query.url;  // URL of the video to download
+
+  // Validate input parameters
+  if (!apikey || !videoUrl) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and video URL.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Fetch the download URL using the frieren-scraper package
+    const downloadUrl = await youtube.download(videoUrl);
+
+    // Check if download URL exists
+    if (!downloadUrl || !downloadUrl.url) {
+      return res.json({
+        status: false,
+        message: 'Failed to retrieve download link for the video.',
+      });
+    }
+
+    // Return the download URL in the response
+    return res.json({
+      status: true,
+      videoUrl: downloadUrl.url,  // The direct download link for the video
+    });
+  } catch (err) {
+    console.error('Error in download route:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while fetching the download URL.',
+      error: err.message,
+    });
+  }
 });
 
 
