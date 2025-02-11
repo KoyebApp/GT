@@ -194,8 +194,7 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-
-router.get('/image/unsplash', async (req, res) => {
+router.get('/music/search', async (req, res) => {
   const query = req.query.query;
 
   if (!query) {
@@ -206,34 +205,112 @@ router.get('/image/unsplash', async (req, res) => {
   }
 
   try {
-    // Dynamically import the 'unsplash' module
-    const { unsplash } = await import('@xct007/frieren-scraper');
+    // Dynamically import the 'music' module
+    const { music } = await import('@xct007/frieren-scraper');
 
-    // Search for images by query
-    const images = await unsplash.search(query);
+    // Search for music by query
+    const results = await music.search(query);
     
-    // Check if images are returned
-    if (images && images.length > 0) {
+    // Check if results are returned
+    if (results && results.length > 0) {
       return res.json({
         status: true,
-        images: images, // Returning the array of image data
+        results: results, // Returning the array of music results
       });
     } else {
       return res.json({
         status: false,
-        message: 'No images found for the given query.',
+        message: 'No music found for the given query.',
       });
     }
   } catch (err) {
-    console.error('Error in Unsplash search:', err);
+    console.error('Error in music search:', err);
     return res.json({
       status: false,
-      message: 'An error occurred while fetching images.',
+      message: 'An error occurred while searching for music.',
       error: err.message,
     });
   }
 });
 
+
+router.get('/apkmody/search', async (req, res) => {
+  const query = req.query.query;
+
+  if (!query) {
+    return res.json({
+      status: false,
+      message: 'Please provide a search query.',
+    });
+  }
+
+  try {
+    // Dynamically import the 'apkmody' module
+    const { apkmody } = await import('@xct007/frieren-scraper');
+
+    // Search for apps or games by query
+    const results = await apkmody.search(query);
+    
+    // Check if results are returned
+    if (results && results.length > 0) {
+      return res.json({
+        status: true,
+        results: results, // Returning the array of apps/games results
+      });
+    } else {
+      return res.json({
+        status: false,
+        message: 'No apps or games found for the given query.',
+      });
+    }
+  } catch (err) {
+    console.error('Error in apkmody search:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while searching for apps or games.',
+      error: err.message,
+    });
+  }
+});
+
+router.get('/apkmody/download', async (req, res) => {
+  const url = req.query.url;
+
+  if (!url) {
+    return res.json({
+      status: false,
+      message: 'Please provide an APKMODY URL.',
+    });
+  }
+
+  try {
+    // Dynamically import the 'apkmody' module
+    const { apkmody } = await import('@xct007/frieren-scraper');
+
+    // Fetch the direct download URL
+    const downloadData = await apkmody.download(url);
+    
+    // Check if download data is returned
+    if (downloadData && downloadData.url) {
+      return res.json({
+        status: true,
+        downloadUrl: downloadData.url, // Returning the direct download URL
+      });
+    } else {
+      return res.json({
+        status: false,
+        message: 'Failed to fetch download URL.',
+      });
+    }
+  } catch (err) {
+    console.error('Error in apkmody download:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while fetching the download URL.',
+      error: err.message,
+    });
+  }
+});
 
  // Importing the translate function
 
