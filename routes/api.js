@@ -231,6 +231,7 @@ const client = new OpenAI({
     console.error('Error generating content:', error);
     return res.json({ status: false, message: 'Error generating content.', error: error.message });
   }
+  }
 });
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
