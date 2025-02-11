@@ -3,6 +3,8 @@ require('dotenv').config();
 
 // Required modules
 const express = require('express');
+const { G4F } = require('g4f');
+const g4f = new G4F();
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
@@ -194,57 +196,54 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
+// Route to handle the chat completion
+router.get('/g4f-chat', async (req, res) => {
+  const apikey = req.query.apikey;
+  const message = req.query.message;
+
+  // Validate input parameters
+  if (!apikey || !message) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and message.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Prepare the messages array with the user's input
+    const messages = [
+      { role: "user", content: message }
+    ];
+
+    // Call g4f's chatCompletion function to get the response
+    const response = await g4f.chatCompletion(messages);
+    
+    // Return the response from the G4F API
+    return res.json({
+      status: true,
+      message: response,
+    });
+    
+  } catch (err) {
+    console.error('Error in g4f-chat route:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while processing your message.',
+      error: err.message,
+    });
+  }
+});
 
 
-  router.get('/morphic-chat', async (req, res) => {
-    const apikey = req.query.apikey;
-    const query = req.query.query;
-
-    // Validate input parameters
-    if (!apikey || !query) {
-      return res.json({
-        status: false,
-        message: 'API key and query are required.',
-      });
-    }
-
-    // Check if the API key is valid (replace listkey with your valid key checking logic)
-    if (!listkey.includes(apikey)) {
-      return res.json({
-        status: false,
-        message: 'Invalid API Key provided.',
-      });
-    }
-
-    try {
-      // Call the Morphic API to generate the response
-      const response = await morphic(query);
-
-      // If no response is returned, return an error
-      if (!response) {
-        return res.json({
-          status: false,
-          message: 'Error generating response from Morphic API.',
-        });
-      }
-
-      // Return the response from Morphic API
-      return res.json({
-        status: true,
-        message: response,
-      });
-
-    } catch (err) {
-      console.error('Error in Morphic chatbot route:', err);
-      return res.json({
-        status: false,
-        message: 'An error occurred while processing your message.',
-        error: err.message,
-      });
-    }
-  });
-
-
+  
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
