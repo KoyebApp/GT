@@ -215,7 +215,7 @@ router.get('/gpt4-chat', async (req, res) => {
     // Prepare the message and options
     const messages = [{ role: "user", content: prompt }];
     const options = {
-      provider: "Aryahcr",  // Use Aryahcr provider
+      provider: "Nextway",  // Use Aryahcr provider
       model: "gpt-4o-free", // GPT-4 model
     };
 
