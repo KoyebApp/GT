@@ -7,8 +7,6 @@ const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
 const validator = require('validator');
-const { deepseek } = require('@ai-sdk/deepseek');
-const { generateText } = require('ai');
 const { search } = require('aptoide-scraper');
 const cityTimezones = require('city-timezones');
 const moment = require('moment-timezone');
@@ -195,38 +193,53 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
-// New route to generate text based on the AI model and prompt
-router.get('/generate-text', async (req, res, next) => {
-  
-    const apikey = req.query.apikey;  // Get the API key from the query
-    const prompt = req.query.prompt;  // Get the prompt from the query
+router.get('/gpt4-chat', async (req, res) => {
+  const apikey = req.query.apikey;  // Get the API key from the query
+  const prompt = req.query.prompt;  // Get the prompt from the query
 
-    // Validate input parameters
-    if (!apikey || !prompt) {
-      return res.json(loghandler.notparam);  // Ensure both API key and prompt are provided
-    }
+  // Validate input parameters
+  if (!apikey || !prompt) {
+    return res.json(loghandler.notparam);  // Ensure API key and prompt are provided
+  }
 
-    // Check if the API key is valid
-    if (!listkey.includes(apikey)) {
-      return res.json(loghandler.invalidKey);  // API key is invalid
-    }
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json(loghandler.invalidKey);  // API key is invalid
+  }
 
   try {
+    // Dynamically import gpt4js module
+    const getGPT4js = await import('gpt4js');
+    const GPT4js = await getGPT4js();
 
-    // Call the AI model to generate text based on the prompt
-    const { text } = await generateText({
-      model: deepseek('deepseek-chat'),  // Pass the deepseek model
-      prompt: prompt,  // Use the provided prompt
-    });
+    const messages = [{ role: "user", content: prompt }];
+    const options = {
+      provider: "Aryahcr",  // Use Aryahcr provider
+      model: "gpt-4o-free",
+    };
+
+    // Create provider using Aryahcr
+    const provider = GPT4js.createProvider(options.provider);
+
+    // Call the chatCompletion method
+    const text = await provider.chatCompletion(messages, options);
 
     // Return the generated text
-    return res.json({ status: true, text });
+    return res.json({
+      status: true,
+      text: text,  // Generated text from GPT-4 using Aryahcr
+    });
 
   } catch (err) {
-    console.error('Error generating text:', err);
-    return res.json(loghandler.error);  // Return error message if something goes wrong
+    console.error('Error during GPT-4 chat:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while generating text.',
+      error: err.message,
+    });
   }
 });
+
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
