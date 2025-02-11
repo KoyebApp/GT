@@ -195,6 +195,7 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+
 // Route to handle chat completion
 router.get('/g4f-chat', async (req, res) => {
   const apikey = req.query.apikey;
@@ -217,10 +218,9 @@ router.get('/g4f-chat', async (req, res) => {
   }
 
   try {
-    // Prepare the messages array with the user's input and system instruction (optional)
+    // Prepare the messages array with just the user's input (no system role in this case)
     const messages = [
-      { role: "system", content: "You're an expert bot in coding." },  // Optional instruction
-      { role: "user", content: message }  // User's message
+      { role: "user", content: message }  // User's message directly
     ];
 
     // Call g4f's chatCompletion function to get the response
