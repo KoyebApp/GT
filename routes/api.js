@@ -193,8 +193,8 @@ router.delete("/apikey", async (req, res, next) => {
 
 
 // New route to generate text based on the AI model and prompt
-router.get('/generate-text', async (req, res) => {
-  try {
+router.get('/generate-text', async (req, res, next) => {
+  
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
 
@@ -207,6 +207,8 @@ router.get('/generate-text', async (req, res) => {
     if (!listkey.includes(apikey)) {
       return res.json(loghandler.invalidKey);  // API key is invalid
     }
+
+  try {
 
     // Dynamically import the modules
     const { deepseek } = await import('@ai-sdk/deepseek');
@@ -232,8 +234,8 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Route to generate content based on prompt and image
-router.get('/generate-content', async (req, res) => {
-  try {
+router.get('/generate-content', async (req, res, next) => {
+  
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
     const imagePath = req.query.imagePath;  // Get the image path from the query
@@ -247,6 +249,7 @@ router.get('/generate-content', async (req, res) => {
     if (!listkey.includes(apikey)) {
       return res.json(loghandler.invalidKey);  // API key is invalid
     }
+  try {
 
     // Read and encode the image to base64
     const image = {
@@ -272,8 +275,8 @@ router.get('/generate-content', async (req, res) => {
 });
 
 // Route to interact with Gemini AI
-router.get('/gemini-chat', async (req, res) => {
-  try {
+router.get('/gemini-chat', async (req, res, next) => {
+  
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
 
@@ -286,6 +289,7 @@ router.get('/gemini-chat', async (req, res) => {
     if (!listkey.includes(apikey)) {
       return res.json(loghandler.invalidKey);  // API key is invalid
     }
+  try {
 
     // Dynamically import Gemini module (using `await import`)
     const { default: Gemini } = await import('gemini-ai');  // Dynamically import the Gemini class
