@@ -18,6 +18,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const request = require('request');
 const { translate } = require('@vitalets/google-translate-api');
+const { translate } = require('bing-translate-api');
 const { Anime } = require('@shineiichijo/marika');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
@@ -192,6 +193,54 @@ router.delete("/apikey", async (req, res, next) => {
   res.json({
     message: 'API key successfully deleted'
   });
+});
+
+
+ // Importing the translate function
+
+// Route to translate text and detect language
+router.get('/ms/translate', async (req, res) => {
+  const apikey = req.query.apikey;
+  const text = req.query.text;  // Text to be translated
+  const targetLanguage = req.query.targetLanguage || 'en'; // Default to English if no target language is specified
+
+  // Validate input parameters
+  if (!apikey || !text) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and text.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Perform translation using bing-translate-api
+    const translationResult = await translate(text, null, targetLanguage);
+
+    // Return the translation result
+    return res.json({
+      status: true,
+      originalText: translationResult.text,
+      translatedText: translationResult.translation,
+      detectedLanguage: translationResult.language.from,  // Detected language code of the original text
+      targetLanguage: translationResult.language.to,  // Target language code
+      score: translationResult.language.score,  // Language detection score
+    });
+  } catch (err) {
+    console.error('Error in translation:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while translating the text.',
+      error: err.message,
+    });
+  }
 });
 
  // Importing the bing-scraper package
