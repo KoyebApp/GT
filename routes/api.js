@@ -302,7 +302,6 @@ async function blackbox(prompt, logHash = generateLogHash()) {
       });
     }
   });
-};
 
 
 
