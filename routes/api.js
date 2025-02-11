@@ -27,7 +27,6 @@ const mega = require('megajs');
 const path = require('path');
 const Qasim = require('api-qasim');
 const FormData = require('form-data');
-const dotenv = require('dotenv').config();
 const { color, bgcolor } = require(__path + '/lib/color.js');
 const { fetchJson } = require(__path + '/lib/fetcher.js');
 const options = require(__path + '/lib/options.js');
@@ -101,7 +100,7 @@ var { Base, WPUser } = require('./../lib/utils/tools');
 var { Tiktok, FB, Joox } = require('./../lib/utils/downloader');
 var tebakGambar = require('./../lib/utils/tebakGambar');
 const uploadToImgur = require('./../lib/utils/Imgur');
-const morphic = require('./../lib/morph');
+const Spotify = require('./../lib/utils/Spotify');
 const { GetTime } = require('./../lib/utils/Time');  // Import the GetTime function
 const Get = require('./../lib/utils/Get');
 
@@ -525,27 +524,6 @@ router.get('/download/mega', async (req, res, next) => {
 });
 
 
-const Spotify = require('./../lib/utils/Spotify');
-
-const fetchWithRetry = async (url, retries = 3, delay = 1000) => {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response;
-  } catch (error) {
-    if (retries > 0) {
-      console.log(`Retrying request... Attempts remaining: ${retries}`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-      return fetchWithRetry(url, retries - 1, delay);  // Retry the request
-    }
-    throw error;  // If no retries left, throw the error
-  }
-};
-
-
-
 // Route to fetch image from whowouldwin API and return the image directly
 router.get('/image/whowouldwin', async (req, res, next) => {
   const apikey = req.query.apikey;
@@ -723,7 +701,7 @@ router.get('/domain/info', async (req, res) => {
 
 
 // Route to fetch "Would You Rather" question from Popcat API
-router.get('/web/wyr', async (req, res) => {
+router.get('/quotes/wyr', async (req, res) => {
   
   const apikey = req.query.apikey;
 
