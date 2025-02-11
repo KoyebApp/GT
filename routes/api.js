@@ -230,6 +230,7 @@ router.get('/generate-text', async (req, res, next) => {
   }
 });
 
+
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 const tmpDir = './temp';  // Temporary directory to store generated images
@@ -262,11 +263,29 @@ router.get('/generate-content', async (req, res, next) => {
   }
 
   try {
-    // Generate image from the AI model based on the prompt
+    // Generate content from the AI model
     const result = await model.generateContent([prompt]);
 
-    // Assuming the result contains an image in base64 format (adjust as per your actual API response)
+    // Debug: Check the full result structure to inspect the response
+    console.log('AI Model Response:', result.response);
+
+    // Ensure the result contains imageData and handle potential errors
+    if (!result.response || !result.response.imageData) {
+      return res.json({
+        status: false,
+        message: 'Failed to generate image. No image data returned from AI model.',
+      });
+    }
+
     const imageBase64 = result.response.imageData;
+
+    // Debug: Check if the base64 string is valid
+    if (!imageBase64) {
+      return res.json({
+        status: false,
+        message: 'No valid image data returned. The base64 string is empty or undefined.',
+      });
+    }
 
     // Create a temporary file path to save the generated image
     const imagePath = path.join(tmpDir, `generated_image_${Date.now()}.png`);
@@ -301,6 +320,7 @@ router.get('/generate-content', async (req, res, next) => {
     });
   }
 });
+
 
 
 // Route to interact with Gemini AI
