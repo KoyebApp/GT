@@ -195,23 +195,13 @@ router.delete("/apikey", async (req, res, next) => {
 let conversationHistory = [];
 
 router.get('/chatbot', async (req, res, next) => {
-  const apikey = req.query.apikey; // Get the API key from the query
   const message = req.query.message; // Get the message from the query
 
   // Validate input parameters
-  if (!apikey || !message) {
+  if (!message) {
     return res.json({
       status: false,
-      message: 'Please provide both the API key and message.',
-    });
-  }
-
-  // Check if the provided API key matches the key in the .env file
-  if (apikey !== process.env.OPENAI_API_KEY) {
-    return res.json({
-      status: false,
-      code: 406,
-      message: 'Invalid API Key provided.',
+      message: 'Please provide  a message.',
     });
   }
 
