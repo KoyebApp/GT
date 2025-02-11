@@ -28,6 +28,7 @@
     "@vitalets/google-translate-api": "^9.2.0",
     "@google/generative-ai": "^0.21.0",
     "@shineiichijo/marika": "^2.0.6",
+    "ai": "^4.1.34",
     "api-qasim": "^3.2.5",
     "aptoide-scraper": "^1.0.1",
     "base-64": "^1.0.0",
