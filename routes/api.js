@@ -192,56 +192,41 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-// Define your route (e.g., using Express)
-router.get('/openai-completion', async (req, res) => {
-  const apikey = req.query.apikey;  // Get the API key from the query
-  const prompt = req.query.prompt || "Say this is a test";  // Default prompt if none provided
 
-  // Validate input parameters
-  if (!apikey || !prompt) {
-    return res.json({ status: false, message: 'API key and prompt are required.' });
-  }
-
-  // Check if the API key is valid (replace with your key checking logic)
-  if (!listkey.includes(apikey)) {
-    return res.json({ status: false, message: 'Invalid API key.' });
-  }
-
+// New route to generate text based on the AI model and prompt
+app.get('/generate-text', async (req, res) => {
   try {
-    // Dynamically import OpenAI inside the async function
-    const { default: OpenAI } = await import('openai');  // Use dynamic import for OpenAI
+    const apikey = req.query.apikey;  // Get the API key from the query
+    const prompt = req.query.prompt;  // Get the prompt from the query
 
-    // Dynamically import 'undici' inside the async function
-    const { fetch } = await import('undici');  // Dynamically import fetch from undici
+    // Validate input parameters
+    if (!apikey || !prompt) {
+      return res.json(loghandler.notparam);  // Ensure both API key and prompt are provided
+    }
 
-    // Create OpenAI client instance with custom fetch
-    const client = new OpenAI({
-      apiKey: process.env['OPENAI_API_KEY'],  // Your OpenAI API key
-      fetch: async (url, init) => {
-        console.log('About to make a request:', url, init);
-        const response = await fetch(url, init);  // Using undici's fetch with async/await
-        console.log('Got response:', response);
-        return response;  // Return the response object
-      },
+    // Check if the API key is valid
+    if (!listkey.includes(apikey)) {
+      return res.json(loghandler.invalidKey);  // API key is invalid
+    }
+
+    // Dynamically import the modules
+    const { deepseek } = await import('@ai-sdk/deepseek');
+    const { generateText } = await import('ai');
+
+    // Call the AI model to generate text based on the prompt
+    const { text } = await generateText({
+      model: deepseek('deepseek-chat'),  // Pass the deepseek model
+      prompt: prompt,  // Use the provided prompt
     });
 
-    // Generate content with OpenAI chat completion
-    const { data: chatCompletion, response: raw } = await client.chat.completions.create({
-      messages: [{ role: 'user', content: prompt }],
-      model: 'gpt-4o',  // Use your desired model
-    });
+    // Return the generated text
+    return res.json({ status: true, text });
 
-    // Return the generated text as a response
-    return res.json({
-      status: true,
-      text: chatCompletion.choices[0].message.content, // Get the content from the completion
-    });
-  } catch (error) {
-    console.error('Error generating content:', error);
-    return res.json({ status: false, message: 'Error generating content.', error: error.message });
+  } catch (err) {
+    console.error('Error generating text:', err);
+    return res.json(loghandler.error);  // Return error message if something goes wrong
   }
 });
-
 
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
