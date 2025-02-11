@@ -202,7 +202,7 @@ router.delete("/apikey", async (req, res, next) => {
 router.get('/ms/translate', async (req, res) => {
   const apikey = req.query.apikey;
   const text = req.query.text;  // Text to be translated
-  const targetLanguage = req.query.targetLanguage || 'en'; // Default to English if no target language is specified
+  const targetLanguage = req.query.to || 'en'; // Default to English if no target language is specified
 
   // Validate input parameters
   if (!apikey || !text) {
@@ -631,7 +631,7 @@ router.get('/info/github', async (req, res, next) => {
 
 
 // Route to fetch a random pickup line from Popcat API
-router.get('/quotes/pickup', async (req, res) => {
+router.get('/quotes/pickupline', async (req, res) => {
   const apikey = req.query.apikey;
 
   if (!apikey) {
