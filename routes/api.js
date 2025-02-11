@@ -38,9 +38,9 @@ var router  = express.Router();
 
 const { downloadInstagram, downloadFacebook, downloadTikTok } = require('./../lib/utils/snapsave');
 
-// In-memory storage for tracking requests for qasim key (can be replaced with a database or Redis)
+/* In-memory storage for tracking requests for qasim key (can be replaced with a database or Redis)
 const requestCounts = {};
-const dailyLimit = 3000; // Set the daily limit for `qasim`
+const dailyLimit = 2000; // Set the daily limit for `qasim`
 
 // Function to reset daily limit after 24 hours (you can use a cron job to reset every 24 hours)
 const resetDailyLimit = (apikey) => {
@@ -80,7 +80,7 @@ const rateLimitMiddleware = (req, res, next) => {
 
     // Check if the daily limit is exceeded for 'qasim'
     if (requestCounts[apikey].count >= dailyLimit) {
-      return res.json({ status: false, message: "Free API KEY has exceeded the daily limit of 4000 requests.\n\ncontact Owner for help or custom api key" });
+      return res.json({ status: false, message: "Free API KEY has exceeded the daily limit of 2000 requests.\n\ncontact Owner for help or custom api key" });
     }
 
     // Increment the request count for 'qasim'
@@ -94,7 +94,7 @@ const rateLimitMiddleware = (req, res, next) => {
   return next();
 };
 
-router.use(rateLimitMiddleware);
+router.use(rateLimitMiddleware); */
 
 
 var { Base, WPUser } = require('./../lib/utils/tools');
@@ -194,123 +194,7 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-router.get('/music/search', async (req, res) => {
-  const query = req.query.query;
 
-  if (!query) {
-    return res.json({
-      status: false,
-      message: 'Please provide a search query.',
-    });
-  }
-
-  try {
-    // Dynamically import the 'music' module
-    const { music } = await import('@xct007/frieren-scraper');
-
-    // Search for music by query
-    const results = await music.search(query);
-    
-    // Check if results are returned
-    if (results && results.length > 0) {
-      return res.json({
-        status: true,
-        results: results, // Returning the array of music results
-      });
-    } else {
-      return res.json({
-        status: false,
-        message: 'No music found for the given query.',
-      });
-    }
-  } catch (err) {
-    console.error('Error in music search:', err);
-    return res.json({
-      status: false,
-      message: 'An error occurred while searching for music.',
-      error: err.message,
-    });
-  }
-});
-
-
-router.get('/apkmody/search', async (req, res) => {
-  const query = req.query.query;
-
-  if (!query) {
-    return res.json({
-      status: false,
-      message: 'Please provide a search query.',
-    });
-  }
-
-  try {
-    // Dynamically import the 'apkmody' module
-    const { apkmody } = await import('@xct007/frieren-scraper');
-
-    // Search for apps or games by query
-    const results = await apkmody.search(query);
-    
-    // Check if results are returned
-    if (results && results.length > 0) {
-      return res.json({
-        status: true,
-        results: results, // Returning the array of apps/games results
-      });
-    } else {
-      return res.json({
-        status: false,
-        message: 'No apps or games found for the given query.',
-      });
-    }
-  } catch (err) {
-    console.error('Error in apkmody search:', err);
-    return res.json({
-      status: false,
-      message: 'An error occurred while searching for apps or games.',
-      error: err.message,
-    });
-  }
-});
-
-router.get('/apkmody/download', async (req, res) => {
-  const url = req.query.url;
-
-  if (!url) {
-    return res.json({
-      status: false,
-      message: 'Please provide an APKMODY URL.',
-    });
-  }
-
-  try {
-    // Dynamically import the 'apkmody' module
-    const { apkmody } = await import('@xct007/frieren-scraper');
-
-    // Fetch the direct download URL
-    const downloadData = await apkmody.download(url);
-    
-    // Check if download data is returned
-    if (downloadData && downloadData.url) {
-      return res.json({
-        status: true,
-        downloadUrl: downloadData.url, // Returning the direct download URL
-      });
-    } else {
-      return res.json({
-        status: false,
-        message: 'Failed to fetch download URL.',
-      });
-    }
-  } catch (err) {
-    console.error('Error in apkmody download:', err);
-    return res.json({
-      status: false,
-      message: 'An error occurred while fetching the download URL.',
-      error: err.message,
-    });
-  }
-});
 
  // Importing the translate function
 
@@ -344,6 +228,7 @@ router.get('/ms/translate', async (req, res) => {
     // Return the translation result
     return res.json({
       status: true,
+      creator: `${creator}`,
       originalText: translationResult.text,
       translatedText: translationResult.translation,
       detectedLanguage: translationResult.language.from,  // Detected language code of the original text
@@ -398,6 +283,7 @@ router.get('/bing/search', async (req, res) => {
       // Return the search results as a JSON response
       return res.json({
         status: true,
+        creator: `${creator}`,
         results: resp,
       });
     });
@@ -448,13 +334,11 @@ router.get('/google/search', async (req, res) => {
       },
     });
 
-    // Log the result to check the format (optional)
-    console.log(queryResult);
-
     // Respond with the first search result or an error if no results are found
     if (queryResult.length > 0) {
       return res.json({
         status: true,
+        creator: `${creator}`,
         results: queryResult,  // Return the search results
       });
     } else {
@@ -479,7 +363,7 @@ const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Route to generate content based on prompt
-router.get('/generate-content', async (req, res, next) => {
+router.get('/gemini/flash', async (req, res, next) => {
   const apikey = req.query.apikey;  // Get the API key from the query
   const prompt = req.query.prompt;  // Get the prompt from the query
 
@@ -504,15 +388,13 @@ router.get('/generate-content', async (req, res, next) => {
     // Generate content from the AI model
     const result = await model.generateContent([prompt]);
 
-    // Debug: Check the full result structure to inspect the response
-    console.log('AI Model Response:', result.response);
-
     // Extract the text from the response (assuming `content` field is what we need)
     const generatedText = result.response.candidates && result.response.candidates[0].content;
 
     if (!generatedText) {
       return res.json({
         status: false,
+        creator: `${creator}`,
         message: 'Failed to generate content. No valid content returned.',
       });
     }
@@ -520,6 +402,7 @@ router.get('/generate-content', async (req, res, next) => {
     // Return the generated text response
     return res.json({
       status: true,
+      creator: `${creator}`,
       text: generatedText,
     });
 
@@ -528,6 +411,7 @@ router.get('/generate-content', async (req, res, next) => {
 
     return res.json({
       status: false,
+      creator: `${creator}`,
       message: 'An error occurred while generating content.',
       error: err.message,
     });
@@ -537,7 +421,7 @@ router.get('/generate-content', async (req, res, next) => {
 
 
 // Route to interact with Gemini AI
-router.get('/gemini-chat', async (req, res, next) => {
+router.get('/gemini/ai', async (req, res, next) => {
   
     const apikey = req.query.apikey;  // Get the API key from the query
     const prompt = req.query.prompt;  // Get the prompt from the query
@@ -569,6 +453,7 @@ router.get('/gemini-chat', async (req, res, next) => {
     // Return the response from the AI
     return res.json({
       status: true,
+      creator: `${creator}`,
       response: response,  // Response generated by Gemini AI
     });
 
@@ -578,6 +463,7 @@ router.get('/gemini-chat', async (req, res, next) => {
     // Return error message if something goes wrong
     return res.json({
       status: false,
+      creator: `${creator}`,
       message: 'An error occurred while interacting with Gemini AI.',
       error: err.message  // Include error message in response for debugging
     });
@@ -663,11 +549,11 @@ const fetchWithRetry = async (url, retries = 3, delay = 1000) => {
 // Route to fetch image from whowouldwin API and return the image directly
 router.get('/image/whowouldwin', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const image1 = req.query.image1;  // URL for the first image
-  const image2 = req.query.image2;  // URL for the second image
+  const image1 = req.query.url1;  // URL for the first image
+  const image2 = req.query.url2;  // URL for the second image
 
   // Validate input parameters
-  if (!image1 || !image2) return res.json(loghandler.nottext);  // Ensure both 'image1' and 'image2' parameters are provided
+  if (!image1 || !image2) return res.json(loghandler.noturl);  // Ensure both 'image1' and 'image2' parameters are provided
   if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
@@ -682,6 +568,7 @@ router.get('/image/whowouldwin', async (req, res, next) => {
       if (response.status !== 200) {
         return res.json({
           status: false,
+          creator: `${creator}`,
           code: 500,
           message: 'Error fetching image from Popcat API.',
         });
@@ -705,12 +592,12 @@ router.get('/image/whowouldwin', async (req, res, next) => {
 
 
 // Route to fetch GitHub-related data using the popcat.xyz API
-router.get('/image/github', async (req, res, next) => {
+router.get('/info/github', async (req, res, next) => {
   const apikey = req.query.apikey;
-  const text = req.query.text;  // Text or query parameter for GitHub
+  const text = req.query.username;  // Text or query parameter for GitHub
 
   // Validate input parameters
-  if (!text) return res.json(loghandler.nottext);  // Ensure 'text' parameter is provided
+  if (!text) return res.json(loghandler.notuser);  // Ensure 'text' parameter is provided
   if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
 
   // Check if the API key is valid
@@ -724,6 +611,7 @@ router.get('/image/github', async (req, res, next) => {
         return res.json({
           status: false,
           code: 500,
+          creator: `${creator}`,
           message: 'Error fetching GitHub data from Popcat API.',
         });
       }
@@ -743,7 +631,7 @@ router.get('/image/github', async (req, res, next) => {
 
 
 // Route to fetch a random pickup line from Popcat API
-router.get('/web/pickuplines', async (req, res) => {
+router.get('/quotes/pickup', async (req, res) => {
   const apikey = req.query.apikey;
 
   if (!apikey) {
@@ -760,8 +648,8 @@ router.get('/web/pickuplines', async (req, res) => {
       // Send the pickup line and contributor as the response
       return res.json({
         status: true,
+        creator: `${creator}`,
         pickupline: response.data.pickupline, // The pickup line
-        contributor: response.data.contributor, // The contributor's link
       });
     } else {
       throw new Error('Invalid response format from Popcat API');
@@ -771,6 +659,7 @@ router.get('/web/pickuplines', async (req, res) => {
     console.error('Error fetching pickup line:', error.message);
     return res.json({
       status: false,
+      creator: `${creator}`,
       message: 'Error fetching pickup line',
       error: error.message,
     });
@@ -781,7 +670,7 @@ router.get('/web/pickuplines', async (req, res) => {
 });
 
 // Route to fetch domain information from the DomainsDB API
-router.get('/web/domain-info', async (req, res) => {
+router.get('/domain/info', async (req, res) => {
   const domain = req.query.domain;
   const apikey = req.query.apikey;
 
@@ -808,11 +697,13 @@ router.get('/web/domain-info', async (req, res) => {
       // Return the domain information
       return res.json({
         status: true,
+        creator: `${creator}`,
         domain: response.data.domains[0], // Returns the first domain information from the response
       });
     } else {
       return res.json({
         status: false,
+        creator: `${creator}`,
         message: 'No domain found or invalid domain.',
       });
     }
@@ -850,6 +741,7 @@ router.get('/web/wyr', async (req, res) => {
       // Send the WYR question options as the response
       return res.json({
         status: true,
+        creator: `${creator}`,
         question: {
           option1: response.data.ops1, // First option
           option2: response.data.ops2, // Second option
@@ -873,14 +765,14 @@ router.get('/web/wyr', async (req, res) => {
 });
 
 // Route to fetch a word's definition from the dictionary API
-router.get('/web/dictionary', async (req, res) => {
-  const word = req.query.word;
+router.get('/dictionary', async (req, res) => {
+  const word = req.query.text;
   const apikey = req.query.apikey;
     // Validate input parameter
   if (!word) {
     return res.json({
       status: false,
-      message: 'Please provide a word to define.',
+      message: 'Please provide a text to define.',
     });
   }
 
@@ -898,6 +790,7 @@ router.get('/web/dictionary', async (req, res) => {
       // Return the word and its definition
       return res.json({
         status: true,
+        creator: `${creator}`,
         word: response.data.word,
         definition: response.data.definition,
       });
@@ -990,7 +883,7 @@ router.get('/web/meta', async (req, res) => {
     // Step 3: Return the metadata
     return res.json({
       status: true,
-      message: 'Metadata fetched successfully',
+      creator: `${creator}`,
       data: metadata,
     });
 
@@ -1006,52 +899,7 @@ router.get('/web/meta', async (req, res) => {
   }
 });
 
-router.get('/download/savefrom', async (req, res) => {
-    const apikey = req.query.apikey;
-    const url = req.query.url;
 
-    // Validate input parameters
-    if (!url) return res.json(loghandler.noturl);
-    if (!apikey) return res.json(loghandler.notparam);
-  if (listkey.includes(apikey)) {
-
-    try {
-        console.log('Fetching download page...'); // Debug log
-        const pageResponse = await axios.get('https://en1.savefrom.net/', {
-            params: { url },
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-            timeout: 10000, // Add a timeout of 10 seconds
-        });
-
-        console.log('Page fetched successfully. Parsing HTML...'); // Debug log
-        const $ = cheerio.load(pageResponse.data);
-
-        // Debug: Log the entire HTML to inspect the structure
-        // console.log(pageResponse.data);
-
-        const downloadLink = $('div.download-button a').attr('href');
-
-        if (!downloadLink) {
-            console.error('Download link not found in the page.'); // Debug log
-            return res.status(404).json({ error: 'Download link not found' });
-        }
-
-        console.log('Download link found:', downloadLink); // Debug log
-        res.json({ downloadLink });
-    } catch (error) {
-        console.error('Error in /download/savefrom:', error.message); // Debug log
-        if (error.response) {
-            console.error('Response data:', error.response.data); // Debug log
-            console.error('Response status:', error.response.status); // Debug log
-        }
-        res.status(500).json({ error: 'Failed to fetch download link' });
-    }
-    } else {
-    return res.json(loghandler.invalidKey);
-  }
-});
 
 
 router.get('/download/loader', async (req, res) => {
@@ -1087,42 +935,6 @@ router.get('/download/loader', async (req, res) => {
   }
 });
 
-router.get('/download/y2mate', async (req, res) => {
-    const apikey = req.query.apikey;
-    const url = req.query.url;
-
-    // Validate input parameters
-    if (!url) return res.json(loghandler.noturl);
-    if (!apikey) return res.json(loghandler.notparam);
-  
-  if (listkey.includes(apikey)) {
-
-    try {
-        const response = await axios.post('https://www.y2mate.com/mates/analyzeV2/ajax', new URLSearchParams({ url }), {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-        });
-
-      const $ = cheerio.load(response.data);
-
-        const { data } = response;
-        const downloadLink = data.links?.mp4?.['360p']?.url;
-
-        if (!downloadLink) {
-            return res.status(404).json({ error: 'Download link not found' });
-        }
-
-        res.json({ downloadLink });
-    } catch (error) {
-        console.error(error); // Log the error for debugging
-        res.status(500).json({ error: 'Failed to fetch download link' });
-    }
-    } else {
-    return res.json(loghandler.invalidKey);
-  }
-});
 
 router.get('/web/logo', async (req, res, next) => {
   const apikey = req.query.apikey;
@@ -1184,7 +996,7 @@ router.get('/self/ip', async (req, res) => {
     // Step 5: Return the extracted data
     return res.json({
       status: true,
-      message: 'Data fetched successfully',
+      creator: `${creator}`,
       data: data,
     });
 
@@ -1236,7 +1048,7 @@ router.get('/info/ip', async (req, res) => {
     // Step 5: Return the extracted data
     return res.json({
       status: true,
-      message: 'Data fetched successfully',
+      creator: `${creator}`,
       data: data,
     });
 
@@ -1291,7 +1103,7 @@ router.get('/web/ulvis', async (req, res) => {
       // Return the extracted URL in the response
       return res.json({
         status: true,
-        message: 'URL extracted from HTML body',
+        creator: `${creator}`,
         url: extractedUrl, // The extracted URL from the body
       });
     }
@@ -1301,7 +1113,7 @@ router.get('/web/ulvis', async (req, res) => {
 
     return res.json({
       status: true,
-      message: 'Data fetched successfully',
+      creator: `${creator}`,
       data: jsonData, // The actual JSON response from Ulvis
     });
 
@@ -1567,7 +1379,7 @@ router.get('/time/check', async (req, res, next) => {
   }
 });
 
-router.get('/ipone/screenshot', async (req, res) => {
+router.get('/phone/screenshot', async (req, res) => {
   const url = req.query.url;  // Get the URL from query parameter
   const apikey = req.query.apikey;  // Retrieve the API key
 
@@ -1744,7 +1556,7 @@ router.get('/validate/data', (req, res) => {
     res.json({
       status: true,
       code: 200,
-      creator: 'Qasim Ali 🦋',
+      creator: `${creator}`,
       result: {
         type: type,
         data: data,
@@ -2067,7 +1879,7 @@ case 'date':
     res.json({
       status: true,
       code: 200,
-      creator: 'Qasim Ali🦋',
+      creator: `${creator}`,
       result: randomData,
     });
   } catch (err) {
@@ -2759,85 +2571,6 @@ router.get('/text/reverse', async (req, res, next) => {
     res.json(loghandler.invalidKey);
   }
 });
-
-    
-
-// Route to search for a word using some-random-api
-router.get('/dictionary', async (req, res, next) => {
-  const apikey = req.query.apikey;
-  const word = req.query.word;
-
-  // Validate input parameters
-  if (!word) return res.json(loghandler.nottext);  // Ensure 'word' parameter is provided
-  if (!apikey) return res.json(loghandler.notparam);  // Ensure API key is provided
-
-  // Check if the API key is valid
-  if (listkey.includes(apikey)) {
-    try {
-      // Perform the dictionary search with the provided word
-      const response = await fetch(`https://some-random-api.com/others/dictionary?word=${encodeURIComponent(word)}`);
-
-      // Check the content type of the response
-      const contentType = response.headers.get('content-type');
-
-      // If the response is JSON, parse it
-      if (contentType && contentType.includes('application/json')) {
-        const dictionaryResult = await response.json();
-
-        // Check if the response contains a valid dictionary entry
-        if (dictionaryResult && dictionaryResult.length > 0) {
-          res.json({
-            status: true,
-            code: 200,
-            creator: `${creator}`,
-            result: dictionaryResult,  // Send the dictionary result
-          });
-        } else {
-          res.json({
-            status: false,
-            code: 404,
-            message: 'Word not found.',
-          });
-        }
-      }
-      // If the response is plain text (possibly a single word definition or a message)
-      else if (contentType && contentType.includes('text/plain')) {
-        const dictionaryResult = await response.text();
-
-        // Check if the response contains the definition
-        if (dictionaryResult) {
-          res.json({
-            status: true,
-            code: 200,
-            creator: `${creator}`,
-            result: dictionaryResult,  // Send the plain text result
-          });
-        } else {
-          res.json({
-            status: false,
-            code: 404,
-            message: 'Word not found.',
-          });
-        }
-      }
-      // If the response is of unsupported type
-      else {
-        res.json({
-          status: false,
-          code: 415,
-          message: 'Unsupported media type received.',
-        });
-      }
-
-    } catch (err) {
-      console.error("Error fetching dictionary data:", err);
-      res.json(loghandler.error);
-    }
-  } else {
-    res.json(loghandler.invalidKey);
-  }
-});
-
 
 
 
