@@ -11,6 +11,7 @@ const { search } = require('aptoide-scraper');
 const cityTimezones = require('city-timezones');
 const moment = require('moment-timezone');
 const cors = require('cors');
+const bing = require('bing-scraper');
 const QRCode = require('qrcode');
 const fetch = require('node-fetch');
 const axios = require('axios');
@@ -192,6 +193,58 @@ router.delete("/apikey", async (req, res, next) => {
     message: 'API key successfully deleted'
   });
 });
+
+ // Importing the bing-scraper package
+
+// Route to search using Bing Scraper
+router.get('/bing/search', async (req, res) => {
+  const apikey = req.query.apikey;
+  const query = req.query.query;
+
+  // Validate input parameters
+  if (!apikey || !query) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and query.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Perform the search using bing-scraper
+    bing.search({ q: query, enforceLanguage: true }, (err, resp) => {
+      if (err) {
+        console.error('Error in Bing Search:', err);
+        return res.json({
+          status: false,
+          message: 'An error occurred while searching with Bing.',
+          error: err.message,
+        });
+      }
+
+      // Return the search results as a JSON response
+      return res.json({
+        status: true,
+        results: resp,
+      });
+    });
+  } catch (err) {
+    console.error('Error in Bing Search route:', err);
+    return res.json({
+      status: false,
+      message: 'An unexpected error occurred.',
+      error: err.message,
+    });
+  }
+});
+
 
 // Route to search using Google SR with dynamic import
 router.get('/google/search', async (req, res) => {
