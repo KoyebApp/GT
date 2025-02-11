@@ -230,17 +230,10 @@ router.get('/generate-text', async (req, res, next) => {
   }
 });
 
-
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-const tmpDir = './temp';  // Temporary directory to store generated images
 
-// Make sure the temp directory exists
-if (!fs.existsSync(tmpDir)) {
-  fs.mkdirSync(tmpDir);
-}
-
-// Route to generate content based on prompt and respond with generated image
+// Route to generate content based on prompt
 router.get('/generate-content', async (req, res, next) => {
   const apikey = req.query.apikey;  // Get the API key from the query
   const prompt = req.query.prompt;  // Get the prompt from the query
@@ -269,49 +262,24 @@ router.get('/generate-content', async (req, res, next) => {
     // Debug: Check the full result structure to inspect the response
     console.log('AI Model Response:', result.response);
 
-    // Ensure the result contains imageData and handle potential errors
-    if (!result.response || !result.response.imageData) {
+    // Extract the text from the response (assuming `content` field is what we need)
+    const generatedText = result.response.candidates && result.response.candidates[0].content;
+
+    if (!generatedText) {
       return res.json({
         status: false,
-        message: 'Failed to generate image. No image data returned from AI model.',
+        message: 'Failed to generate content. No valid content returned.',
       });
     }
 
-    const imageBase64 = result.response.imageData;
-
-    // Debug: Check if the base64 string is valid
-    if (!imageBase64) {
-      return res.json({
-        status: false,
-        message: 'No valid image data returned. The base64 string is empty or undefined.',
-      });
-    }
-
-    // Create a temporary file path to save the generated image
-    const imagePath = path.join(tmpDir, `generated_image_${Date.now()}.png`);
-
-    // Write the base64 image data to the file system
-    fs.writeFileSync(imagePath, Buffer.from(imageBase64, 'base64'));
-
-    // Wait for the image to be generated, then send it in the response
-    res.set('Content-Type', 'image/png');  // Adjust the MIME type if needed
-    res.sendFile(imagePath, (err) => {
-      if (err) {
-        console.error('Error sending image:', err);
-      } else {
-        // After sending the image, delete it from the file system
-        fs.unlinkSync(imagePath);
-      }
+    // Return the generated text response
+    return res.json({
+      status: true,
+      text: generatedText,
     });
 
   } catch (err) {
     console.error('Error generating content:', err);
-
-    // Clean up any generated files in case of failure
-    const tempImagePath = path.join(tmpDir, 'generated_image.png');
-    if (fs.existsSync(tempImagePath)) {
-      fs.unlinkSync(tempImagePath);
-    }
 
     return res.json({
       status: false,
