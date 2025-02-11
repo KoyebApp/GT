@@ -211,7 +211,7 @@ router.get('/google-search', async (req, res) => {
     const google = await import('googlethis');
 
     const options = {
-      page: 0,
+      page: 25,
       safe: false,  // Safe Search
       parse_ads: false,  // If set to true, sponsored results will be parsed
       additional_params: {
