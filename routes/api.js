@@ -232,18 +232,23 @@ router.get('/generate-text', async (req, res, next) => {
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const tmpDir = './temp';  // Temporary directory to store generated images
 
-// Route to generate content based on prompt and image
+// Make sure the temp directory exists
+if (!fs.existsSync(tmpDir)) {
+  fs.mkdirSync(tmpDir);
+}
+
+// Route to generate content based on prompt and respond with generated image
 router.get('/generate-content', async (req, res, next) => {
   const apikey = req.query.apikey;  // Get the API key from the query
   const prompt = req.query.prompt;  // Get the prompt from the query
-  const imagePath = req.query.imagePath;  // Get the image path from the query
 
   // Validate input parameters
-  if (!apikey || !prompt || !imagePath) {
-    return res.json({ 
-      status: false, 
-      message: "Please provide the API key, prompt, and image path." 
+  if (!apikey || !prompt) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and prompt.',
     });
   }
 
@@ -257,40 +262,36 @@ router.get('/generate-content', async (req, res, next) => {
   }
 
   try {
-    // Ensure the image exists at the provided path
-    if (!fs.existsSync(imagePath)) {
-      return res.json({
-        status: false,
-        message: 'Image file not found at the provided path.',
-      });
-    }
+    // Generate image from the AI model based on the prompt
+    const result = await model.generateContent([prompt]);
 
-    // Read and encode the image to base64
-    const image = {
-      inlineData: {
-        data: Buffer.from(fs.readFileSync(imagePath)).toString('base64'),
-        mimeType: 'image/png',  // Adjust MIME type if needed
-      },
-    };
+    // Assuming the result contains an image in base64 format (adjust as per your actual API response)
+    const imageBase64 = result.response.imageData;
 
-    // Generate content using the AI model with the prompt and image
-    const result = await model.generateContent([prompt, image]);
+    // Create a temporary file path to save the generated image
+    const imagePath = path.join(tmpDir, `generated_image_${Date.now()}.png`);
 
-    // Delete the image file after processing
-    fs.unlinkSync(imagePath);
+    // Write the base64 image data to the file system
+    fs.writeFileSync(imagePath, Buffer.from(imageBase64, 'base64'));
 
-    // Return the generated content (You can adjust this as needed based on the response format)
-    return res.json({
-      status: true,
-      text: result.response.text(),  // Content generated from AI model
+    // Wait for the image to be generated, then send it in the response
+    res.set('Content-Type', 'image/png');  // Adjust the MIME type if needed
+    res.sendFile(imagePath, (err) => {
+      if (err) {
+        console.error('Error sending image:', err);
+      } else {
+        // After sending the image, delete it from the file system
+        fs.unlinkSync(imagePath);
+      }
     });
 
   } catch (err) {
     console.error('Error generating content:', err);
 
-    // Attempt to delete the image if an error occurs during processing
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);  // Remove the image from the filesystem
+    // Clean up any generated files in case of failure
+    const tempImagePath = path.join(tmpDir, 'generated_image.png');
+    if (fs.existsSync(tempImagePath)) {
+      fs.unlinkSync(tempImagePath);
     }
 
     return res.json({
