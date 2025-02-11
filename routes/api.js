@@ -192,9 +192,6 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-// Load environment variables from the .env file
-require('dotenv').config();
-
 let conversationHistory = [];
 
 router.get('/chatbot', async (req, res, next) => {
@@ -234,7 +231,7 @@ router.get('/chatbot', async (req, res, next) => {
     const completion = await client.chat.completions.create({
       model: 'gpt-3.5-turbo', // Use free plan access model
       messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
+        { role: 'system', content: 'You are a helpful assistant of Qasim.' },
         ...conversationHistory, // Include entire conversation history
       ],
       max_tokens: 150, // Token limit for free plan
