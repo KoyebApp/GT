@@ -224,9 +224,10 @@ router.get('/g4f-chat', async (req, res) => {
 
     // Call g4f's chatCompletion function to get the response
     const response = await g4f.chatCompletion(messages);
+    console.log('G4F Raw Response:', response);
+    
 
     // Log the full response for debugging
-    console.log('G4F Response:', response);
 
     // Check if the response is valid
     if (!response || !response.choices || response.choices.length === 0) {
@@ -243,9 +244,7 @@ router.get('/g4f-chat', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error in g4f-chat route:', err);
-
-    // Provide more detailed error information
+    console.error('Error in g4f-chat route:'ation
     return res.json({
       status: false,
       message: 'An error occurred while processing your message.',
