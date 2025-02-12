@@ -193,9 +193,8 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-
-// Route to get image based on emoji combination
-router.get('/ms/emoji-image', async (req, res) => {
+// Sample route for emoji image fetching
+app.get('/api/ms/emoji-image', async (req, res) => {
   const apikey = req.query.apikey;
   const text = req.query.text;  // Emoji combination to be passed (e.g., 😎+🤑)
 
@@ -232,7 +231,11 @@ router.get('/ms/emoji-image', async (req, res) => {
   const [emoji, emoji2] = text.split('+');  // Split emoji combination
 
   try {
-    // Call the API using axios
+    // Log the query string before making the API request
+    const encodedQuery = `${encodeURIComponent(emoji)}_${encodeURIComponent(emoji2)}`;
+    console.log('Query sent to Tenor API:', encodedQuery);
+
+    // Call the Tenor API using axios
     const response = await axios.get(`https://tenor.googleapis.com/v2/featured`, {
       params: {
         key: process.env.TENOR_API_KEY,  // API key from .env
@@ -240,9 +243,12 @@ router.get('/ms/emoji-image', async (req, res) => {
         media_filter: 'png_transparent',
         component: 'proactive',
         collection: 'emoji_kitchen_v5',
-        q: `${encodeURIComponent(emoji)}_${encodeURIComponent(emoji2)}`,
+        q: encodedQuery,
       },
     });
+
+    // Log the response data to see what Tenor is returning
+    console.log('Tenor API Response:', response.data);
 
     // Check if the API response contains results
     if (!response.data.results || response.data.results.length === 0) {
