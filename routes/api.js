@@ -245,8 +245,7 @@ router.get('/upload-file', async (req, res) => {
 
         // Return the Giphy URL and full response data
         res.status(200).json({
-            url: result.data.url,
-            data: result.data.expires,
+            result
         });
     } catch (error) {
         console.error('Error:', error);
