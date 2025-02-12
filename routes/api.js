@@ -195,7 +195,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 const uploadFileToFileIo = require('./../lib/utils/File-io');
 const uploadToPastebin = require('./../lib/utils/Paste');
-const uguuSe = require('./../lib/utils/Uguu');
+const UguuSe = require('./../lib/utils/Uguu');
 const webp2mp4File = require('./../lib/utils/webp2mp4File');
 
 // Import the Pastebin uploader function
