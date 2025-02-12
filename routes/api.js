@@ -220,7 +220,7 @@ const uploadToPastebin = require('./../lib/utils/Paste'); // Import the Pastebin
  */
 router.get('/paste', async (req, res) => {
     try {
-        const { text, title, format, privacy } = req.query.text;
+        const { text } = req.query.text;
 
         // Validate required fields
         if (!text) {
@@ -228,7 +228,7 @@ router.get('/paste', async (req, res) => {
         }
 
         // Upload to Pastebin
-        const pasteUrl = await uploadToPastebin(text, title, format, privacy);
+        const pasteUrl = await uploadToPastebin(text);
 
         // Return the Pastebin URL
         res.status(200).json({ url: pasteUrl });
