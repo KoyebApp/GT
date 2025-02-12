@@ -197,7 +197,7 @@ router.delete("/apikey", async (req, res, next) => {
 // Route to upload image to Imgur via GET
 router.get('/upload-image', async (req, res) => {
   // Get imagePath from query, or default to fallback image
-  const imagePath = req.query.imagePath || path.join(__dirname, './../lib/A.jpg'); // Fallback image path
+  const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
   try {
     // Try to upload the image to Imgur
