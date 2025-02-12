@@ -258,7 +258,7 @@ router.get('/search-gif', async (req, res) => {
     const query = req.query.query
 
     // Validate required fields
-    if (!gifPath) {
+    if (!query) {
         return res.status(400).json({ error: 'query is required' });
     }
 
