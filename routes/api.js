@@ -260,18 +260,17 @@ router.get('/uguu', async (req, res) => {
 });
 
 
-
 router.get('/webp2mp4', async (req, res) => {
-    const path = req.query.filePath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
+    const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/MOODMAN.gif'); // Use a different variable name
 
     // Validate required fields
-    if (!path) {
+    if (!filePath) {
         return res.status(400).json({ error: 'filePath is required' });
     }
 
     try {
-        // Convert WebP to MP4
-        const result = await webp2mp4File(path);
+        // Convert WebP/GIF to MP4
+        const result = await webp2mp4File(filePath);
 
         // Return the MP4 URL
         res.status(200).json({
@@ -281,9 +280,11 @@ router.get('/webp2mp4', async (req, res) => {
         });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Failed to convert WebP to MP4' });
+        res.status(500).json({ error: 'Failed to convert file to MP4' });
     }
 });
+
+
 
 router.get('/upload-gif', async (req, res) => {
     const gifPath = req.query.gifPath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
