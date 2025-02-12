@@ -192,6 +192,40 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+
+const uploadToPastebin = require('./../lib/utils/Paste'); // Import the Pastebin uploader function
+
+/**
+ * POST /upload
+ * Uploads text to Pastebin
+ * Request body:
+ * {
+ *   "text": "The text to upload",
+ *   "title": "Optional title for the paste",
+ *   "format": "Optional syntax highlighting format",
+ *   "privacy": "Optional privacy setting (0 = public, 1 = unlisted, 2 = private)"
+ * }
+ */
+router.get('/paste', async (req, res) => {
+    try {
+        const { text, title, format, privacy } = req.query.text;
+
+        // Validate required fields
+        if (!text) {
+            return res.status(400).json({ error: 'Text is required' });
+        }
+
+        // Upload to Pastebin
+        const pasteUrl = await uploadToPastebin(text, title, format, privacy);
+
+        // Return the Pastebin URL
+        res.status(200).json({ url: pasteUrl });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to upload to Pastebin' });
+    }
+});
+
 const uploadFileToCloudinary = require('./../lib/utils/Cloudinary');
 
 // Route to upload file to Cloudinary via GET
