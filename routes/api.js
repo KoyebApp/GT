@@ -10,6 +10,7 @@ const validator = require('validator');
 const { search } = require('aptoide-scraper');
 const cityTimezones = require('city-timezones');
 const moment = require('moment-timezone');
+const FileType = require('file-type');
 const cors = require('cors');
 const bing = require('bing-scraper');
 const QRCode = require('qrcode');
