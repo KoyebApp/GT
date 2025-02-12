@@ -205,13 +205,12 @@ router.get('/upload/imgbb', async (req, res) => {
     const imageBuffer = fs.readFileSync(imagePath);
 
     // Upload the image to ImgBB
-    const imgbbResponse = await uploadImageToImgBB(imageBuffer);
+    const imgbbResponse = await uploadToImgBB(imageBuffer);
 
     if (imgbbResponse && imgbbResponse.data) {
       return res.json({
         status: true,
         creator: 'YourName', // Replace with your name or handle
-        data: imgbbResponse.data.url, // URL of the uploaded image
         fullResponse: imgbbResponse, // Full response from ImgBB
       });
     } else {
