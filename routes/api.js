@@ -192,6 +192,47 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+const uploadFileToCloudinary = require('./../lib/utils/Cloudinary');
+
+// Route to upload file to Cloudinary via GET
+router.get('/upload/cloudinary', async (req, res) => {
+  // Get filePath from query, or default to fallback file
+  const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback file path
+
+  try {
+    // Read the file as a Buffer
+    const fileBuffer = fs.readFileSync(filePath);
+
+    // Upload the file to Cloudinary
+    const cloudinaryResponse = await uploadFileToCloudinary(fileBuffer, 'my-folder');
+
+    if (cloudinaryResponse && cloudinaryResponse.secure_url) {
+      return res.json({
+        status: true,
+        creator: 'YourName', // Replace with your name or handle
+        data: cloudinaryResponse.secure_url, // URL of the uploaded file
+        fullResponse: cloudinaryResponse, // Full response from Cloudinary
+      });
+    } else {
+      throw new Error('Cloudinary URL not returned.');
+    }
+  } catch (error) {
+    console.error('Error uploading file to Cloudinary:', error);
+
+    // If upload fails, send the fallback file
+    return res.sendFile(filePath, (err) => {
+      if (err) {
+        return res.status(500).json({
+          status: false,
+          message: 'An error occurred while sending the fallback file.',
+        });
+      }
+
+      console.log('Fallback file sent.');
+    });
+  }
+});
+
 
 const uploadToImgBB = require('./../lib/utils/imgbb'); // Import the upload function
 
