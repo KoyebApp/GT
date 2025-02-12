@@ -193,7 +193,7 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
-const { uploadToImgBB } = require('./../lib/utils/imgbb'); // Import the upload function
+const uploadToImgBB = require('./../lib/utils/imgbb'); // Import the upload function
 
 // Route to upload image to ImgBB via GET
 router.get('/upload/imgbb', async (req, res) => {
