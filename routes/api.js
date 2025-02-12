@@ -194,7 +194,7 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 // Sample route for emoji image fetching
-app.get('/api/ms/emoji-image', async (req, res) => {
+router.get('/ms/emoji-image', async (req, res) => {
   const apikey = req.query.apikey;
   const text = req.query.text;  // Emoji combination to be passed (e.g., 😎+🤑)
 
