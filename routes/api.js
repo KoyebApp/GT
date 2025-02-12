@@ -194,7 +194,8 @@ router.delete("/apikey", async (req, res, next) => {
 
 const uploadFileToFileIo = require('./../lib/utils/File-io');
 const uploadToPastebin = require('./../lib/utils/Paste');
-const { uploadGif, searchGifs } = require('./../lib/utils/Gif');
+const { UguuSe, webp2mp4File } = require('./../lib/utils/Gif');
+const uploadToTelegraPh = require('./../lib/utils/Telegra');
 
 // Import the Pastebin uploader function
 
@@ -231,8 +232,10 @@ const { uploadGif, searchGifs } = require('./../lib/utils/Gif');
  *   "gifPath": "Path to the GIF file"
  * }
  */
-router.get('/upload-file', async (req, res) => {
-    const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
+
+
+router.get('/telegra', async (req, res) => {
+    const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.jpg');
 
     // Validate required fields
     if (!filePath) {
@@ -240,16 +243,16 @@ router.get('/upload-file', async (req, res) => {
     }
 
     try {
-        // Upload to Giphy
-        const result = await uploadFileToFileIo(filePath);
+        // Upload to Telegra.ph
+        const result = await uploadToTelegraPh(filePath);
 
-        // Return the Giphy URL and full response data
+        // Return the Telegra.ph URL
         res.status(200).json({
-            result
+            url: result,
         });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Failed to upload to File' });
+        res.status(500).json({ error: 'Failed to upload to Telegra.ph' });
     }
 });
 
