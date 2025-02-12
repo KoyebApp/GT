@@ -193,6 +193,54 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+// Route to get country information based on the requestor's IP
+router.get('/ms/country', async (req, res) => {
+  const apikey = req.query.apikey;
+
+  // Validate input parameters
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: 'Please provide the API key.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Make a request to the Country API to get the country information based on the requestor's IP
+    const response = await fetch('https://api.country.is/');
+    
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch country data from Country API');
+    }
+
+    const responseData = await response.json();
+
+    // Return the country data
+    return res.json({
+      status: true,
+      ip: responseData.ip,  // IP address
+      country: responseData.country,  // Country code for the requestor's IP
+    });
+  } catch (err) {
+    console.error('Error interacting with Country API:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while processing the request.',
+      error: err.message,
+    });
+  }
+});
+
+
 // Route to interact with the GuruSensei Llama API
 router.get('/ms/llama', async (req, res) => {
   const apikey = req.query.apikey;
