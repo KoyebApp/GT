@@ -102,8 +102,6 @@ var tebakGambar = require('./../lib/utils/tebakGambar');
 const uploadToImgur = require('./../lib/utils/Imgur');
 const Spotify = require('./../lib/utils/Spotify');
 const { GetTime } = require('./../lib/utils/Time');  // Import the GetTime function
-const Get = require('./../lib/utils/Get');
-const uploadToCloudinary = require('./../lib/utils/Cloud');
 
 const creator = 'Qasim Ali 🦋';
 
