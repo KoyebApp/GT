@@ -195,6 +195,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 const uploadToPastebin = require('./../lib/utils/Paste');
 const uploadGif = require('./../lib/utils/Gif');
+const searchGifs = require('./../lib/utils/Gif');
 // Import the Pastebin uploader function
 
 /**
@@ -250,6 +251,29 @@ router.get('/upload-gif', async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Failed to upload to Giphy' });
+    }
+});
+
+router.get('/search-gif', async (req, res) => {
+    const query = req.query.query
+
+    // Validate required fields
+    if (!gifPath) {
+        return res.status(400).json({ error: 'query is required' });
+    }
+
+    try {
+        // Upload to Giphy
+        const result = await searchGifs(query);
+
+        // Return the Giphy URL and full response data
+        res.status(200).json({
+            url: result.url,
+            data: result.data,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to search from Giphy' });
     }
 });
 
