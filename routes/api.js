@@ -194,8 +194,8 @@ router.delete("/apikey", async (req, res, next) => {
 
 
 const uploadToPastebin = require('./../lib/utils/Paste');
-const uploadGif = require('./../lib/utils/Gif');
-const searchGifs = require('./../lib/utils/Gif');
+const { uploadGif, searchGifs } = require('./../lib/utils/Gif');
+
 // Import the Pastebin uploader function
 
 /**
