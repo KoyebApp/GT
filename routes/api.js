@@ -193,6 +193,106 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+// Route to interact with the GuruSensei Llama API
+router.get('/ms/llama', async (req, res) => {
+  const apikey = req.query.apikey;
+  const prompt = req.query.prompt;  // Text prompt for Llama API
+
+  // Validate input parameters
+  if (!apikey || !prompt) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and prompt.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Make a request to the GuruSensei Llama API
+    const response = await fetch(`https://api.gurusensei.workers.dev/llama?prompt=${encodeURIComponent(prompt)}`);
+    
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch response from Llama API');
+    }
+    
+    const responseData = await response.json();
+
+    // Return the result from Llama API
+    return res.json({
+      status: true,
+      creator: `${creator}`,
+      originalPrompt: responseData.text,  // Original prompt sent
+      response: responseData.response.response,  // Response from Llama API
+      usage: responseData.response.usage,  // Token usage information
+    });
+  } catch (err) {
+    console.error('Error interacting with Llama API:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while processing the request.',
+      error: err.message,
+    });
+  }
+});
+
+// Route to interact with the GuruSensei DeepSeek API
+router.get('/ms/deepseek', async (req, res) => {
+  const apikey = req.query.apikey;
+  const text = req.query.text;  // Text input for DeepSeek API
+
+  // Validate input parameters
+  if (!apikey || !text) {
+    return res.json({
+      status: false,
+      message: 'Please provide both the API key and text.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  try {
+    // Make a request to the GuruSensei DeepSeek API
+    const response = await fetch(`https://api.gurusensei.workers.dev/deepseek?text=${encodeURIComponent(text)}`);
+    
+    // Check if the response is successful
+    if (!response.ok) {
+      throw new Error('Failed to fetch response from DeepSeek API');
+    }
+    
+    const responseData = await response.json();
+
+    // Return the result from DeepSeek API
+    return res.json({
+      status: true,
+      creator: `${creator}`,
+      originalText: responseData.text,  // Original text input
+      response: responseData.response.response,  // Response from DeepSeek API
+      usage: responseData.response.usage,  // Token usage information
+    });
+  } catch (err) {
+    console.error('Error interacting with DeepSeek API:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while processing the request.',
+      error: err.message,
+    });
+  }
+});
+
 
 
  // Importing the translate function
