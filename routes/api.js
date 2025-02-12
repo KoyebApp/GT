@@ -206,6 +206,18 @@ const uploadToPastebin = require('./../lib/utils/Paste'); // Import the Pastebin
  *   "privacy": "Optional privacy setting (0 = public, 1 = unlisted, 2 = private)"
  * }
  */
+
+/**
+ * GET /paste
+ * Uploads text to Pastebin
+ * Request query parameters:
+ * {
+ *   "text": "The text to upload",
+ *   "title": "Optional title for the paste",
+ *   "format": "Optional syntax highlighting format",
+ *   "privacy": "Optional privacy setting (0 = public, 1 = unlisted, 2 = private)"
+ * }
+ */
 router.get('/paste', async (req, res) => {
     try {
         const { text, title, format, privacy } = req.query.text;
