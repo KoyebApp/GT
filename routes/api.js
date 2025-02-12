@@ -193,7 +193,9 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
-const uploadToPastebin = require('./../lib/utils/Paste'); // Import the Pastebin uploader function
+const uploadToPastebin = require('./../lib/utils/Paste');
+const uploadGif = require('./../lib/utils/Gif');
+// Import the Pastebin uploader function
 
 /**
  * POST /upload
@@ -218,6 +220,39 @@ const uploadToPastebin = require('./../lib/utils/Paste'); // Import the Pastebin
  *   "privacy": "Optional privacy setting (0 = public, 1 = unlisted, 2 = private)"
  * }
  */
+
+
+/**
+ * GET /upload-gif
+ * Uploads a GIF to Giphy
+ * Request query parameters:
+ * {
+ *   "gifPath": "Path to the GIF file"
+ * }
+ */
+router.get('/upload-gif', async (req, res) => {
+    const gifPath = req.query.gifPath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
+
+    // Validate required fields
+    if (!gifPath) {
+        return res.status(400).json({ error: 'gifPath is required' });
+    }
+
+    try {
+        // Upload to Giphy
+        const result = await uploadGif(gifPath);
+
+        // Return the Giphy URL and full response data
+        res.status(200).json({
+            url: result.url,
+            data: result.data,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to upload to Giphy' });
+    }
+});
+
 router.get('/paste', async (req, res) => {
     const text = req.query.text;
   // Validate required fields
