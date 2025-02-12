@@ -195,7 +195,7 @@ router.delete("/apikey", async (req, res, next) => {
 
 
 // Route to upload image to Imgur via GET
-router.get('/upload-image', async (req, res) => {
+router.get('/upload/imgur', async (req, res) => {
   // Get imagePath from query, or default to fallback image
   const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
@@ -206,8 +206,8 @@ router.get('/upload-image', async (req, res) => {
     if (imgurUrl) {
       return res.json({
         status: true,
-        message: 'Image uploaded successfully!',
-        url: imgurUrl,  // This will be the URL returned from the Imgur API
+        creator: `${creator}`,
+        data: imgurUrl,  // This will be the URL returned from the Imgur API
       });
     } else {
       throw new Error("Imgur URL not returned.");
