@@ -210,8 +210,8 @@ router.get('/upload/imgbb', async (req, res) => {
     if (imgbbResponse && imgbbResponse.data) {
       return res.json({
         status: true,
-        creator: 'YourName', // Replace with your name or handle
-        fullResponse: imgbbResponse, // Full response from ImgBB
+        creator: `${creator}`, // Replace with your name or handle
+        Response: imgbbResponse, // Full response from ImgBB
       });
     } else {
       throw new Error('ImgBB URL not returned.');
