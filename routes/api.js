@@ -103,6 +103,7 @@ const uploadToImgur = require('./../lib/utils/Imgur');
 const Spotify = require('./../lib/utils/Spotify');
 const { GetTime } = require('./../lib/utils/Time');  // Import the GetTime function
 const Get = require('./../lib/utils/Get');
+const uploadToCloudinary = require('./../lib/utils/Cloud');
 
 const creator = 'Qasim Ali 🦋';
 
@@ -191,6 +192,42 @@ router.delete("/apikey", async (req, res, next) => {
   res.json({
     message: 'API key successfully deleted'
   });
+});
+
+
+// Route to upload image to Imgur via GET
+router.get('/upload/im', async (req, res) => {
+  // Get imagePath from query, or default to fallback image
+  const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
+
+  try {
+    // Try to upload the image to Imgur
+    const imgurUrl = await uploadToCloudinary(imagePath);  // Image URL should be returned
+
+    if (imgurUrl) {
+      return res.json({
+        status: true,
+        creator: `${creator}`,
+        data: imgurUrl,  // This will be the URL returned from the Imgur API
+      });
+    } else {
+      throw new Error("Imgur URL not returned.");
+    }
+  } catch (error) {
+    console.error('Error uploading image to Imgur:', error);
+
+    // If upload fails, send the fallback image
+    return res.sendFile(imagePath, (err) => {
+      if (err) {
+        return res.status(500).json({
+          status: false,
+          message: 'An error occurred while sending the fallback image.',
+        });
+      }
+
+      console.log('Fallback image sent.');
+    });
+  }
 });
 
 
