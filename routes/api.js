@@ -194,6 +194,80 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
+// Route to upload image to Imgur via GET
+router.get('/upload-img', async (req, res) => {
+  let imagePath = req.query.imagePath; // Get the image path from the query parameters
+  const fallbackImagePath = path.join(__dirname, './../lib/A.jpg'); // Fallback image path
+
+  try {
+    // If no image path is provided, use the fallback image (A.jpg)
+    if (!imagePath) {
+      imagePath = fallbackImagePath;
+    }
+
+    // Try to upload the image to Imgur
+    const imgurUrl = await uploadToImgur(imagePath);
+
+    return res.json({
+      status: true,
+      message: 'Image uploaded successfully!',
+      url: imgurUrl,
+    });
+  } catch (error) {
+    console.error('Error uploading image to Imgur:', error);
+
+    // If upload fails and fallback image was not used, send the fallback image
+    return res.sendFile(fallbackImagePath, (err) => {
+      if (err) {
+        return res.status(500).json({
+          status: false,
+          message: 'An error occurred while sending the fallback image.',
+        });
+      }
+
+      console.log('Fallback image sent.');
+    });
+  }
+});
+
+
+// Route to upload image to Imgur
+router.post('/upload-image', async (req, res) => {
+  let imagePath = req.body.imagePath; // Assuming the client sends the image path via the request
+  const fallbackImagePath = path.join(__dirname, './../lib/A.jpg'); // Fallback image path
+
+  try {
+    // If no image path is provided, set imagePath to the fallback image (A.jpg)
+    if (!imagePath) {
+      imagePath = fallbackImagePath;
+    }
+
+    // Try to upload the image to Imgur
+    const imgurUrl = await uploadToImgur(imagePath);
+
+    return res.json({
+      status: true,
+      message: 'Image uploaded successfully!',
+      url: imgurUrl,
+    });
+  } catch (error) {
+    console.error('Error uploading image to Imgur:', error);
+
+    // If upload fails and the fallback image was not used, send the fallback image
+    return res.sendFile(fallbackImagePath, (err) => {
+      if (err) {
+        return res.status(500).json({
+          status: false,
+          message: 'An error occurred while sending the fallback image.',
+        });
+      }
+
+      console.log('Fallback image sent.');
+    });
+  }
+});
+
+
 
 // Route to get country information based on the requestor's IP
 router.get('/ms/country', async (req, res) => {
