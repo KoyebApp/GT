@@ -197,7 +197,7 @@ const uploadFileToCloudinary = require('./../lib/utils/Cloudinary');
 // Route to upload file to Cloudinary via GET
 router.get('/upload/cloudinary', async (req, res) => {
   // Get filePath from query, or default to fallback file
-  const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback file path
+  const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.mp4'); // Fallback file path
 
   try {
     // Read the file as a Buffer
