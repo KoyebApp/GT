@@ -232,8 +232,8 @@ router.get('/ms/emoji-image', async (req, res) => {
 
   try {
     // Log the query string before making the API request
-    const encodedQuery = `${encodeURIComponent(emoji)}_${encodeURIComponent(emoji2)}`;
-    console.log('Query sent to Tenor API:', encodedQuery);
+    const query = `${emoji}_${emoji2}`;  // No URL encoding
+    console.log('Query sent to Tenor API:', query);  // Log raw query with emojis
 
     // Call the Tenor API using axios
     const response = await axios.get(`https://tenor.googleapis.com/v2/featured`, {
@@ -243,7 +243,7 @@ router.get('/ms/emoji-image', async (req, res) => {
         media_filter: 'png_transparent',
         component: 'proactive',
         collection: 'emoji_kitchen_v5',
-        q: encodedQuery,
+        q: query,  // Pass raw emojis directly (no encodeURIComponent)
       },
     });
 
@@ -273,6 +273,7 @@ router.get('/ms/emoji-image', async (req, res) => {
     });
   }
 });
+
 
 
 // Route to get country information based on the requestor's IP
