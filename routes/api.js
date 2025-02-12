@@ -193,6 +193,82 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+
+// Route to get image based on emoji combination
+router.get('/ms/emoji-image', async (req, res) => {
+  const apikey = req.query.apikey;
+  const text = req.query.text;  // Emoji combination to be passed (e.g., 😎+🤑)
+
+  // Validate input parameters
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: 'Please provide the API key.',
+    });
+  }
+
+  // Check if the API key is valid (replace listkey with your valid key checking logic)
+  if (!listkey.includes(apikey)) {
+    return res.json({
+      status: false,
+      message: 'Invalid API Key provided.',
+    });
+  }
+
+  if (!text) {
+    return res.json({
+      status: false,
+      message: 'Please provide emoji combination.',
+    });
+  }
+
+  if (!text.includes('+')) {
+    return res.json({
+      status: false,
+      message: '✳️ Separate the emoji with a *+* \n\n📌 Example: 😎+🤑',
+    });
+  }
+
+  const [emoji, emoji2] = text.split('+');  // Split emoji combination
+
+  try {
+    // Call the API using axios
+    const response = await axios.get(`https://tenor.googleapis.com/v2/featured`, {
+      params: {
+        key: process.env.TENOR_API_KEY,  // API key from .env
+        contentfilter: 'high',
+        media_filter: 'png_transparent',
+        component: 'proactive',
+        collection: 'emoji_kitchen_v5',
+        q: `${encodeURIComponent(emoji)}_${encodeURIComponent(emoji2)}`,
+      },
+    });
+
+    // Check if the API response contains results
+    if (!response.data.results || response.data.results.length === 0) {
+      return res.json({
+        status: false,
+        message: 'No results found for the given emojis.',
+      });
+    }
+
+    // Get the image URL from the API response
+    const imageUrl = response.data.results[0].url;  // Using the first result
+
+    // Send the image as a response (assuming image URL is directly accessible)
+    res.redirect(imageUrl);  // Redirects to the image URL
+
+  } catch (err) {
+    console.error('Error retrieving image:', err);
+    return res.json({
+      status: false,
+      message: 'An error occurred while processing the request.',
+      error: err.message,
+    });
+  }
+});
+
+
 // Route to get country information based on the requestor's IP
 router.get('/ms/country', async (req, res) => {
   const apikey = req.query.apikey;
