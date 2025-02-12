@@ -195,8 +195,8 @@ router.delete("/apikey", async (req, res, next) => {
 
 const uploadFileToFileIo = require('./../lib/utils/File-io');
 const uploadToPastebin = require('./../lib/utils/Paste');
-const { UguuSe, webp2mp4File } = require('./../lib/utils/Gif');
-const uploadToTelegraPh = require('./../lib/utils/Telegra');
+const uguuSe = require('./../lib/utils/Uguu');
+const webp2mp4File = require('./../lib/utils/webp2mp4File');
 
 // Import the Pastebin uploader function
 
@@ -234,8 +234,7 @@ const uploadToTelegraPh = require('./../lib/utils/Telegra');
  * }
  */
 
-
-router.get('/telegra', async (req, res) => {
+router.get('/uguu', async (req, res) => {
     const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.jpg');
 
     // Validate required fields
@@ -244,16 +243,45 @@ router.get('/telegra', async (req, res) => {
     }
 
     try {
-        // Upload to Telegra.ph
-        const result = await uploadToTelegraPh(filePath);
+        // Read the file into a buffer
+        const buffer = fs.readFileSync(filePath);
 
-        // Return the Telegra.ph URL
+        // Upload to Uguu.se
+        const result = await UguuSe(buffer);
+
+        // Return the Uguu.se URL
         res.status(200).json({
             url: result,
         });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Failed to upload to Telegra.ph' });
+        res.status(500).json({ error: 'Failed to upload to Uguu.se' });
+    }
+});
+
+
+
+router.get('/webp2mp4', async (req, res) => {
+    const path = req.query.filePath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
+
+    // Validate required fields
+    if (!path) {
+        return res.status(400).json({ error: 'filePath is required' });
+    }
+
+    try {
+        // Convert WebP to MP4
+        const result = await webp2mp4File(path);
+
+        // Return the MP4 URL
+        res.status(200).json({
+            status: result.status,
+            message: result.message,
+            url: result.result,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to convert WebP to MP4' });
     }
 });
 
