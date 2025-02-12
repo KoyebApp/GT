@@ -192,7 +192,7 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
-
+const uploadFileToFileIo = require('./../lib/utils/File-io');
 const uploadToPastebin = require('./../lib/utils/Paste');
 const { uploadGif, searchGifs } = require('./../lib/utils/Gif');
 
@@ -231,6 +231,29 @@ const { uploadGif, searchGifs } = require('./../lib/utils/Gif');
  *   "gifPath": "Path to the GIF file"
  * }
  */
+router.get('/upload-file', async (req, res) => {
+    const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
+
+    // Validate required fields
+    if (!filePath) {
+        return res.status(400).json({ error: 'filePath is required' });
+    }
+
+    try {
+        // Upload to Giphy
+        const result = await uploadFileToFileIo(filePath);
+
+        // Return the Giphy URL and full response data
+        res.status(200).json({
+            url: result.data.url,
+            data: result.data.expires,
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to upload to File' });
+    }
+});
+
 router.get('/upload-gif', async (req, res) => {
     const gifPath = req.query.gifPath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
 
