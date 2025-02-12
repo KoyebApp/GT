@@ -195,26 +195,32 @@ router.delete("/apikey", async (req, res, next) => {
 });
 
 
-// Route to upload image to Imgur via GET
-router.get('/upload/im', async (req, res) => {
+const { uploadToImgBB } = require('./../lib/utils/imgbb'); // Import the upload function
+
+// Route to upload image to ImgBB via GET
+router.get('/upload/imgbb', async (req, res) => {
   // Get imagePath from query, or default to fallback image
   const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
   try {
-    // Try to upload the image to Imgur
-    const imgurUrl = await uploadToCloudinary(imagePath);  // Image URL should be returned
+    // Read the image file as a Buffer
+    const imageBuffer = fs.readFileSync(imagePath);
 
-    if (imgurUrl) {
+    // Upload the image to ImgBB
+    const imgbbResponse = await uploadImageToImgBB(imageBuffer);
+
+    if (imgbbResponse && imgbbResponse.data) {
       return res.json({
         status: true,
-        creator: `${creator}`,
-        data: imgurUrl,  // This will be the URL returned from the Imgur API
+        creator: 'YourName', // Replace with your name or handle
+        data: imgbbResponse.data.url, // URL of the uploaded image
+        fullResponse: imgbbResponse, // Full response from ImgBB
       });
     } else {
-      throw new Error("Imgur URL not returned.");
+      throw new Error('ImgBB URL not returned.');
     }
   } catch (error) {
-    console.error('Error uploading image to Imgur:', error);
+    console.error('Error uploading image to ImgBB:', error);
 
     // If upload fails, send the fallback image
     return res.sendFile(imagePath, (err) => {
@@ -229,7 +235,6 @@ router.get('/upload/im', async (req, res) => {
     });
   }
 });
-
 
 // Route to upload image to Imgur via GET
 router.get('/upload/imgur', async (req, res) => {
