@@ -570,8 +570,10 @@ router.get('/upload/imgbb', async (req, res) => {
       return res.json({
         status: true,
         creator:`${creator}`, // Replace with dynamic creator name if necessary
-        data: imgbbResponse.data.url, // Only return the URL from ImgBB
-        response: imgbbResponse, // Full response from ImgBB for debugging purposes
+        url: imgbbResponse.data.url, // Only return the URL from ImgBB
+        url_viewer: imgbbResponse.data.url_viewer,
+        display_url: imgbbResponse.data.display_url,
+        thumb: imgbbResponse.data.thumb,
       });
     } else {
       throw new Error('ImgBB URL not returned.');
