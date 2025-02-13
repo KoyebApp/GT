@@ -193,6 +193,25 @@ router.delete("/apikey", async (req, res, next) => {
   });
 });
 
+// Export the functions
+const {
+    uploadGif,
+    searchGifs,
+    searchStickers,
+    downloadGif,
+    getGifById,
+    getStickerById,
+    getGifsByCategory,
+    getStickersByCategory,
+    getRandomGif,
+    getRandomSticker,
+    translateToGif,
+    translateToSticker,
+    getTrendingGifs,
+    getTrendingSticker
+} = require('./../lib/utils/Gif')
+
+
 const uploadFileToFileIo = require('./../lib/utils/File-io');
 const uploadToPastebin = require('./../lib/utils/Paste');
 const UguuSe = require('./../lib/utils/Uguu');
