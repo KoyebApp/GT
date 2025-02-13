@@ -306,6 +306,91 @@ router.get('/lexica', async (req, res) => {
   }
 });
 
+const BASE_ALPHABETS = {
+  base2: '01',
+  base8: '01234567',
+  base11: '0123456789a',
+  base16: '0123456789abcdef',
+  base32: '0123456789ABCDEFGHJKMNPQRSTVWXYZ',
+  zbase32: 'ybndrfg8ejkmcpqxot1uwisza345h769',
+  base36: '0123456789abcdefghijklmnopqrstuvwxyz',
+  base58: '123456789ABCDEFGHJKLMNPQRSTVWXYZabcdefghijkmnopqrstuvwxyz',
+  base62: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  base64: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+  base67: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.!',
+};
+
+// Dynamic route for encoding and decoding using any Base
+router.get('/base/:base', async (req, res) => {
+  const apikey = req.query.apikey; // API key
+  const action = req.query.action; // Action (encode or decode)
+  const data = req.query.data; // Data to be encoded or decoded
+  const base = req.params.base; // Base from URL parameter
+
+  // Validate input parameters
+  if (!apikey) return res.json({ status: false, code: 400, message: 'API key is required.' });
+  if (!data) return res.json({ status: false, code: 400, message: 'Data is required.' });
+  if (!action) return res.json({ status: false, code: 400, message: 'Action (encode/decode) is required.' });
+
+  // Check if the API key is valid
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, code: 401, message: 'Invalid API key.' });
+  }
+
+  // Check if the requested base is valid
+  if (!BASE_ALPHABETS[base]) {
+    return res.json({ status: false, code: 400, message: `Invalid base. Supported bases: ${Object.keys(BASE_ALPHABETS).join(', ')}` });
+  }
+
+  try {
+    // Dynamically import base-x module
+    const { default: basex } = await import('base-x');
+
+    // Create the base encoder/decoder using the correct alphabet
+    const baseEncoder = basex(BASE_ALPHABETS[base]);
+
+    let result;
+
+    // Perform the encoding or decoding based on the action
+    if (action === 'encode') {
+      // Base encoding
+      const buffer = Buffer.from(data, 'utf-8');
+      result = baseEncoder.encode(buffer);
+    } else if (action === 'decode') {
+      // Validate that the input data is valid for the chosen base
+      const isValidInput = [...data].every(char => BASE_ALPHABETS[base].includes(char));
+      if (!isValidInput) {
+        return res.json({ status: false, code: 400, message: `Invalid input data for base ${base}.` });
+      }
+
+      // Base decoding
+      const decoded = baseEncoder.decode(data);
+      result = Buffer.from(decoded).toString('utf-8'); // Convert buffer to string
+    } else {
+      return res.json({ status: false, code: 400, message: 'Invalid action. Use "encode" or "decode".' });
+    }
+
+    // Return the result
+    res.json({
+      status: true,
+      code: 200,
+      creator: 'Qasim Ali 🦋',
+      result: {
+        base: base,
+        action: action,
+        originalData: data,
+        processedData: result,
+      },
+    });
+  } catch (err) {
+    console.error(`Error with Base${base} operation:`, err);
+    res.json({
+      status: false,
+      code: 500,
+      message: `Error with Base${base} encoding/decoding: ${err.message}`,
+    });
+  }
+});
 
 
 router.get('/upload/uguuse', async (req, res) => {
