@@ -396,23 +396,35 @@ router.get('/upload/cloudinary', async (req, res) => {
 
 const uploadToImgBB = require('./../lib/utils/imgbb'); // Import the upload function
 
+
 // Route to upload image to ImgBB via GET
 router.get('/upload/imgbb', async (req, res) => {
   // Get imagePath from query, or default to fallback image
   const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
   try {
-    // Read the image file as a Buffer
-    const imageBuffer = fs.readFileSync(imagePath);
+    let imageInput;
+
+    // Check if the imagePath is a valid file path, and read it as a Buffer
+    if (fs.existsSync(imagePath)) {
+      imageInput = fs.readFileSync(imagePath); // Read file as Buffer
+    } else if (imagePath.startsWith('data:') || imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      // If imagePath is base64 data or URL, use it as input
+      imageInput = imagePath;
+    } else {
+      // If path is not valid, throw an error
+      throw new Error('Invalid imagePath input. Please provide a valid file path, base64 string, or URL.');
+    }
 
     // Upload the image to ImgBB
-    const imgbbResponse = await uploadToImgBB(imageBuffer);
+    const imgbbResponse = await uploadToImgBB(imageInput);
 
     if (imgbbResponse && imgbbResponse.data) {
       return res.json({
         status: true,
-        creator: `${creator}`, // Replace with your name or handle
-        Response: imgbbResponse, // Full response from ImgBB
+        creator: 'Your Creator Name', // Replace with dynamic creator name if necessary
+        data: imgbbResponse.data.url, // Only return the URL from ImgBB
+        response: imgbbResponse, // Full response from ImgBB for debugging purposes
       });
     } else {
       throw new Error('ImgBB URL not returned.');
