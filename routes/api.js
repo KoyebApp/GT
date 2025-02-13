@@ -437,27 +437,32 @@ router.get('/upload/imgbb', async (req, res) => {
 
 // Route to upload image to Imgur via GET
 router.get('/upload/imgur', async (req, res) => {
-  // Get imagePath from query, or default to fallback image
-  const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
+  // Get input from query or body
+  const input = req.query.input || req.body.input;
+  const type = req.query.type || 'auto'; // Default to 'auto' to detect input type
+
+  if (!input) {
+    return res.status(400).json({
+      status: false,
+      message: 'Input is required.',
+    });
+  }
 
   try {
-    // Determine if the input is a URL or a local file path
-    const isUrl = imagePath.startsWith('http://') || imagePath.startsWith('https://');
-
-    // Try to upload the image to Imgur
-    const imgurUrl = await uploadToImgur(imagePath, isUrl ? 'url' : 'file'); // Use 'url' type for URLs
+    // Try to upload the media to Imgur
+    const imgurUrl = await uploadToImgur(input, type);
 
     if (imgurUrl) {
       return res.json({
         status: true,
-        creator: 'Qasim',
+        creator: creator,
         data: imgurUrl, // This will be the URL returned from the Imgur API
       });
     } else {
       throw new Error('Imgur URL not returned.');
     }
   } catch (error) {
-    console.error('Error uploading image to Imgur:', error);
+    console.error('Error uploading media to Imgur:', error);
 
     // If upload fails, send the fallback image
     const fallbackImagePath = path.join(__dirname, './../lib/utils/A.jpg'); // Absolute path to fallback image
@@ -474,6 +479,7 @@ router.get('/upload/imgur', async (req, res) => {
     });
   }
 });
+
 
 // Route to get country information based on the requestor's IP
 router.get('/ms/country', async (req, res) => {
