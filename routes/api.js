@@ -332,23 +332,42 @@ router.get('/search-gif', async (req, res) => {
     }
 });
 
-router.get('/paste', async (req, res) => {
-    const text = req.query.text;
-  // Validate required fields
-        if (!text) {
-            return res.status(400).json({ error: 'Text is required' });
-        }
-  
-  try {
 
-        // Upload to Pastebin
-        const pasteUrl = await uploadToPastebin(text);
+// Route to upload to Pastebin
+router.get('/paste', async (req, res) => {
+    const { text, title, format, privacy } = req.query.input;
+
+    // Validate required fields
+    if (!text) {
+        return res.status(400).json({ error: 'Text is required' });
+    }
+
+    // Optional: Use default values if not provided
+    const pasteTitle = title || 'Untitled';
+    const pasteFormat = format || 'text';
+    const pastePrivacy = privacy || '1'; // Default to "Unlisted"
+
+    try {
+        // Check if the text is a file path, base64 string, or raw text
+        let inputText = text;
+
+        // If the input is a file path, read the file content
+        if (fs.existsSync(inputText)) {
+            inputText = fs.readFileSync(inputText, 'utf8');
+        } else if (inputText.startsWith('data:')) {
+            // If the input is base64 data, handle it accordingly
+            inputText = inputText.split(',')[1];
+        }
+
+        // Upload the content to Pastebin
+        const pasteUrl = await uploadToPastebin(inputText, pasteTitle, pasteFormat, pastePrivacy);
 
         // Return the Pastebin URL
-        res.status(200).json({ url: pasteUrl });
+        return res.status(200).json({ url: pasteUrl });
+
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Failed to upload to Pastebin' });
+        console.error('Error uploading to Pastebin:', error);
+        return res.status(500).json({ error: 'Failed to upload to Pastebin' });
     }
 });
 
