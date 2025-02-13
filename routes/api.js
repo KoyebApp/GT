@@ -308,7 +308,7 @@ router.get('/lexica', async (req, res) => {
 
 
 
-router.get('/uguu', async (req, res) => {
+router.get('/upload/uguuse', async (req, res) => {
   const filePath = req.query.imgPath || path.join(__dirname, './../lib/utils/A.jpg');
   const apikey = req.query.apikey;
     // Validate required fields
@@ -344,7 +344,7 @@ router.get('/uguu', async (req, res) => {
     }
 });
 
-router.get('/upload-gif', async (req, res) => {
+router.get('/upload/gif', async (req, res) => {
   const gifPath = req.query.gifPath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
   const apikey = req.query.apikey;
   if (!apikey) {
@@ -378,7 +378,7 @@ router.get('/upload-gif', async (req, res) => {
     }
 });
 
-router.get('/search-gif', async (req, res) => {
+router.get('/search/gif', async (req, res) => {
   const query = req.query.query
   const apikey = req.query.apikey;
 
@@ -415,7 +415,7 @@ router.get('/search-gif', async (req, res) => {
 
 
 // Route to upload to Pastebin
-router.get('/paste', async (req, res) => {
+router.get('/upload/paste', async (req, res) => {
   const text = req.query.input;
   const apikey = req.query.apikey;
   const title = req.query.name;
