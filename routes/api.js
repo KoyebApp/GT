@@ -434,30 +434,36 @@ router.get('/upload/imgbb', async (req, res) => {
   }
 });
 
+
 // Route to upload image to Imgur via GET
 router.get('/upload/imgur', async (req, res) => {
   // Get imagePath from query, or default to fallback image
   const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
   try {
+    // Determine if the input is a URL or a local file path
+    const isUrl = imagePath.startsWith('http://') || imagePath.startsWith('https://');
+
     // Try to upload the image to Imgur
-    const imgurUrl = await uploadToImgur(imagePath);  // Image URL should be returned
+    const imgurUrl = await uploadToImgur(imagePath, isUrl ? 'url' : 'file'); // Use 'url' type for URLs
 
     if (imgurUrl) {
       return res.json({
         status: true,
-        creator: `${creator}`,
-        data: imgurUrl,  // This will be the URL returned from the Imgur API
+        creator: 'Qasim',
+        data: imgurUrl, // This will be the URL returned from the Imgur API
       });
     } else {
-      throw new Error("Imgur URL not returned.");
+      throw new Error('Imgur URL not returned.');
     }
   } catch (error) {
     console.error('Error uploading image to Imgur:', error);
 
     // If upload fails, send the fallback image
-    return res.sendFile(imagePath, (err) => {
+    const fallbackImagePath = path.join(__dirname, './../lib/utils/A.jpg'); // Absolute path to fallback image
+    return res.sendFile(fallbackImagePath, (err) => {
       if (err) {
+        console.error('Error sending fallback image:', err);
         return res.status(500).json({
           status: false,
           message: 'An error occurred while sending the fallback image.',
@@ -468,8 +474,6 @@ router.get('/upload/imgur', async (req, res) => {
     });
   }
 });
-
-
 
 // Route to get country information based on the requestor's IP
 router.get('/ms/country', async (req, res) => {
