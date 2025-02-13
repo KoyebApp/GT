@@ -352,7 +352,9 @@ router.get('/paste', async (req, res) => {
     }
 });
 
-const uploadFileToCloudinary = require('./../lib/utils/Cloudinary');
+
+const uploadFileToCloudinary = require('./../lib/utils/Cloudinary'); // Adjust the path to your uploadFileToCloudinary function
+
 
 // Route to upload file to Cloudinary via GET
 router.get('/upload/cloudinary', async (req, res) => {
@@ -360,16 +362,27 @@ router.get('/upload/cloudinary', async (req, res) => {
   const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.mp4'); // Fallback file path
 
   try {
-    // Read the file as a Buffer
-    const fileBuffer = fs.readFileSync(filePath);
+    let cloudinaryResponse;
 
-    // Upload the file to Cloudinary
-    const cloudinaryResponse = await uploadFileToCloudinary(fileBuffer, 'my-folder');
+    // Determine if the input is a URL, base64 string, or local file path
+    if (typeof filePath === 'string' && (filePath.startsWith('http://') || filePath.startsWith('https://'))) {
+      // Handle file URL
+      cloudinaryResponse = await uploadFileToCloudinary(filePath, 'my-folder');
+    } else if (typeof filePath === 'string' && filePath.startsWith('data:')) {
+      // Handle base64 string
+      cloudinaryResponse = await uploadFileToCloudinary(filePath, 'my-folder');
+    } else if (typeof filePath === 'string' && fs.existsSync(filePath)) {
+      // Handle local file path
+      const fileBuffer = fs.readFileSync(filePath);
+      cloudinaryResponse = await uploadFileToCloudinary(fileBuffer, 'my-folder');
+    } else {
+      throw new Error('Unsupported file type. Please provide a file path, URL, or base64 string.');
+    }
 
     if (cloudinaryResponse && cloudinaryResponse.secure_url) {
       return res.json({
         status: true,
-        creator: 'YourName', // Replace with your name or handle
+        creator: creator,
         data: cloudinaryResponse.secure_url, // URL of the uploaded file
         fullResponse: cloudinaryResponse, // Full response from Cloudinary
       });
@@ -380,8 +393,10 @@ router.get('/upload/cloudinary', async (req, res) => {
     console.error('Error uploading file to Cloudinary:', error);
 
     // If upload fails, send the fallback file
-    return res.sendFile(filePath, (err) => {
+    const fallbackFilePath = path.join(__dirname, './../lib/utils/A.mp4'); // Absolute path to fallback file
+    return res.sendFile(fallbackFilePath, (err) => {
       if (err) {
+        console.error('Error sending fallback file:', err);
         return res.status(500).json({
           status: false,
           message: 'An error occurred while sending the fallback file.',
@@ -392,7 +407,6 @@ router.get('/upload/cloudinary', async (req, res) => {
     });
   }
 });
-
 
 const uploadToImgBB = require('./../lib/utils/imgbb'); // Import the upload function
 
