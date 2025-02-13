@@ -256,10 +256,6 @@ router.get('/lexica', async (req, res) => {
       headers: headers,
     });
 
-    // Log the response status and headers for debugging
-    console.log('Lexica API response status:', response.status);
-    console.log('Lexica API response headers:', response.headers);
-
     // Check if the response status is OK (status code 200)
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -428,7 +424,7 @@ router.get('/paste', async (req, res) => {
 
     // Validate required fields
     if (!text) {
-        return res.status(400).json({ error: 'Text is required' });
+        return res.status(400).json({ error: 'input is required', message: 'Please provide text, a file path, or base64 data.', });
     }
   if (!apikey) {
     return res.json({
@@ -480,6 +476,10 @@ router.get('/upload/cloudinary', async (req, res) => {
   const apikey = req.query.apikey;
   const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.mp4'); // Fallback file path
 
+  // Validate required fields
+    if (!filePath) {
+        return res.status(400).json({ error: 'filePath is required', message: 'Please provide a Buffer, base64 string, file URL, local file path, or stream.' });
+    }
 
   if (!apikey) {
     return res.json({
@@ -522,22 +522,8 @@ router.get('/upload/cloudinary', async (req, res) => {
     }
   } catch (error) {
     console.error('Error uploading file to Cloudinary:', error);
-
-    // If upload fails, send the fallback file
-    const fallbackFilePath = path.join(__dirname, './../lib/utils/A.mp4'); // Absolute path to fallback file
-    return res.sendFile(fallbackFilePath, (err) => {
-      if (err) {
-        console.error('Error sending fallback file:', err);
-        return res.status(500).json({
-          status: false,
-          message: 'An error occurred while sending the fallback file.',
-        });
-      }
-
-      console.log('Fallback file sent.');
-    });
   }
-});
+  });
 
 // Import the upload function
 
@@ -548,6 +534,10 @@ router.get('/upload/imgbb', async (req, res) => {
   const apikey = req.query.apikey;
   const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
+  // Validate required fields
+    if (!imagePath) {
+        return res.status(400).json({ error: 'imagePath is required', message: 'Please provide a Buffer, base64 string, URL, file path, or stream.' });
+    }
   if (!apikey) {
     return res.json({
       status: false,
@@ -589,17 +579,6 @@ router.get('/upload/imgbb', async (req, res) => {
   } catch (error) {
     console.error('Error uploading image to ImgBB:', error);
 
-    // If upload fails, send the fallback image
-    return res.sendFile(imagePath, (err) => {
-      if (err) {
-        return res.status(500).json({
-          status: false,
-          message: 'An error occurred while sending the fallback image.',
-        });
-      }
-
-      console.log('Fallback image sent.');
-    });
   }
 });
 
@@ -615,6 +594,7 @@ router.get('/upload/imgur', async (req, res) => {
     return res.status(400).json({
       status: false,
       message: 'Input is required.',
+      method: 'Please provide a Buffer, base64 string, URL, file path, or stream.'
     });
   }
 
@@ -643,21 +623,7 @@ router.get('/upload/imgur', async (req, res) => {
       throw new Error('Imgur URL not returned.');
     }
   } catch (error) {
-    console.error('Error uploading media to Imgur:', error);
-
-    // If upload fails, send the fallback image
-    const fallbackImagePath = path.join(__dirname, './../lib/utils/A.jpg'); // Absolute path to fallback image
-    return res.sendFile(fallbackImagePath, (err) => {
-      if (err) {
-        console.error('Error sending fallback image:', err);
-        return res.status(500).json({
-          status: false,
-          message: 'An error occurred while sending the fallback image.',
-        });
-      }
-
-      console.log('Fallback image sent.');
-    });
+    console.error('Error uploading media to Imgur:', error);   
   }
 });
 
