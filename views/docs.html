@@ -404,25 +404,30 @@
       <div id="collapseGenerator" class="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
        <div class="py-2 collapse-inner rounded">
          <h6 class="collapse-header">Validator API</h6>
-         <a class="collapse-item" href="/api/validate/data?type=json&data=check if the string is valid JSON&apikey=APIKEY">JSON</a>
-         <a class="collapse-item" href="/api/validate/data?type=imei&data=check if the string is a valid IMEI number&apikey=APIKEY">IMEI</a>
-         <a class="collapse-item" href="/api/validate/data?type=iban&data=check if the string is an IBAN&apikey=APIKEY">IBAN</a>
-         <a class="collapse-item" href="/api/validate/data?type=ean&data=check if the string is an EAN European Article Number&apikey=APIKEY">EAN</a>
-         <a class="collapse-item" href="/api/validate/data?type=creditcard&data=check if the string is a credit card number&apikey=APIKEY">Credit</a>
-         <a class="collapse-item" href="/api/validate/data?type=swift&data=check if the string is a SWIFT code&apikey=APIKEY">Swift</a>
-         <a class="collapse-item" href="/api/validate/data?type=base64&data=check if the string is base64 encoded&apikey=APIKEY">Base64</a>
-         <a class="collapse-item" href="/api/validate/data?type=base58&data=check if the string is base58 encoded&apikey=APIKEY">Base58</a>
-         <a class="collapse-item" href="/api/validate/data?type=base32&data=check if the string is base32 encoded&apikey=APIKEY">Base32</a>
-         <a class="collapse-item" href="/api/validate/data?type=ppnumbrr&data=something@email.com&apikey=APIKEY">Passport</a>
-         <a class="collapse-item" href="/api/validate/data?type=postcode&data=something@email.com&apikey=APIKEY">PostId</a>
-         <a class="collapse-item" href="/api/validate/data?type=taxid&data=something@email.com&apikey=APIKEY">TaxId</a>
-         <a class="collapse-item" href="/api/validate/data?type=hexcolor&data=something@email.com&apikey=APIKEY">HexId</a>
-         <a class="collapse-item" href="/api/validate/data?type=url&data=someurl.com&apikey=APIKEY">Link</a>
-         <a class="collapse-item" href="/api/validate/data?type=phone&data=phone number&apikey=APIKEY">Phone</a>
-         <a class="collapse-item" href="/api/validate/data?type=aplha&data=checks if only letters are present&apikey=APIKEY">Alpha</a>
+         <a class="collapse-item" href="/api/validate/data?type=json&data=check if the string is valid JSON&apikey=APIKEY">Valid JSON</a>
+         <a class="collapse-item" href="/api/validate/data?type=creditcard&data=check if the string is a credit card number&apikey=APIKEY">Credit Card</a>
+         <a class="collapse-item" href="/api/validate/data?type=base64&data=check if the string is base64 encoded&apikey=APIKEY">Base 64</a>
+         <a class="collapse-item" href="/api/validate/data?type=hexcolor&data=something@email.com&apikey=APIKEY">Hex Color</a>
+         <a class="collapse-item" href="/api/validate/data?type=url&data=someurl.com&apikey=APIKEY">Link/Url</a>
+         <a class="collapse-item" href="/api/validate/data?type=phone&data=phone number&apikey=APIKEY">Phone Number</a>
          <a class="collapse-item" href="/api/validate/data?type=alphanumeric&data=checks if only letters and numbers are present&apikey=APIKEY">Alphanum</a>
          <a class="collapse-item" href="/api/validate/data?type=numeric&data=checks if the string is numeric&apikey=APIKEY">Numeric</a>
          <a class="collapse-item" href="/api/validate/data?type=uuid&data=checks if the string is a valid UUID&apikey=APIKEY">UUID</a>
+         </div>
+         </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseFake" aria-expanded="true" aria-controls="collapseForm">
+          <i class="fa fa-fw fa-database"></i>
+           <span>Generate Data</span>
+       </a>
+      <div id="collapseFake" class="collapse" aria-labelledby="headingForm" data-parent="#accordionSidebar">
+       <div class="py-2 collapse-inner rounded">
+         <h6 class="collapse-header">Fake Data API</h6>
+            <a class="collapse-item" href="/api/upload/paste?apikey=APIKEY&name=somename">PasteBin</a>
+         <a class="collapse-item" href="/api/quotes/wyr?apikey=APIKEY">WouldYouRather</a>
+         <a class="collapse-item" href="/api/quotes/joke?apikey=APIKEY">Jokes</a>
+         <a class="collapse-item" href="/api/quotes/why?apikey=APIKEY">Why Quest</a>
          </div>
          </div>
       </li>
