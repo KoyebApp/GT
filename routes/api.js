@@ -335,7 +335,10 @@ router.get('/search-gif', async (req, res) => {
 
 // Route to upload to Pastebin
 router.get('/paste', async (req, res) => {
-    const { text, title, format, privacy } = req.query.input;
+    const text = req.query.input;
+  const title = req.query.name;
+  const format = req.query.format;
+  const privacy = req.query.privacy;
 
     // Validate required fields
     if (!text) {
