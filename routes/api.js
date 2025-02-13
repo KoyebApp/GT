@@ -2106,8 +2106,35 @@ router.get('/validate/data', (req, res) => {
       case 'url':
         validationResult = validator.isURL(data);
         break;
-      case 'phone':
-        validationResult = validator.isMobilePhone(data);
+      case 'json':
+        validationResult = validator.isJSON(data);
+        break;
+        case 'imei':
+        validationResult = validator.isIMEI(data);
+        break;
+        case 'iban':
+        validationResult = validator.isIBAN(data);
+        break;
+        case 'hexcolor':
+        validationResult = validator.isHexColor(data);
+        break;
+        case 'ean':
+        validationResult = validator.isEAN(data);
+        break;
+        case 'creditcard':
+        validationResult = validator.isCreditCard(data);
+        break;
+        case 'swift':
+        validationResult = validator.isBIC(data);
+        break;
+        case 'base64':
+        validationResult = validator.isBase64(data);
+        break;
+        case 'base58':
+        validationResult = validator.isBase58(data);
+        break;
+        case 'base32':
+        validationResult = validator.isBase32(data);
         break;
       case 'alpha':
         validationResult = validator.isAlpha(data); // checks if only letters are present
@@ -2117,6 +2144,21 @@ router.get('/validate/data', (req, res) => {
         break;
       case 'numeric':
         validationResult = validator.isNumeric(data); // checks if the string is numeric
+        break;
+        case 'phone':
+        validationResult = validator.isMobilePhone(data); // checks if the string is numeric
+        break;
+        case 'ppnumber':
+        validationResult = validator.isPassportNumber(data); // checks if the string is numeric
+        break;
+        case 'conutrycode':
+        validationResult = validator.isVAT(data); // checks if the string is numeric
+        break;
+        case 'postcode':
+        validationResult = validator.isPostalCode(data); // checks if the string is numeric
+        break;
+        case 'taxid':
+        validationResult = validator.isTaxID(data); // checks if the string is numeric
         break;
       case 'uuid':
         validationResult = validator.isUUID(data); // checks if the string is a valid UUID
