@@ -514,8 +514,14 @@ router.get('/upload/cloudinary', async (req, res) => {
       return res.json({
         status: true,
         creator:`${creator}`,
-        data: cloudinaryResponse.secure_url, // URL of the uploaded file
-        Response: cloudinaryResponse, // Full response from Cloudinary
+        url: cloudinaryResponse.secure_url, // URL of the uploaded file
+        width: cloudinaryResponse.width,
+        height: cloudinaryResponse.height,
+        format: cloudinaryResponse.format,
+        resource_type: cloudinaryResponse.resource_type,
+        created_at: cloudinaryResponse.created_at,
+        bytes: cloudinaryResponse.bytes,
+    // Full response from Cloudinary
       });
     } else {
       throw new Error('Cloudinary URL not returned.');
