@@ -438,7 +438,7 @@ router.get('/upload/imgbb', async (req, res) => {
 // Route to upload image to Imgur via GET
 router.get('/upload/imgur', async (req, res) => {
   // Get input from query or body
-  const input = req.query.input || req.body.input;
+  const input = req.query.input;
   const type = req.query.type || 'auto'; // Default to 'auto' to detect input type
 
   if (!input) {
