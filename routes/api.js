@@ -212,11 +212,10 @@ const {
 } = require('./../lib/utils/Gif')
 
 
-const uploadFileToFileIo = require('./../lib/utils/File-io');
 const uploadToPastebin = require('./../lib/utils/Paste');
 const UguuSe = require('./../lib/utils/Uguu');
-const webp2mp4File = require('./../lib/utils/webp2mp4File');
-
+const uploadToImgBB = require('./../lib/utils/imgbb'); 
+const uploadFileToCloudinary = require('./../lib/utils/Cloudinary'); 
 
 
 router.get('/lexica', async (req, res) => {
@@ -314,12 +313,22 @@ router.get('/lexica', async (req, res) => {
 
 
 router.get('/uguu', async (req, res) => {
-    const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.jpg');
-
+  const filePath = req.query.imgPath || path.join(__dirname, './../lib/utils/A.jpg');
+  const apikey = req.query.apikey;
     // Validate required fields
     if (!filePath) {
-        return res.status(400).json({ error: 'filePath is required' });
+        return res.status(400).json({ error: 'imgPath is required' });
     }
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
 
     try {
         // Read the file into a buffer
@@ -330,6 +339,7 @@ router.get('/uguu', async (req, res) => {
 
         // Return the Uguu.se URL
         res.status(200).json({
+         creator:`${creator}`,
             url: result,
         });
     } catch (error) {
@@ -339,8 +349,18 @@ router.get('/uguu', async (req, res) => {
 });
 
 router.get('/upload-gif', async (req, res) => {
-    const gifPath = req.query.gifPath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
-
+  const gifPath = req.query.gifPath || path.join(__dirname, './../lib/utils/MOODMAN.gif');
+  const apikey = req.query.apikey;
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
     // Validate required fields
     if (!gifPath) {
         return res.status(400).json({ error: 'gifPath is required' });
@@ -354,6 +374,7 @@ router.get('/upload-gif', async (req, res) => {
         res.status(200).json({
             url: result.url,
             data: result.data,
+          creator:`${creator}`,
         });
     } catch (error) {
         console.error('Error:', error);
@@ -362,12 +383,23 @@ router.get('/upload-gif', async (req, res) => {
 });
 
 router.get('/search-gif', async (req, res) => {
-    const query = req.query.query
+  const query = req.query.query
+  const apikey = req.query.apikey;
 
     // Validate required fields
     if (!query) {
         return res.status(400).json({ error: 'query is required' });
     }
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
 
     try {
         // Upload to Giphy
@@ -377,6 +409,7 @@ router.get('/search-gif', async (req, res) => {
         res.status(200).json({
             url: result.url,
             data: result.data,
+          creator:`${creator}`,
         });
     } catch (error) {
         console.error('Error:', error);
@@ -387,7 +420,8 @@ router.get('/search-gif', async (req, res) => {
 
 // Route to upload to Pastebin
 router.get('/paste', async (req, res) => {
-    const text = req.query.input;
+  const text = req.query.input;
+  const apikey = req.query.apikey;
   const title = req.query.name;
   const format = req.query.format;
   const privacy = req.query.privacy;
@@ -396,6 +430,16 @@ router.get('/paste', async (req, res) => {
     if (!text) {
         return res.status(400).json({ error: 'Text is required' });
     }
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
 
     // Optional: Use default values if not provided
     const pasteTitle = title || 'Untitled';
@@ -418,7 +462,7 @@ router.get('/paste', async (req, res) => {
         const pasteUrl = await uploadToPastebin(inputText, pasteTitle, pasteFormat, pastePrivacy);
 
         // Return the Pastebin URL
-        return res.status(200).json({ url: pasteUrl });
+        return res.status(200).json({ url: pasteUrl, creator:`${creator}` });
 
     } catch (error) {
         console.error('Error uploading to Pastebin:', error);
@@ -427,14 +471,27 @@ router.get('/paste', async (req, res) => {
 });
 
 
-const uploadFileToCloudinary = require('./../lib/utils/Cloudinary'); // Adjust the path to your uploadFileToCloudinary function
+// Adjust the path to your uploadFileToCloudinary function
 
 
 // Route to upload file to Cloudinary via GET
 router.get('/upload/cloudinary', async (req, res) => {
   // Get filePath from query, or default to fallback file
+  const apikey = req.query.apikey;
   const filePath = req.query.filePath || path.join(__dirname, './../lib/utils/A.mp4'); // Fallback file path
 
+
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
+  
   try {
     let cloudinaryResponse;
 
@@ -456,7 +513,7 @@ router.get('/upload/cloudinary', async (req, res) => {
     if (cloudinaryResponse && cloudinaryResponse.secure_url) {
       return res.json({
         status: true,
-        creator: creator,
+        creator:`${creator}`,
         data: cloudinaryResponse.secure_url, // URL of the uploaded file
         fullResponse: cloudinaryResponse, // Full response from Cloudinary
       });
@@ -482,14 +539,26 @@ router.get('/upload/cloudinary', async (req, res) => {
   }
 });
 
-const uploadToImgBB = require('./../lib/utils/imgbb'); // Import the upload function
+// Import the upload function
 
 
 // Route to upload image to ImgBB via GET
 router.get('/upload/imgbb', async (req, res) => {
   // Get imagePath from query, or default to fallback image
+  const apikey = req.query.apikey;
   const imagePath = req.query.imagePath || path.join(__dirname, './../lib/utils/A.jpg'); // Fallback image path
 
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
+  
   try {
     let imageInput;
 
@@ -510,7 +579,7 @@ router.get('/upload/imgbb', async (req, res) => {
     if (imgbbResponse && imgbbResponse.data) {
       return res.json({
         status: true,
-        creator: 'Your Creator Name', // Replace with dynamic creator name if necessary
+        creator:`${creator}`, // Replace with dynamic creator name if necessary
         data: imgbbResponse.data.url, // Only return the URL from ImgBB
         response: imgbbResponse, // Full response from ImgBB for debugging purposes
       });
@@ -538,6 +607,7 @@ router.get('/upload/imgbb', async (req, res) => {
 // Route to upload image to Imgur via GET
 router.get('/upload/imgur', async (req, res) => {
   // Get input from query or body
+  const apikey = req.query.apikey;
   const input = req.query.input;
   const type = req.query.type || 'auto'; // Default to 'auto' to detect input type
 
@@ -548,6 +618,17 @@ router.get('/upload/imgur', async (req, res) => {
     });
   }
 
+  if (!apikey) {
+    return res.json({
+      status: false,
+      message: "API key is missing."
+    });
+  }
+    // Example API key validation (replace `listkey` with your actual list of valid keys)
+  if (!listkey.includes(apikey)) {
+    return res.json({ status: false, message: 'Invalid API key' });
+  }
+  
   try {
     // Try to upload the media to Imgur
     const imgurUrl = await uploadToImgur(input, type);
@@ -555,7 +636,7 @@ router.get('/upload/imgur', async (req, res) => {
     if (imgurUrl) {
       return res.json({
         status: true,
-        creator: creator,
+        creator:`${creator}`,
         data: imgurUrl, // This will be the URL returned from the Imgur API
       });
     } else {
@@ -582,7 +663,7 @@ router.get('/upload/imgur', async (req, res) => {
 
 
 // Route to get country information based on the requestor's IP
-router.get('/ms/country', async (req, res) => {
+router.get('/ip/self', async (req, res) => {
   const apikey = req.query.apikey;
 
   // Validate input parameters
@@ -615,6 +696,7 @@ router.get('/ms/country', async (req, res) => {
     // Return the country data
     return res.json({
       status: true,
+      creator:`${creator}`,
       ip: responseData.ip,  // IP address
       country: responseData.country,  // Country code for the requestor's IP
     });
@@ -630,7 +712,7 @@ router.get('/ms/country', async (req, res) => {
 
 
 // Route to interact with the GuruSensei Llama API
-router.get('/ms/llama', async (req, res) => {
+router.get('/ai/llama', async (req, res) => {
   const apikey = req.query.apikey;
   const prompt = req.query.prompt;  // Text prompt for Llama API
 
@@ -680,7 +762,7 @@ router.get('/ms/llama', async (req, res) => {
 });
 
 // Route to interact with the GuruSensei DeepSeek API
-router.get('/ms/deepseek', async (req, res) => {
+router.get('/ai/deepseek', async (req, res) => {
   const apikey = req.query.apikey;
   const text = req.query.text;  // Text input for DeepSeek API
 
