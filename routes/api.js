@@ -306,6 +306,46 @@ router.get('/lexica', async (req, res) => {
   }
 });
 
+// Route to get random coffee image with API key validation
+router.get('/image/coffee', async (req, res, next) => {
+  const apikey = req.query.apikey;  // Get API key from query
+
+  // Validate input parameters
+  if (!apikey) return res.json(loghandler.notparam);  // Ensure 'apikey' is provided
+
+  // Check if the API key is valid
+  if (listkey.includes(apikey)) {
+    try {
+      // Fetch random coffee image from the API
+      const response = await fetch('https://coffee.alexflipnote.dev/random.json');
+      const coffeeResult = await response.json();
+
+      // Check if the image URL is returned
+      if (coffeeResult && coffeeResult.file) {
+        res.json({
+          status: true,
+          code: 200,
+          creator: `${creator}`,
+          result: coffeeResult.file, // Send the coffee image URL
+        });
+      } else {
+        res.json({
+          status: false,
+          code: 404,
+          message: 'No coffee image found.',
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching random coffee image:", err);
+      res.json(loghandler.error);
+    }
+  } else {
+    // Invalid API key
+    res.json(loghandler.invalidKey);
+  }
+});
+
+
 const BASE_ALPHABETS = {
   base2: '01',
   base8: '01234567',
