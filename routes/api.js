@@ -515,7 +515,7 @@ router.get('/upload/cloudinary', async (req, res) => {
         status: true,
         creator:`${creator}`,
         data: cloudinaryResponse.secure_url, // URL of the uploaded file
-        fullResponse: cloudinaryResponse, // Full response from Cloudinary
+        signature: cloudinaryResponse.signature, // Full response from Cloudinary
       });
     } else {
       throw new Error('Cloudinary URL not returned.');
