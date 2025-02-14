@@ -50,7 +50,7 @@
     "file-type": "^16.5.4",
     "fluent-ffmpeg": "^2.1.2",
     "form-data": "^4.0.1",
-    "fs": "0.0.1-security",
+    "fs-extra": "^11.3.0",
     "giphy-api": "^2.0.2",
     "gemini-ai": "^2.2.1",
     "google-sr": "^5.0.0",
