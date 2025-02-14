@@ -6,6 +6,7 @@ const express = require('express');
 const favicon = require('serve-favicon');
 const faker = require('faker'); // Import the Faker package
 const Photo360 = require('ephoto-api-faris');
+const bwipjs = require('bwip-js');
 const validator = require('validator');
 const { search } = require('aptoide-scraper');
 const cityTimezones = require('city-timezones');
@@ -305,6 +306,56 @@ router.get('/lexica', async (req, res) => {
     });
   }
 });
+
+
+// Route to generate a barcode as a PNG image
+router.get('/barcode', async (req, res, next) => {
+  const apikey = req.query.apikey; // API key for authentication
+  const text = req.query.text;     // Text to encode in the barcode
+  const bcid = req.query.type || 'code128'; // Barcode type (default: Code 128)
+  const scale = parseInt(req.query.scale) || 3; // Scaling factor (default: 3)
+  const height = parseInt(req.query.height) || 10; // Bar height (default: 10mm)
+
+  // Validate input parameters
+  if (!text) return res.json(loghandler.notparam); // Ensure 'text' parameter is provided
+  if (!apikey) return res.json(loghandler.notparam); // Ensure API key is provided
+
+  // Check if the API key is valid (replace with your actual key validation logic)
+  if (!listkey.includes(apikey)) {
+    return res.json(loghandler.invalidKey);
+  }
+
+  try {
+    // Generate the barcode as a PNG buffer
+    const png = await new Promise((resolve, reject) => {
+      bwipjs.toBuffer({
+        bcid: bcid,       // Barcode type (e.g., 'code128')
+        text: text,       // Text to encode
+        scale: scale,     // Scaling factor
+        height: height,   // Bar height (in mm)
+        includetext: true, // Include human-readable text
+        textxalign: 'center', // Center-align the text
+      }, (err, buffer) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(buffer);
+        }
+      });
+    });
+
+    // Set the appropriate headers for image content (PNG)
+    res.set('Content-Type', 'image/png');
+
+    // Send the PNG buffer directly in the response
+    return res.send(png);
+
+  } catch (err) {
+    console.error('Error generating barcode:', err);
+    return res.json(loghandler.error);
+  }
+});
+
 
 // Route to get random coffee image with API key validation
 router.get('/image/coffee', async (req, res, next) => {
