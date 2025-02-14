@@ -771,14 +771,14 @@ router.get('/upload/imgbb', async (req, res) => {
 router.get('/upload/imgur', async (req, res) => {
   // Get input from query or body
   const apikey = req.query.apikey;
-  const input = req.query.input;
+  const input = req.query.input || path.join(__dirname, './../lib/utils/A.jpg');
   const type = req.query.type || 'auto'; // Default to 'auto' to detect input type
 
   if (!input) {
     return res.status(400).json({
       status: false,
       message: 'Input is required.',
-      method: 'Please provide a Buffer, base64 string, URL, file path, or stream.'
+      method: 'Please provide a Buffer, base64 string, file path, or stream.'
     });
   }
 
